@@ -1,14 +1,13 @@
 # PME3402-Laboratório de Medição e Controle Discreto
 
-Trabalho de estudantes do 8º semestre do curso de Engenharia Mecânica da _Escola Politécnica da USP_ para a disciplina _PME3402 - Laboratório de Medição e Controle Discreto_
+Trabalho de estudantes do 8º semestre do curso de Engenharia Mecânica da __Escola Politécnica da USP__ para a disciplina __PME3402 - Laboratório de Medição e Controle Discreto__
 
-_Grupo 13_
-Membros:
+__Membros do Grupo 13__
 - Tiago Vieira de Campos Krause
 - Vinicius Rosario Dyonisio
 - Vítor Albuquerque Maranhao Ribeiro
 - Vitória Garcia Bittar
 
-Professores responsáveis:
+__Professores responsáveis__:
 - Edilson Hiroshi Tamai
 - Flávio Trigo
