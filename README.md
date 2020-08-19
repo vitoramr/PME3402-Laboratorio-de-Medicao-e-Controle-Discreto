@@ -6,7 +6,7 @@ Os programas são desenvolvidos para o [Scilab](https://www.scilab.org/), softwa
 
 ### Grupo 13
 Membros 
-- Tiago Vieira de Campos Krause
+- [Tiago Vieira de Campos Krause](https://github.com/tiagokrause)
 - [Vinicius Rosario Dyonisio](https://github.com/Vidyonisio)
 - [Vítor Albuquerque Maranhao Ribeiro](https://github.com/vitoramr)
 - [Vitória Garcia Bittar](https://github.com/vgbittar)
