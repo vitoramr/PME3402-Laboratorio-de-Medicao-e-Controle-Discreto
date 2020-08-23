@@ -196,14 +196,14 @@ fig6 = scf(6);
     plot( f2(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura 6.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
-// 8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
+// 3.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_3_1 = y5_t_3_1 .* pulso1_t
 
-// 9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 3;
+// 3.1.9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 3;
 y8_f_3_1 = fft(y8_t_3_1, -1)                 //Realiza a Transformada Direta de Fourier.
 pot_y8_3_1 = ( abs(y8_f_3_1) ).^2
 
-// 10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
+// 3.1.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
 fig7 = scf(7);
     subplot(2,1,1)
     plot(t2,y8_t_3_1);        //Visualizar o sinal de (5)
@@ -220,11 +220,11 @@ f5_3_2 = 4,16;                              //Frequência para o sinal de (5) da
 phi5_3_2 = 0;                            //Fase inicial para o sinal de (5) da parte 3.2
 y5_t_3_2 = cos(2*%pi*f5_3_2*t2 + phi5_2);
 
-// 3.12.6. Aplicar a transformada rápida de Fourier ao sinal gerado em (5) da parte 3.2;
+// 3.2.6. Aplicar a transformada rápida de Fourier ao sinal gerado em (5) da parte 3.2;
 y5_f_3_2 = fft(y5_t_3_2, -1)                 //Realiza a Transformada Direta de Fourier.
 pot_y5_3_2 = ( abs(y5_f_3_2) ).^2
 
-// 3.1.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
+// 3.2.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
 fig8 = scf(8);
     subplot(2,1,1)
     plot(t2,y5_t_3_2);        //Visualizar o sinal de (5)
@@ -234,14 +234,14 @@ fig8 = scf(8);
     plot( f2(1:N_f/2) , pot_y5_3_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura 8.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
-// 8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
+// 3.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_3_2 = y5_t_3_2 .* pulso1_t
 
-// 9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 3;
+// 3.2.9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 3;
 y8_f_3_2 = fft(y8_t_3_2, -1)                 //Realiza a Transformada Direta de Fourier.
 pot_y8_3_2 = ( abs(y8_f_3_2) ).^2
 
-// 10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
+// 3.2.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
 fig9 = scf(9);
     subplot(2,1,1)
     plot(t2,y8_t_3_2);        //Visualizar o sinal de (5)
