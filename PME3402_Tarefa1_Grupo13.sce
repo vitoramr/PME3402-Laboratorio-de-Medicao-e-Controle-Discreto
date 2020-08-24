@@ -175,7 +175,7 @@ fig5 = scf(5);
 
 // Explicar o comportamento dos espectros.
 
-// 3.1: Para o sinal de 4,01
+// .1: Para o sinal de 4,01
 
 // 3.1.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,01 Hz;
 f5_3_1 = 4,01;                              //Frequência para o sinal de (5) da parte 3.1
@@ -257,9 +257,100 @@ EXPLICAÇÃO
 // ================
 // PARTE 4
 
+
+
 // Repetir o procedimento da Parte 3,  porém modificando o passo do vetor de tempos para 0,01s.
+
+dt4 = 0.01;                          //[s] Intervalo de amostragem do vetor de tempo t4
+tf4 = 10.0;                          //[s] Tempo final da parte 4
+t4  = t0:dt4:tf4;                    //[s] Vetor de tempos da parte 4
+N4   = size(t4,'*');                   // Número de amostras
+
+// Gerar um pulso unitário de duração 2 s.  começando no instante t=1s.
+pulso1_t4 = zeros(t4);                //Vetor de zeros do mesmo tamanho de t2
+ti_p1 = 1.0;                         //Início do pulso 1
+dt_p1 = 2.0;                         //Duração do pulso 1
+idx_ti_p1 = (ti_p1 - t0)/dt4 + 1;    //Índice no vetor t2 do tempo inicial do pulso 1 (ti_p1)
+idx_tf_p1 = idx_ti_p1 + dt_p1 / dt4; //Índice no vetor t2 do tempo final do pulso 1 (ti_p1)
+
+pulso1_t4(idx_ti_p1:idx_tf_p1) = 1;   //Adicionando 1's ao vetor de pulso em seus respectivos indices
+
+// 4.1.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,01 Hz;
+f5_4_1 = 4,01;                              //Frequência para o sinal de (5) da parte 4.1
+phi5_4_1 = 0;                            //Fase inicial para o sinal de (5) da parte 4.1
+y_t_4_1 = cos(2*%pi*f5_4_1*t4 + phi5_4_1);
+
+// 4.1.6. Aplicar a transformada rápida de Fourier ao sinal gerado em (5) da parte 4.1;
+y_f_4_1 = fft(y_t_4_1, -1)                 //Realiza a Transformada Direta de Fourier.
+pot_y_4_1 = ( abs(y_f_4_1) ).^2
+
+// 4.1.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
+fig10 = scf(10);
+    subplot(2,1,1)
+    plot(t4,y_t_4_1);        //Visualizar o sinal de (5)
+    xtitle('Figura 6.1: Sinal periódico de frequência '+ string(f5_4_1) + 'Hz e fase ' + string(phi5_4_1) +' rad.' , 't (s)','s (t)');
+    
+    subplot(2,1,2)
+    plot( f2(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    xtitle('Figura 6.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+
+// 4.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
+y8_t_4_1 = y_t_4_1 .* pulso1_t4
+
+// 4.1.9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 4;
+y8_f_4_1 = fft(y8_t_4_1, -1)                 //Realiza a Transformada Direta de Fourier.
+pot_y8_4_1 = ( abs(y8_f_4_1) ).^2
+
+// 4.1.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
+fig11 = scf(11);
+    subplot(2,1,1)
+    plot(t4,y8_t_4_1);        //Visualizar o sinal de (5)
+    xtitle('Figura 7.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    
+    subplot(2,1,2)
+    plot( f2(1:N_f/2) , pot_y8_4_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    xtitle('Figura 7.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    
+// 4.2: Para o sinal de 4,16
+
+// 4.2.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,16 Hz;
+f5_4_2 = 4,16;                              //Frequência para o sinal de (5) da parte 4.2
+phi5_4_2 = 0;                            //Fase inicial para o sinal de (5) da parte 4.2
+y5_t_4_2 = cos(2*%pi*f5_4_2*t4 + phi5_4_2);
+
+// 4.2.6. Aplicar a transformada rápida de Fourier ao sinal gerado em (5) da parte 4.2;
+y5_f_4_2 = fft(y5_t_4_2, -1)                 //Realiza a Transformada Direta de Fourier.
+pot_y_4_2 = ( abs(y5_f_4_2) ).^2
+
+// 4.2.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
+fig12 = scf(12);
+    subplot(2,1,1)
+    plot(t4,y5_t_4_2);        //Visualizar o sinal de (5)
+    xtitle('Figura 8.1: Sinal periódico de frequência '+ string(f5_4_2) + 'Hz e fase ' + string(phi5_4_2) +' rad.' , 't (s)','s (t)');
+    
+    subplot(2,1,2)
+    plot( f2(1:N_f/2) , pot_y_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    xtitle('Figura 8.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+
+// 4.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
+y8_t_4_2 = y5_t_4_2 .* pulso1_t4
+
+// 4.2.9. Aplicar a transformada rápida de Fourier ao sinal gerado em (8) da parte 4;
+y8_f_4_2 = fft(y8_t_4_2, -1)                 //Realiza a Transformada Direta de Fourier.
+pot_y8_4_2 = ( abs(y8_f_4_2) ).^2
+
+// 4.2.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
+fig13 = scf(13);
+    subplot(2,1,1)
+    plot(t4,y8_t_4_2);        //Visualizar o sinal de (5)
+    xtitle('Figura 9.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    
+    subplot(2,1,2)
+    plot( f2(1:N_f/2) , pot_y8_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    xtitle('Figura 9.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+/*
 
 // Comparar com o resultado do item (III) e explicar o que ocorre.
 /*
-EXPLICAÇÃO
+Percebi que a densidade de potência aumentou quando comparada com o 3, mas não sei o que isso quer dizer ashashashashhsah
 */
