@@ -51,7 +51,7 @@ fig1 = scf(1);
     xgrid;
     plot(t1,y1, 'r');
     plot(t1,y2, 'b');
-    xtitle("Figura 1: Sinais períodicos em função do tempo, com f= " + string(f1) + "Hz, Φ1 = " + string(phi1) + "rad e P= " + string(P) );
+    xtitle("Figura I-1: Sinais períodicos em função do tempo, com f= " + string(f1) + "Hz, Φ1 = " + string(phi1) + "rad e P= " + string(P) );
     xlabel ('tempo(s)')
     ylabel ('y')
     hl = legend(['y1';'y2'])
@@ -67,7 +67,7 @@ que ele seja um inteiro), ocorre o fenômeno de falseamento (Aliasing).
 Assim, a cada passo do vetor de tempo, a fase de y2 é multiplicada por um múltiplo
 de 2pi, o que dá a impressão de que y2 possui uma fase estática de 0.
 
-A figura 2 ilustra o fenômeno ao mostrar que, ao calcularmos o resto da divisão
+A figura I-2 ilustra o fenômeno ao mostrar que, ao calcularmos o resto da divisão
 de phi2 por 2pi, este valor é aproximadamente zero ou 2pi, devido às aproximações
 de cálculo, para toda duração do sinal.
 */
@@ -77,11 +77,11 @@ phi2_mod2pi = pmodulo(phi2,2*%pi) //Resto da divisão de Φ2 por 2pi
 fig2 = scf(2);
     subplot(2,1,1)
     plot(t1,phi2); //Visualizar o pulso 1
-    xtitle('Figura 2.1: Fase do sinal y2', 't(s)','Φ2 (rad)');
+    xtitle('Figura I.2-1: Fase do sinal y2', 't(s)','Φ2 (rad)');
     
     subplot(2,1,2)
     scatter(t1, phi2_mod2pi, '.')
-    xtitle('Figura 2.2: Fase do sinal y2 entre 0 e 2pi', 't(s)','Φ2 (rad)');
+    xtitle('Figura I.2-2: Fase do sinal y2 entre 0 e 2pi', 't(s)','Φ2 (rad)');
     
 
 
@@ -125,11 +125,11 @@ pot_pulso1 = ( abs(pulso1_f) ).^2;
 fig3 = scf(3);
     subplot(2,1,1)
     scatter(t2,pulso1_t,".");        //Visualizar o pulso 1
-    xtitle('Figura 3.1: Sinal de pulso unitário de com início em t = '+ string(ti_p1) + 's e duração de ' + string(dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura II.1-1: Sinal de pulso unitário de com início em t = '+ string(ti_p1) + 's e duração de ' + string(dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_pulso1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 3.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura II.1-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
     
 // 5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4 Hz;
 f5_2 = 4;                              //Frequência para o sinal de (5) da parte 2
@@ -144,11 +144,11 @@ pot_y5_2 = ( abs(y5_f_2) ).^2
 fig4 = scf(4);
     subplot(2,1,1)
     plot(t2,y5_t_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 4.1: Sinal periódico de frequência '+ string(f5_2) + 'Hz e fase ' + string(phi5_2) +' rad.' , 't (s)','s (t)');
+    xtitle('Figura II.2-1: Sinal periódico de frequência '+ string(f5_2) + 'Hz e fase ' + string(phi5_2) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y5_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 4.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura II.2-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 8. Efetuar a multiplicação dos sinais gerados em (2) e em (5) da parte 2;
 y8_t_2 = y5_t_2 .* pulso1_t
@@ -161,11 +161,11 @@ pot_y8_2 = ( abs(y8_f_2) ).^2
 fig5 = scf(5);
     subplot(2,1,1)
     plot(t2,y8_t_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 5.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura II.3-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 5.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura II.3-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 
 // ================
@@ -178,7 +178,7 @@ fig5 = scf(5);
 // .1: Para o sinal de 4,01
 
 // 3.1.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,01 Hz;
-f5_3_1 = 4,01;                              //Frequência para o sinal de (5) da parte 3.1
+f5_3_1 = 4.01;                              //Frequência para o sinal de (5) da parte 3.1
 phi5_3_1 = 0;                            //Fase inicial para o sinal de (5) da parte 3.1
 y5_t_3_1 = cos(2*%pi*f5_3_1*t2 + phi5_2);
 
@@ -190,11 +190,11 @@ pot_y5_3_1 = ( abs(y5_f_3_1) ).^2
 fig6 = scf(6);
     subplot(2,1,1)
     plot(t2,y5_t_3_1);        //Visualizar o sinal de (5)
-    xtitle('Figura 6.1: Sinal periódico de frequência '+ string(f5_3_1) + 'Hz e fase ' + string(phi5_3_1) +' rad.' , 't (s)','s (t)');
+    xtitle('Figura III.1-1: Sinal periódico de frequência '+ string(f5_3_1) + 'Hz e fase ' + string(phi5_3_1) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 6.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura III.1-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 3.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_3_1 = y5_t_3_1 .* pulso1_t
@@ -207,16 +207,16 @@ pot_y8_3_1 = ( abs(y8_f_3_1) ).^2
 fig7 = scf(7);
     subplot(2,1,1)
     plot(t2,y8_t_3_1);        //Visualizar o sinal de (5)
-    xtitle('Figura 7.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura III.2-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 7.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura III.2-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
     
 // 3.2: Para o sinal de 4,16
 
 // 3.2.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,16 Hz;
-f5_3_2 = 4,16;                              //Frequência para o sinal de (5) da parte 3.2
+f5_3_2 = 4.16;                              //Frequência para o sinal de (5) da parte 3.2
 phi5_3_2 = 0;                            //Fase inicial para o sinal de (5) da parte 3.2
 y5_t_3_2 = cos(2*%pi*f5_3_2*t2 + phi5_2);
 
@@ -228,11 +228,11 @@ pot_y5_3_2 = ( abs(y5_f_3_2) ).^2
 fig8 = scf(8);
     subplot(2,1,1)
     plot(t2,y5_t_3_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 8.1: Sinal periódico de frequência '+ string(f5_3_2) + 'Hz e fase ' + string(phi5_3_2) +' rad.' , 't (s)','s (t)');
+    xtitle('Figura III.3-1: Sinal periódico de frequência '+ string(f5_3_2) + 'Hz e fase ' + string(phi5_3_2) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y5_3_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 8.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura III.3-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 3.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_3_2 = y5_t_3_2 .* pulso1_t
@@ -245,11 +245,11 @@ pot_y8_3_2 = ( abs(y8_f_3_2) ).^2
 fig9 = scf(9);
     subplot(2,1,1)
     plot(t2,y8_t_3_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 9.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura III.4-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_3_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 9.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura III.4-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 /*
 EXPLICAÇÃO
 */
@@ -276,7 +276,7 @@ idx_tf_p1 = idx_ti_p1 + dt_p1 / dt4; //Índice no vetor t2 do tempo final do pul
 pulso1_t4(idx_ti_p1:idx_tf_p1) = 1;   //Adicionando 1's ao vetor de pulso em seus respectivos indices
 
 // 4.1.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,01 Hz;
-f5_4_1 = 4,01;                              //Frequência para o sinal de (5) da parte 4.1
+f5_4_1 = 4.01;                              //Frequência para o sinal de (5) da parte 4.1
 phi5_4_1 = 0;                            //Fase inicial para o sinal de (5) da parte 4.1
 y_t_4_1 = cos(2*%pi*f5_4_1*t4 + phi5_4_1);
 
@@ -288,11 +288,11 @@ pot_y_4_1 = ( abs(y_f_4_1) ).^2
 fig10 = scf(10);
     subplot(2,1,1)
     plot(t4,y_t_4_1);        //Visualizar o sinal de (5)
-    xtitle('Figura 6.1: Sinal periódico de frequência '+ string(f5_4_1) + 'Hz e fase ' + string(phi5_4_1) +' rad.' , 't (s)','s (t)');
+    xtitle('Figura IV.1-1: Sinal periódico de frequência '+ string(f5_4_1) + 'Hz e fase ' + string(phi5_4_1) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 6.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura IV.1-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 4.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_4_1 = y_t_4_1 .* pulso1_t4
@@ -305,16 +305,16 @@ pot_y8_4_1 = ( abs(y8_f_4_1) ).^2
 fig11 = scf(11);
     subplot(2,1,1)
     plot(t4,y8_t_4_1);        //Visualizar o sinal de (5)
-    xtitle('Figura 7.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura IV.2-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_4_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 7.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura IV.2-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
     
 // 4.2: Para o sinal de 4,16
 
 // 4.2.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,16 Hz;
-f5_4_2 = 4,16;                              //Frequência para o sinal de (5) da parte 4.2
+f5_4_2 = 4.16;                              //Frequência para o sinal de (5) da parte 4.2
 phi5_4_2 = 0;                            //Fase inicial para o sinal de (5) da parte 4.2
 y5_t_4_2 = cos(2*%pi*f5_4_2*t4 + phi5_4_2);
 
@@ -326,11 +326,11 @@ pot_y_4_2 = ( abs(y5_f_4_2) ).^2
 fig12 = scf(12);
     subplot(2,1,1)
     plot(t4,y5_t_4_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 8.1: Sinal periódico de frequência '+ string(f5_4_2) + 'Hz e fase ' + string(phi5_4_2) +' rad.' , 't (s)','s (t)');
+    xtitle('Figura IV.3-1: Sinal periódico de frequência '+ string(f5_4_2) + 'Hz e fase ' + string(phi5_4_2) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 8.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura IV.3-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 4.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_4_2 = y5_t_4_2 .* pulso1_t4
@@ -343,11 +343,11 @@ pot_y8_4_2 = ( abs(y8_f_4_2) ).^2
 fig13 = scf(13);
     subplot(2,1,1)
     plot(t4,y8_t_4_2);        //Visualizar o sinal de (5)
-    xtitle('Figura 9.1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
+    xtitle('Figura IV.4-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
-    xtitle('Figura 9.2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+    xtitle('Figura IV.4-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 /*
 
 // Comparar com o resultado do item (III) e explicar o que ocorre.
