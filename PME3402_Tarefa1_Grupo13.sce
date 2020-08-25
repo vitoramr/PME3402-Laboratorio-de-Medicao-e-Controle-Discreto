@@ -44,7 +44,7 @@ y1 = cos(2*%pi*f1*t1 + phi1);
 P = 2;                        //Número inteiro
 phi2 = 2*%pi*P*fa*t1;         //Fase da frequência 2 
 
-y2 = cos(2*%pi*f1*t1 + phi2);
+y2 = cos(2*%pi*f1*t1 + phi2 + phi1);
 
 // 4. Exibir um gráfico contendo os sinais y1 e y2 em função do tempo.
 fig1 = scf(1);
@@ -59,7 +59,7 @@ fig1 = scf(1);
 // 5. Interpretar o gráfico e explicar o resultado.
 
 /*
-Como podemos notar, o sinal y2 se comporta como se ele possuísse fase = 0.
+Como podemos notar, o sinal y2 se comporta como se ele possuísse defasagem = 0.
 Isso ocorre, pois, mesmo que a fase de phi2 varie no tempo, como ela é
 calculada em relação à fa, que é a frequência de amostragem do vetor de tempo,
 e uma propocionalidade de um múltiplo de 2*pi (independente do valor de P, dado
@@ -250,8 +250,16 @@ fig9 = scf(9);
     subplot(2,1,2)
     plot( f2(1:N_f/2) , pot_y8_3_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura III.4-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
+
+//Explicar o comportamento dos espectros.
 /*
-EXPLICAÇÃO
+Analisando-se o sinal periódico de frequência e a densidade de potência gerada a partir da aplicação da transformada rápida de Fourier,
+pode-se observar que a densidade de potência contém um pico (~7500) na frequência definida para o sinal periódico, isso ocorre para qualquer frequência utilizada.
+Ao mesclar o pulso unitário com o sinal periódico, a periodicidade do sinal é mantida apenas na região em que o pulso ocorre, deste modo,
+a transformada rápida de Fourier obtém um resultado mais esparso, ainda com pico na frequência definida, porém com valor de densidade menor (~400) e
+com pequenas gaussianas com picos menores em torno da frequência definida.
+A diferença numérica no valor da densidade de potência ocorre devido à somatória presente no cálculo da transformada rápida de Fourier, por haverem mais termos nulos na mesclagem do pulso com o sinal,
+o valor calculado pela transformada é numéricamente menor.
 */
 
 // ================
@@ -275,6 +283,10 @@ idx_tf_p1 = idx_ti_p1 + dt_p1 / dt4; //Índice no vetor t2 do tempo final do pul
 
 pulso1_t4(idx_ti_p1:idx_tf_p1) = 1;   //Adicionando 1's ao vetor de pulso em seus respectivos indices
 
+sample_rate4 = 1.0/(dt4);          //[Hz] Escala horizontal da DFT
+
+f4 = (sample_rate4/N4) * (0:(N_f-1));     //[Hz] Escala horizontal das frequências da DFT
+
 // 4.1.5. Utilizando o mesmo vetor de tempos, gerar uma função periódica (seno ou cosseno) de frequência 4,01 Hz;
 f5_4_1 = 4.01;                              //Frequência para o sinal de (5) da parte 4.1
 phi5_4_1 = 0;                            //Fase inicial para o sinal de (5) da parte 4.1
@@ -291,7 +303,7 @@ fig10 = scf(10);
     xtitle('Figura IV.1-1: Sinal periódico de frequência '+ string(f5_4_1) + 'Hz e fase ' + string(phi5_4_1) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
-    plot( f2(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    plot( f4(1:N_f/2) , pot_y5_3_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura IV.1-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 4.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
@@ -308,7 +320,7 @@ fig11 = scf(11);
     xtitle('Figura IV.2-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
-    plot( f2(1:N_f/2) , pot_y8_4_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    plot( f4(1:N_f/2) , pot_y8_4_1(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura IV.2-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
     
 // 4.2: Para o sinal de 4,16
@@ -329,7 +341,7 @@ fig12 = scf(12);
     xtitle('Figura IV.3-1: Sinal periódico de frequência '+ string(f5_4_2) + 'Hz e fase ' + string(phi5_4_2) +' rad.' , 't (s)','s (t)');
     
     subplot(2,1,2)
-    plot( f2(1:N_f/2) , pot_y_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    plot( f4(1:N_f/2) , pot_y_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura IV.3-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
 
 // 4.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
@@ -346,11 +358,13 @@ fig13 = scf(13);
     xtitle('Figura IV.4-1: Sinal periódico aplicado à janela entre  t = '+ string(ti_p1) + 's e t = ' + string(ti_p1 + dt_p1) +'s.' , 't (s)','s (t)');
     
     subplot(2,1,2)
-    plot( f2(1:N_f/2) , pot_y8_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
+    plot( f4(1:N_f/2) , pot_y8_4_2(1:N_f/2) ); // Como o sinal é real, a FFT é simétrica, e retemos apenas os N/2 primeiros elementos
     xtitle('Figura IV.4-2: Densidade de potência do sinal acima', 'f (Hz)','|S(w)| ^2');
-/*
 
 // Comparar com o resultado do item (III) e explicar o que ocorre.
 /*
-Percebi que a densidade de potência aumentou quando comparada com o 3, mas não sei o que isso quer dizer ashashashashhsah
+Alterando-se o passo para um menor aumenta-se o número de intervalos em que os dados são obtidos, assim obtêm-se uma melhor resolução das curvas.
+Além disso, a transformada rápida de Fourier envolve uma somatória dos termos, por haver um número maior de termos devido ao passo menor,
+o valor obtido com a transformada é maior, logo a densidade de potência calculada também é maior.
 */
+
