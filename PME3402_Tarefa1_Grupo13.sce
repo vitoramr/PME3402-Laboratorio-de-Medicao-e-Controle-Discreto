@@ -271,11 +271,14 @@ fig5 = scf(5);
 /*
 Analisando-se o sinal periódico de frequência e a densidade de potência gerada a partir da aplicação da transformada rápida de Fourier,
 pode-se observar que a densidade de potência contém um pico (~7500) na frequência definida para o sinal periódico, isso ocorre para qualquer frequência utilizada.
+
 Ao mesclar o pulso unitário com o sinal periódico, a periodicidade do sinal é mantida apenas na região em que o pulso ocorre, deste modo,
 a transformada rápida de Fourier obtém um resultado mais esparso, ainda com pico na frequência definida, porém com valor de densidade menor (~400) e
-com pequenas gaussianas com picos menores em torno da frequência definida.
-A diferença numérica no valor da densidade de potência ocorre devido à somatória presente no cálculo da transformada rápida de Fourier, por haverem mais termos nulos na mesclagem do pulso com o sinal,
-o valor calculado pela transformada é numéricamente menor.
+com pequenos picos menores em torno da frequência definida. Isso ocorre, pois a transformada de Fourier do sinal resultante é igual à convolução circular
+da transformada do sinal original pela tranformada da função de pulso retangular, que tem o formato
+
+A diferença numérica nos valores da densidade de potência ocorre devido à somatória presente no cálculo da transformada rápida de Fourier. No sinal filtrado, por 
+haverem mais termos nulos na mesclagem do pulso com o sinal, o valor calculado pela transformada é numéricamente menor e o sinal possui menor densidade de potência.
 */
 
 // ================
@@ -389,7 +392,13 @@ fig7 = scf(7);
 
 // Comparar com o resultado do item (III) e explicar o que ocorre.
 /*
-Alterando-se o passo para um menor aumenta-se o número de intervalos em que os dados são obtidos, assim obtêm-se uma melhor resolução das curvas.
+No sinal da parte 3, a frequência de amostragem é de 20Hz, que, apesar de ser maior do que o dobro da frequência do sinal analisado (de aprox. 4 Hz),
+ainda é relativamente próxima à essa frequência limite. Assim, no gráfico do sinal no tempo, é visível que o sinal não é tão refinado e, muitas vezes,
+apresenta um carater descompassado do sinal original (fenômeno de Aliasing)
+
+Na parte 4, diminuindo-se o período de amostragem, a frequência de amostragem passa a ser de 100Hz, e aumenta-se o número de intervalos em que os dados são obtidos.
+Assim obtêm-se uma melhor resolução das curvas, que passa a assemelhar-se mais do sinal em tempo contínuo.
+
 Além disso, a transformada rápida de Fourier envolve uma somatória dos termos, por haver um número maior de termos devido ao passo menor,
 o valor obtido com a transformada é maior, logo a densidade de potência calculada também é maior.
 */
