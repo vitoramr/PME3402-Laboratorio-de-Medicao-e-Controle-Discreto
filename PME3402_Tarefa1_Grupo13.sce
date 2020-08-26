@@ -317,7 +317,7 @@ pot_y_4_1 = ( abs(y_f_4_1) ).^2
 
 // 4.1.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
 
-// Vide linhas 331-337
+// Vide linhas 333-340
 
 // 4.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_4_1 = y_t_4_1 .* pulso1_t4
@@ -328,7 +328,7 @@ pot_y8_4_1 = ( abs(y8_f_4_1) ).^2
 
 // 4.1.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
 
-// Vide linhas 339-345
+// Vide linhas 342-348
 
 fig6 = scf(6);
     subplot(2,2,1)
@@ -360,7 +360,7 @@ pot_y_4_2 = ( abs(y5_f_4_2) ).^2
 
 // 4.2.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
 
-// Vide linhas 374-380
+// Vide linhas 377-383
 
 // 4.2.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_4_2 = y5_t_4_2 .* pulso1_t4
@@ -371,7 +371,7 @@ pot_y8_4_2 = ( abs(y8_f_4_2) ).^2
 
 // 4.2.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
 
-// Vide linhas 382-388
+// Vide linhas 385-391
 
 fig7 = scf(7);
     subplot(2,2,1)
