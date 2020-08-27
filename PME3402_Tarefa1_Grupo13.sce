@@ -277,8 +277,10 @@ obtém um resultado mais esparso, ainda com pico na frequência definida, porém
 Esse resultado provém das propriedades da Transformada Discreta de Fourier, onde a transformada do sinal resultante é igual à convolução circular
 da transformada do sinal original pela tranformada da função de pulso retangular, que tem o formato de uma função periódica que decai ao longo do eixo das frequências.
 
-Além disso, a diferença numérica nos picos da densidade de potência entre o sinal original e o filtrado ocorre, pois a energia do sinal deve ser igual, ou seja as integrais deste tanto no tempo quanto na frequência devem coincidir.
+A diferença numérica nos picos da densidade de potência entre o sinal original e o filtrado ocorre, pois a energia do sinal deve ser igual, ou seja as integrais deste tanto no tempo quanto na frequência devem coincidir.
 Assim, como o sinal filtrado possui mais termos nulos, este possui menor energia e os picos de densidade de potência são numéricamente menores do que os do sinal original.
+
+Além disso, o truncamento do sinal causado pela pela mesclagem com pulso unitário (janela de sinal), acaba por gerar o fenômeno de vazamento ("leakage") que se traduz no seguinte erro básico: as amplitudes calculadas sofrem um achatamento e um espalhamento em torno das raias espectrais originais.
 */
 
 // ================
@@ -402,5 +404,5 @@ Assim obtêm-se uma melhor resolução das curvas, que passa a assemelhar-se mai
 Essa falta de refinamento dos sinais da parte III tem efeito também na precisão das densidades de potência espectrais calculadas.
 Para o sinal de frequência 4.01Hz, o pico da PSD da parte III é menor do que o da parte IV.
 Já para a frequência de 4.16Hz, o pico da PSD da parte III é maior.
-Isso mostra que o fenômeno de Aliasing pode afetar a precisão do cálculo de energia de um sinal.
+Isso mostra que o fenômeno de Aliasing pode afetar a precisão do cálculo de energia de um sinal. E o fenômeno de vazamento ("Leakage") continua a ser observado quando a o truncamento do sinal em uma janela.
 */
