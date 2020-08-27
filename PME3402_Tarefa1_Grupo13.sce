@@ -272,17 +272,17 @@ fig5 = scf(5);
 Analisando-se o sinal periódico de frequência e a densidade de potência gerada a partir da aplicação da transformada rápida de Fourier, pode-se observar que
 a densidade de potência contém um pico (~2) na frequência definida para o sinal periódico. Esse fenômeno isso ocorre para todos os sinais de diferentes frequências utilizados.
 
-Ao mesclar o pulso unitário com o sinal periódico, a periodicidade do sinal é mantida apenas na região em que o pulso ocorre, deste modo, a transformada rápida de Fourier 
-obtém um resultado mais esparso, ainda com pico na frequência definida, porém com valor de densidade menor e com pequenos picos menores em torno da frequência definida.
+Ao mesclar o sinal periódico com o pulso unitário (janela de sinal), a periodicidade do sinal é mantida apenas na região definida pela janela em que o pulso ocorre
+e acaba-se por gerar o fenômeno de vazamento ("leakage"), que se traduz no seguinte erro básico: as amplitudes calculadas sofrem um achatamento e um espalhamento 
+em torno das raias espectrais originais. Assim, a transformada discreta de Fourier obtém um resultado mais esparso, ainda com pico na frequência definida,
+porém com valor de densidade menor e com pequenos picos menores em torno da frequência definida.
+
 Esse resultado provém das propriedades da Transformada Discreta de Fourier, onde a transformada do sinal resultante é igual à convolução circular
 da transformada do sinal original pela tranformada da função de pulso retangular, que tem o formato de uma função periódica que decai ao longo do eixo das frequências.
 
 A diferença numérica nos picos da densidade de potência entre o sinal original e o filtrado ocorre, pois a energia do sinal deve ser igual, ou seja as integrais deste tanto 
 no tempo quanto na frequência devem coincidir.
 Assim, como o sinal filtrado possui mais termos nulos, este possui menor energia e os picos de densidade de potência são numéricamente menores do que os do sinal original.
-
-Além disso, o truncamento do sinal causado pela pela mesclagem com pulso unitário (janela de sinal), acaba por gerar o fenômeno de vazamento ("leakage") que se traduz no 
-seguinte erro básico: as amplitudes calculadas sofrem um achatamento e um espalhamento em torno das raias espectrais originais.
 */
 
 // ================
@@ -321,7 +321,7 @@ pot_y_4_1 = (dt4 / N4) * ( abs(y_f_4_1) ).^2
 
 // 4.1.7. Exibir gráficos contendo o sinal gerado em (5) e seu espectro de potência;
 
-// Vide linhas 333-340
+// Vide linhas 338-344
 
 // 4.1.8. Efetuar a multiplicação dos sinais gerados em (2) e em (5);
 y8_t_4_1 = y_t_4_1 .* pulso1_t4
@@ -332,7 +332,7 @@ pot_y8_4_1 = (dt4 / N4) * ( abs(y8_f_4_1) ).^2
 
 // 4.1.10. Exibir gráficos contendo o sinal gerado em (8) e seu espectro de potência.
 
-// Vide linhas 342-348
+// Vide linhas 346-352
 
 fig6 = scf(6);
     subplot(2,2,1)
