@@ -78,6 +78,7 @@ i_aberto_filespath =  listfiles(data_directory + s + '*I.wav');  // Lista de tod
 o_aberto_filespath =  listfiles(data_directory + s + '*Ó.wav');  // Lista de todos os arquivos com fim 'Ó.wav'
 o_fechado_filespath = listfiles(data_directory + s + '*Ô.wav');  // Lista de todos os arquivos com fim 'Ô.wav'
 
+
 // Tratamento dos dados e concatenamento dos arquivos de som nos seus respectivos vetores
 
 function [audio_fft, audio_psd, freq_audio] = leitura_audios(nomes_dos_arquivos)
