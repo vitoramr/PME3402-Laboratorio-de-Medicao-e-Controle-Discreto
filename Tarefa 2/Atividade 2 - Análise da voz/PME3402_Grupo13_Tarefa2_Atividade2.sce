@@ -4,6 +4,7 @@
  PME3402 - Laboratório de Medição e Controle Discreto
 --------------------------------------------------------------
                    TAREFA 2 ATIVIDADE 2
+             Análise espectral do som de vogais
 --------------------------------------------------------------
                         GRUPO 13
                         Membros:
@@ -18,11 +19,18 @@
                       Flávio Trigo
                       
 ===============================================================
+
+INSTRUÇÕES PARA RODAR O PROGRAMA
+Antes de rodar o programa, siga os seguintes passos
+1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 2 - Análise da voz/" em que o programa se encontra
+2) Certifique-se de que os áudios encontram-se na pasta "/Atividade 2 - Análise da voz/Dados", dentro da pasta atual do programa
+3) Rode o programa
 */
+
 //LIMPEZA DE MEMÓRIA
 
-clear;
-clc;    // Limpeza de variáveis e do console
+clear;         // Limpeza de variáveis
+clc;           // Limpeza do console
 xdel(winsid()) // Fecha as janelas abertas
 
 
@@ -51,36 +59,8 @@ este número de elementos
 fa = 44100; //[Hz] Frequência de amostragem dos microfones
 N_elementos = 800;
 
-
-// Vetores para armazenar os valores das FFTs dos audios obtidos
-a_aberto = [];  // Tamanho: m_audios x N_elementos
-a_fechado = []; // Tamanho: m_audios x N_elementos
-e_aberto = [];  // Tamanho: m_audios x N_elementos
-e_fechado = []; // Tamanho: m_audios x N_elementos
-i_aberto = [];  // Tamanho: m_audios x N_elementos
-o_aberto = [];  // Tamanho: m_audios x N_elementos
-o_fechado = []; // Tamanho: m_audios x N_elementos
-
-// Vetores para armazenar os valores das PSDs dos audios obtidos
-a_aberto_pot = [];  // Tamanho: m_audios x N_elementos
-a_fechado_pot = []; // Tamanho: m_audios x N_elementos
-e_aberto_pot = [];  // Tamanho: m_audios x N_elementos
-e_fechado_pot = []; // Tamanho: m_audios x N_elementos
-i_aberto_pot = [];  // Tamanho: m_audios x N_elementos
-o_aberto_pot = [];  // Tamanho: m_audios x N_elementos
-o_fechado_pot = []; // Tamanho: m_audios x N_elementos
-
-//Estocagem da escala de frequências de cada arquivo de som
-f_a_aberto = [];
-f_a_fechado = [];
-f_e_aberto = [];
-f_e_fechado = [];
-f_i_aberto = [];
-f_o_aberto = [];
-f_o_fechado = [];
-
 // ============================================================
-// OBTENÇÂO DOS DADOS
+// CARREGAMENTO DOS DADOS
 
 // Obtendo os caminhos de cada arquivo de som
 
@@ -102,15 +82,20 @@ o_fechado_filespath = listfiles(data_directory + s + '*Ô.wav');  // Lista de to
 
 function [audio_fft, audio_psd, freq_audio] = leitura_audios(nomes_dos_arquivos)
     /*
-    Recebe uma lista com os nomes dos arquivos que contêm os áudios em .wav
+    Recebe "nomes_dos_arquivos" uma lista de m elementos com as strings contendo
+    a localização dos m arquivos que contêm os áudios de formato .wav
+    
     Lê esses arquivos armazenando em matrizes os N_elementos primeiros valores da:
-    FFT, PSD e Vetor de frequências do áudio 
+    FFT, PSD e Vetor de frequências do áudio.
+    
+    Tamanho das matrizes de output: m_audios x N_elementos
     */
+    
     audio_fft = [];
     audio_psd = [];
     freq_audio = [];
     
-    for i = 1:size(nomes_dos_arquivos,1)
+    for i = 1:size(nomes_dos_arquivos,1)                     // Para cada um dos m arquivos de áudio presentes na lista de nomes
         [audio_t, fs] = wavread(nomes_dos_arquivos(i));      // Leitura do arquivo de áudio e da sua frequência de amostragem
         N = size(audio_t,2);                                 // Número de elementos do arquivo
         audio_f = fft(audio_t(1,:),-1);                      // FFT do sinal temporal
@@ -125,7 +110,12 @@ function [audio_fft, audio_psd, freq_audio] = leitura_audios(nomes_dos_arquivos)
 
 endfunction
 
-[a_aberto , a_aberto_pot , f_a_aberto ] = leitura_audios(a_aberto_filespath);
+//Exemplo para compreensão das variáveis:
+//a_aberto     --> Tamanho: (m_audios x N_elementos). Matriz com o Espectro de cada áudio falando "A" (aberto)
+//a_aberto_pot --> Tamanho: (m_audios x N_elementos). Matriz com a PSD de cada áudio falando "A" (aberto)
+//f_a_aberto   --> Tamanho: (m_audios x N_elementos). Matriz com a escala de frequência para cada áudio falando "A" (aberto)
+
+[a_aberto , a_aberto_pot , f_a_aberto ] = leitura_audios(a_aberto_filespath); 
 [a_fechado, a_fechado_pot, f_a_fechado] = leitura_audios(a_fechado_filespath);
 [e_aberto , e_aberto_pot , f_e_aberto ] = leitura_audios(e_aberto_filespath);
 [e_fechado, e_fechado_pot, f_e_fechado] = leitura_audios(e_fechado_filespath);
@@ -133,22 +123,20 @@ endfunction
 [o_aberto , o_aberto_pot , f_o_aberto ] = leitura_audios(o_aberto_filespath);
 [o_fechado, o_fechado_pot, f_o_fechado] = leitura_audios(o_fechado_filespath);
 
-
 // ============================================================
 // TRATAMENTO DOS DADOS
 
-// Plot de cada sinal de áudio individualmente
-// A Aberto
+// Vizualização do espectro de cada um dos áudios para a vogal "A" (aberto)
 fig1 = scf(1);
-    fig1.color_map = rainbowcolormap(size(a_aberto,1));
-    for i = 1:size(a_aberto,1)
-        subplot(2,2,i)
-        plot(f_a_aberto(i,:),a_aberto(i,:));
+    fig1.color_map = rainbowcolormap(size(a_aberto,1)); // Escala de cores para os plots
+    for i = 1:size(a_aberto,1)                          // Para cada áudio da matriz "A" aberto
+        subplot(2,2,i)                                  // Plota uma figura 2x2 com 4 gráficos
+        plot(f_a_aberto(i,:),a_aberto(i,:));            // Gráficos de f x Espectro do sinal
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
-        title('Figura 1: Espectro de frequências de cada áudio para a vogal A (aberta)')
+        title('Figura 1.' + string(i) + ': Espectro de frequências do áudio ' + string(i) + ' para a vogal A (aberta)')
         xlabel('f (Hz)');
-        ylabel('PSD');
+        ylabel('|H(f)|');
     end
 
 /*
@@ -258,7 +246,7 @@ fig3 = scf(3);
     fig3.color_map = rainbowcolormap(size(a_aberto,1));
     for i = 1:size(a_aberto_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 3: PSD normalizada de cada audio para a Vogal: A (aberto)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 3.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: A (aberto)' , 'f (Hz)','PSD normalizada');
         plot(f_a_aberto(i,:),a_aberto_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -269,7 +257,7 @@ fig4 = scf(4);
     fig4.color_map = rainbowcolormap(size(a_fechado,1));
     for i = 1:size(a_fechado_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 4: PSD normalizada de cada audio para a Vogal: A (fechado)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 4.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: A (fechado)' , 'f (Hz)','PSD normalizada');
         plot(f_a_fechado(i,:),a_fechado_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -280,7 +268,7 @@ fig5 = scf(5);
     fig5.color_map = rainbowcolormap(size(e_aberto,1));
     for i = 1:size(e_aberto_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 5: PSD normalizada de cada audio para a Vogal: E (aberto)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 5.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: E (aberto)' , 'f (Hz)','PSD normalizada');
         plot(f_e_aberto(i,:),e_aberto_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -290,7 +278,7 @@ fig6 = scf(6);
     fig6.color_map = rainbowcolormap(size(e_fechado,1));
     for i = 1:size(e_fechado_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 6: PSD normalizada de cada audio para a Vogal: E (fechado)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 6.' + string(i) + ': PSD normalizada de cada audio para a Vogal: E (fechado)' , 'f (Hz)','PSD normalizada');
         plot(f_e_fechado(i,:),e_fechado_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -302,7 +290,7 @@ fig7 = scf(5);
     fig5.color_map = rainbowcolormap(size(i_aberto,1));
     for i = 1:size(i_aberto_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 7: PSD normalizada de cada audio para a Vogal: I' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 7.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: I' , 'f (Hz)','PSD normalizada');
         plot(f_i_aberto(i,:),i_aberto_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -312,7 +300,7 @@ fig8 = scf(8);
     fig8.color_map = rainbowcolormap(size(o_aberto,1));
     for i = 1:size(o_aberto_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 8: PSD normalizada de cada audio para a Vogal: O (aberto)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 8.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: O (aberto)' , 'f (Hz)','PSD normalizada');
         plot(f_o_aberto(i,:),o_aberto_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
@@ -324,7 +312,7 @@ fig9 = scf(9);
     fig9.color_map = rainbowcolormap(size(o_fechado,1));
     for i = 1:size(o_fechado_normalizado,1)
         subplot(2,2,i)
-        xtitle('Figura 9: PSD normalizada de cada audio para a Vogal: O (fechado)' , 'f (Hz)','PSD normalizada');
+        xtitle('Figura 9.' + string(i) + ': PSD normalizada do audio ' + string(i) + ' para a Vogal: O (fechado)' , 'f (Hz)','PSD normalizada');
         plot(f_o_fechado(i,:),o_fechado_normalizado(i,:));
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
