@@ -143,7 +143,7 @@ fig1 = scf(1);
 /*
 Como é visível na figura 1, os audios possuem amplitudes muito distintas. Isso
 ocorre, pois os áudio provêm de diferentes fontes, já que cada celular possui
-sensores diferentes com arquiteturas diferentes e cada pessoa gravação possui
+sensores diferentes com arquiteturas diferentes e cada pessoa e gravação possui
 volumes diferentes.
 
 Dessa forma, como o interesse é comparar os áudios para identificar as diferentes
@@ -190,7 +190,7 @@ fig2 = scf(2);
         plot_propriedades = gce();
         plot_propriedades.children.foreground = i; // Mudando as cores a cada elemento
     end
-    legend(['Vítor', 'Vitória','Vinicius'])
+    //legend(['Vítor', 'Vitória','Vinicius', 'Tiago'])
     
     subplot(4,2,2)
     xtitle('Figura 2.2: Densidade de frequência normalizada dos áudios para a vogal: A (fechado)' , 'f (Hz)','PSD normalizada');
@@ -233,7 +233,7 @@ fig2 = scf(2);
     end
     
     subplot(4,2,7)
-    xtitle('Figura 2.7: Densidade de frequência normalizada dos áudios para a vogal: Ô (fechado)' , 'f (Hz)','PSD normalizada');
+    xtitle('Figura 2.7: Densidade de frequência normalizada dos áudios para a vogal: I (Aberto)' , 'f (Hz)','PSD normalizada');
     for i = 1:size(i_aberto,1)
         plot(f_i_aberto(i,:),i_aberto_normalizado(i,:));
         plot_propriedades = gce();
@@ -287,7 +287,7 @@ fig6 = scf(6);
 
 
 // I normalizado
-fig7 = scf(5);
+fig7 = scf(7);
     fig5.color_map = rainbowcolormap(size(i_aberto,1));
     for i = 1:size(i_aberto_normalizado,1)
         subplot(2,2,i)
@@ -327,9 +327,52 @@ fig9 = scf(9);
 Quanto mais baixa a frequência, mais grave é o som.
 A faixa de voz masculina costuma variar entre 80 Hz e 150 Hz, sendo a média da
 frequência da voz dos homens adultos brasileiros é de 113 Hz. A faixa feminina
-varia entre 150 Hz e 250 Hz
-*/
+varia entre 150 Hz e 250 Hz.
 
+Analisando os gráficos gerados e normalizados, primeiramente observa-se que há
+grande diferença nas frequências atingidas por cada áudio mesmo que para uma
+mesma vogal, isso pode ser consequência de eventuais ruídos captados na gravaação
+e diferenças nos timbres de voz, como por exemplo a mesma vogal pronunciada por
+uma voz feminina e uma voz masculina. Porém mesmo com esse ruídos é possível
+observar certos padrões.
+
+Primeiramente olhando as figuras 3.1 a 3.4, observa-se que para todos os membro há
+picos próximo do 200 Hz e algum sinal na faixa de 300-350 Hz, sendo provavelmente
+a frequência natural e o harmônico respectivamente para essa faixa de áudio.
+
+O mesmo é observado para a vogal Â (Fechado), indicando a similaridade entre os sons
+ porém aparece também para 3 das 4 faixas de áudio um pico em frequências mais 
+ graves (100-200 Hz) indicando que o som tende a ser mais grave do que para o caso
+ do A aberto.
+ 
+ Para a vogal E aberta a tendência é haver um pico próximo a 200 Hz (Frequência natural)
+ e um outro próximo a 450 Hz (Harmônico). 
+ 
+ Comparando a vogal E aberta com a vogal E fechada O pico em torno de 200 Hz decresce em e
+ o pico de 450 Hz aumenta a intensidade e descola para mais próximo de 350 Hz para indicando
+ que o som se torna um pouco mais grave.
+ 
+ Para a vogal I há um pico na faixa 200-300 Hz para todos os áudios gravados, e aparece
+ em 3 das 4 gravações um segundo pico na faixa de 400-500 Hz indicando que esse som tende 
+ a ser mais agudo que a vogal A.
+ 
+ Para a vogal O acontece o mesmo que para a vogal E com um pico em torno de 200 Hz que diminui a
+ intensidade da caso aberto para o fechado e um pico na faixa de 400 a 500 Hz que tenda a se deslocar
+ para a esquerda e aumentar em intensidade para 3 dos 4 áudios.
+ 
+ É interessante também observar que a faixa de áudio do membro do grupo Vitor, indicado pelo índice x.3
+ de cor azul clara tende a apresentar menos frequências graves quando comparado com os demais, isso pode
+ estar associado a alguma característica do medidor ou a uma voz naturalmente mais grave que dos demais.
+ Um fenômeno parecido acontece para o membro de grupo Vitória, porém com uma concentração maior de 
+ frequências agudas, isso pode estar associado ao fato de ser o único membro feminino do grupo 
+ apreesentando uma voz mais aguda que os demais membros.
+ 
+ Não é possível identificar a vogal gravada a partir do espectro principalmente pelo fato de have uma
+ variação significativa entre uma medição e outra e ao fato das diferentes vogais apresentarem picos 
+ em regiões parecidas, como exemplo todos as vogais medidas apresentaram pico em torno de 200 Hz para 
+pelo menos uma parcela das faixas de áudio analisadas.
+
+*/
 
 
 
