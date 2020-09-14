@@ -196,10 +196,11 @@ fa_a25_c = 1.0 ./( a25_c(2:$ ,1) - a25_c(1:$-1 ,1) )
 // Teste de impulsos
 teste_freq   = csvRead(data_directory + s + 'impulsos_5s_10s.csv', ';',',','double', [], [], [], header );
 fa_teste = 1.0 ./( teste_freq(2:$ ,1) - teste_freq(1:$-1 ,1) )
+
 // ============================================================
 // ANÁLISE ESPECTRAL
 
-function [espectro, f] = analise_espectral(sinal_t,fa)
+function [f, espectro, espectro_unbias, espectro_passaalta] = analise_espectral(sinal_t,fa)
     /*
     Recebe:
     sinat_t --> um vetor unidimensional sinal_t (1xN) que representa o valor de um
@@ -212,40 +213,67 @@ function [espectro, f] = analise_espectral(sinal_t,fa)
     */
     N = length(sinal_t);
     N_f = round(N/2); // Como a FFT é simétrica, pega-se apenas metade dos valores do vetor
+
      
     espectro = abs(fft(sinal_t,-1))((1:N_f)); // Módulo da FFT do sinal temporal
+    
+    // Retirando o enviesamento do sinal
+    sinal_t_unbias = sinal_t - mean(sinal_t)
+    espectro_unbias = abs(fft(sinal_t_unbias,-1))((1:N_f)) // Módulo da FFT desenviesada
+    
+    // Filtro passa alta na frequência de corte de 3 Hz
+    f_low = 3;      //Frequencia de corte baixa
+    f_high = []; //Frequência de corte alta é a frequência final
+    
+
+    //filtro = ffilt('hp', N , f_low , [])
+    
+    f_cut = 3;
+    fc = f_cut/fa;
+    
+    filtro = iir (3 ,'hp','butt', fc ,[]) ; //Filtro passa alta
+    sinal_filtrado = flts(sinal_t', filtro) ;
+
+    espectro_passaalta = abs(fft(sinal_filtrado,-1))((1:N_f))
     
     f = (fa /N) * (0:N_f-1)'                  // Escala de frequências
 endfunction
 
 // Obtenção dos espectros de frequência do módulo da aceleração de cada impulso
 // Para L=20cm
-[espectro_a20_1, f_a20_1] = analise_espectral(a20_1(:,5),fa) //Espectro do módulo da aceleração
-[espectro_a20_2, f_a20_2] = analise_espectral(a20_2(:,5),fa)
-[espectro_a20_3, f_a20_3] = analise_espectral(a20_3(:,5),fa)
-[espectro_a20_4, f_a20_4] = analise_espectral(a20_4(:,5),fa)
-[espectro_a20_5, f_a20_5] = analise_espectral(a20_5(:,5),fa)
-[espectro_a20_6, f_a20_6] = analise_espectral(a20_6(:,5),fa)
-[espectro_a20_7, f_a20_7] = analise_espectral(a20_7(:,5),fa)
+[f_a20_1, espectro_a20_1, espectro_a20_1_unbias, espectro_a20_1_filt] = analise_espectral(a20_1(:,5),fa) //Espectro do módulo da aceleração
+[f_a20_2, espectro_a20_2, espectro_a20_2_unbias, espectro_a20_2_filt] = analise_espectral(a20_2(:,5),fa)
+[f_a20_3, espectro_a20_3, espectro_a20_3_unbias, espectro_a20_3_filt] = analise_espectral(a20_3(:,5),fa)
+[f_a20_4, espectro_a20_4, espectro_a20_4_unbias, espectro_a20_4_filt] = analise_espectral(a20_4(:,5),fa)
+[f_a20_5, espectro_a20_5, espectro_a20_5_unbias, espectro_a20_5_filt] = analise_espectral(a20_5(:,5),fa)
+[f_a20_6, espectro_a20_6, espectro_a20_6_unbias, espectro_a20_6_filt] = analise_espectral(a20_6(:,5),fa)
+[f_a20_7, espectro_a20_7, espectro_a20_7_unbias, espectro_a20_7_filt] = analise_espectral(a20_7(:,5),fa)
+
 // Para L=25cm
-[espectro_a25_1, f_a25_1] = analise_espectral(a25_1(:,5),fa)
-[espectro_a25_2, f_a25_2] = analise_espectral(a25_2(:,5),fa)
-[espectro_a25_3, f_a25_3] = analise_espectral(a25_3(:,5),fa)
-[espectro_a25_4, f_a25_4] = analise_espectral(a25_4(:,5),fa)
-[espectro_a25_5, f_a25_5] = analise_espectral(a25_5(:,5),fa)
-[espectro_a25_6, f_a25_6] = analise_espectral(a25_6(:,5),fa)
+[f_a25_1, espectro_a25_1, espectro_a25_1_unbias, espectro_a25_1_filt] = analise_espectral(a25_1(:,5),fa)
+[f_a25_2, espectro_a25_2, espectro_a25_2_unbias, espectro_a25_2_filt] = analise_espectral(a25_2(:,5),fa)
+[f_a25_3, espectro_a25_3, espectro_a25_3_unbias, espectro_a25_3_filt] = analise_espectral(a25_3(:,5),fa)
+[f_a25_4, espectro_a25_4, espectro_a25_4_unbias, espectro_a25_4_filt] = analise_espectral(a25_4(:,5),fa)
+[f_a25_5, espectro_a25_5, espectro_a25_5_unbias, espectro_a25_5_filt] = analise_espectral(a25_5(:,5),fa)
+[f_a25_6, espectro_a25_6, espectro_a25_6_unbias, espectro_a25_6_filt] = analise_espectral(a25_6(:,5),fa)
+
 
 // ============================================================
 // ANÁLISE DOS RESULTADOS
 /*
-Analisando o espectro de frequência dos sinais nas figuras 6,7 e 8, é visível
+Analisando o espectro de frequência dos sinais na figura 6, é visível
 que todos possuem um grande pico na frequência 0Hz. Isso ocorre devido ao
 fenômeno de polarização CC (ou "DC bias" em inglês). Esse fenômeno ocorre quando
 a média do sinal no tempo é diferente de zero, e diz-se, então, que o sinal
 está "enviesado". Em geral, este fenômeno está presente quando o dispositivo
-captura medidas mesmo quando a posição do dispositivo é estática, e ele é reduzido
-aplicando um offset no sinal, ou seja, subtraindo-o pela sua média.
+captura medidas mesmo quando a posição do dispositivo é estática.
 
+Esse problema é reduzido aplicando um offset no sinal temporal, ou seja,
+subtraindo-o pela sua média. Realizando essa operação, obtemos a figura 7, onde
+o pico em zero dos espectros foi reduzido, mas ainda assim, existem grandes
+valores para baixas frequências, o que provavelmente é proveniente do ruído
+presente na medição. Uma maneira de reduzir esse problema é aplicar um filtro passa alta, que reduzi-
+ria o valor das baixas frequências.
 
 
 */
@@ -428,91 +456,7 @@ f5= scf(5)
     ylabel('fa [Hz]')
 
 f6 = scf(6)
-    // Figura 6: plot2d individuais dos espectros de pulsos para L=20cm
-    //[espectro_a20_1, f_a20_1]
-    subplot(4,2,1)
-    plot2d(f_a20_1, espectro_a20_1, style = color(cores(1)));
-    title('Figura 6.1: Espectro do módulo da aceleração do pulso 1 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,2,2)
-    plot2d(f_a20_2, espectro_a20_2, style = color(cores(2)));
-    title('Figura 6.2: Espectro do módulo da aceleração do pulso 2 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,2,3)
-    plot2d(f_a20_3, espectro_a20_3, style = color(cores(3)));
-    title('Figura 6.3: Espectro do módulo da aceleração do pulso 3 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,2,4)
-    plot2d(f_a20_4, espectro_a20_4, style = color(cores(4)));
-    title('Figura 6.4: Espectro do módulo da aceleração do pulso 4 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,2,5)
-    plot2d(f_a20_5, espectro_a20_5, style = color(cores(5)));
-    title('Figura 6.5: Espectro do módulo da aceleração do pulso 5 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,2,6)
-    plot2d(f_a20_6, espectro_a20_6, style = color(cores(6)));
-    title('Figura 6.6: Espectro do módulo da aceleração do pulso 6 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(4,1,4)
-    plot2d(f_a20_7, espectro_a20_7, style = color(cores(7)));
-    title('Figura 6.7: Espectro do módulo da aceleração do pulso 7 medidos pelo acelerômetro em L=20cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-
-f7= scf(7)
-    // Figura 7: plot2d individuais dos espectros de pulsos para L=25cm
-    //[espectro_a20_1, f_a20_1]
-    subplot(3,2,1)
-    plot2d(f_a25_1, espectro_a25_1, style = color(cores(1)));
-    title('Figura 7.1: Espectro do módulo da aceleração do pulso 1 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(3,2,2)
-    plot2d(f_a25_2, espectro_a25_2, style = color(cores(2)));
-    title('Figura 7.2: Espectro do módulo da aceleração do pulso 2 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(3,2,3)
-    plot2d(f_a25_3, espectro_a25_3, style = color(cores(3)));
-    title('Figura 7.3: Espectro do módulo da aceleração do pulso 3 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(3,2,4)
-    plot2d(f_a25_4, espectro_a25_4, style = color(cores(4)));
-    title('Figura 7.4: Espectro do módulo da aceleração do pulso 4 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(3,2,5)
-    plot2d(f_a25_5, espectro_a25_5, style = color(cores(5)));
-    title('Figura 7.5: Espectro do módulo da aceleração do pulso 5 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
-    subplot(3,2,6)
-    plot2d(f_a25_6, espectro_a25_6, style = color(cores(6)));
-    title('Figura 7.6: Espectro do módulo da aceleração do pulso 6 medidos pelo acelerômetro em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-
-f8 = scf(8)
-    // Figura 8: plot2d dos espectros de pulsos para L=20cm e para L=25
+    // Figura 6: plot2d dos espectros de pulsos para L=20cm e para L=25
     subplot(2,1,1)
     plot2d(f_a20_1, espectro_a20_1, style = color(cores(1)));
     plot2d(f_a20_2, espectro_a20_2, style = color(cores(2)));
@@ -521,7 +465,7 @@ f8 = scf(8)
     plot2d(f_a20_5, espectro_a20_5, style = color(cores(5)));
     plot2d(f_a20_6, espectro_a20_6, style = color(cores(6)));
     plot2d(f_a20_7, espectro_a20_7, style = color(cores(7)));
-    title('Figura 8.1: Espectro do módulo da aceleração dos pulsos medidos pelo acelerômetro em L=20cm')
+    title('Figura 6.1: Espectro do módulo da aceleração dos pulsos medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
 
@@ -533,6 +477,145 @@ f8 = scf(8)
     plot2d(f_a25_5, espectro_a25_5, style = color(cores(5)));
     plot2d(f_a25_6, espectro_a25_6, style = color(cores(6)));
 
+    title('Figura 6.2: Espectro do módulo da aceleração dos pulsos medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f7 = scf(7)
+    // Figura 7: plot2d dos espectros de pulsos para L=20cm e para L=25
+    subplot(2,1,1)
+    plot2d(f_a20_1, espectro_a20_1_unbias, style = color(cores(1)));
+    plot2d(f_a20_2, espectro_a20_2_unbias, style = color(cores(2)));
+    plot2d(f_a20_3, espectro_a20_3_unbias, style = color(cores(3)));
+    plot2d(f_a20_4, espectro_a20_4_unbias, style = color(cores(4)));
+    plot2d(f_a20_5, espectro_a20_5_unbias, style = color(cores(5)));
+    plot2d(f_a20_6, espectro_a20_6_unbias, style = color(cores(6)));
+    plot2d(f_a20_7, espectro_a20_7_unbias, style = color(cores(7)));
+    title('Figura 7.1: Espectro da aceleração desenviesada dos pulsos medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+    subplot(2,1,2)
+    plot2d(f_a25_1, espectro_a25_1_unbias, style = color(cores(1)));
+    plot2d(f_a25_2, espectro_a25_2_unbias, style = color(cores(2)));
+    plot2d(f_a25_3, espectro_a25_3_unbias, style = color(cores(3)));
+    plot2d(f_a25_4, espectro_a25_4_unbias, style = color(cores(4)));
+    plot2d(f_a25_5, espectro_a25_5_unbias, style = color(cores(5)));
+    plot2d(f_a25_6, espectro_a25_6_unbias, style = color(cores(6)));
+
+    title('Figura 7.2: Espectro da aceleração desenviesada dos pulsos medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+//_filt
+
+
+f8 = scf(8)
+    // Figura 8: plot2d dos espectros de pulsos para L=20cm e para L=25
+    subplot(2,1,1)
+    plot2d(f_a20_1, espectro_a20_1_filt, style = color(cores(1)));
+    plot2d(f_a20_2, espectro_a20_2_filt, style = color(cores(2)));
+    plot2d(f_a20_3, espectro_a20_3_filt, style = color(cores(3)));
+    plot2d(f_a20_4, espectro_a20_4_filt, style = color(cores(4)));
+    plot2d(f_a20_5, espectro_a20_5_filt, style = color(cores(5)));
+    plot2d(f_a20_6, espectro_a20_6_filt, style = color(cores(6)));
+    plot2d(f_a20_7, espectro_a20_7_filt, style = color(cores(7)));
+    title('Figura 8.1: Espectro do módulo da aceleração dos pulsos medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+    subplot(2,1,2)
+    plot2d(f_a25_1, espectro_a25_1_filt, style = color(cores(1)));
+    plot2d(f_a25_2, espectro_a25_2_filt, style = color(cores(2)));
+    plot2d(f_a25_3, espectro_a25_3_filt, style = color(cores(3)));
+    plot2d(f_a25_4, espectro_a25_4_filt, style = color(cores(4)));
+    plot2d(f_a25_5, espectro_a25_5_filt, style = color(cores(5)));
+    plot2d(f_a25_6, espectro_a25_6_filt, style = color(cores(6)));
+
     title('Figura 8.2: Espectro do módulo da aceleração dos pulsos medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f9 = scf(9)
+    // Figura 8: plot2d individuais dos espectros de pulsos para L=20cm
+    //[espectro_a20_1, f_a20_1]
+    subplot(4,2,1)
+    plot2d(f_a20_1, espectro_a20_1_filt, style = color(cores(1)));
+    title('Figura 8.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,2,2)
+    plot2d(f_a20_2, espectro_a20_2_filt, style = color(cores(2)));
+    title('Figura 8.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,2,3)
+    plot2d(f_a20_3, espectro_a20_3_filt, style = color(cores(3)));
+    title('Figura 8.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,2,4)
+    plot2d(f_a20_4, espectro_a20_4_filt, style = color(cores(4)));
+    title('Figura 8.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,2,5)
+    plot2d(f_a20_5, espectro_a20_5_filt, style = color(cores(5)));
+    title('Figura 8.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,2,6)
+    plot2d(f_a20_6, espectro_a20_6_filt, style = color(cores(6)));
+    title('Figura 8.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_a20_7, espectro_a20_7_filt, style = color(cores(7)));
+    title('Figura 8.7: Espectro filtrado da aceleração do pulso 7 medidos pelo acelerômetro em L=20cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f10= scf(10)
+    // Figura 8: plot2d individuais dos espectros de pulsos para L=25cm
+    //[espectro_a20_1, f_a20_1]
+    subplot(3,2,1)
+    plot2d(f_a25_1, espectro_a25_1_filt, style = color(cores(1)));
+    title('Figura 9.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(3,2,2)
+    plot2d(f_a25_2, espectro_a25_2_filt, style = color(cores(2)));
+    title('Figura 9.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(3,2,3)
+    plot2d(f_a25_3, espectro_a25_3_filt, style = color(cores(3)));
+    title('Figura 9.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(3,2,4)
+    plot2d(f_a25_4, espectro_a25_4_filt, style = color(cores(4)));
+    title('Figura 9.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(3,2,5)
+    plot2d(f_a25_5, espectro_a25_5_filt, style = color(cores(5)));
+    title('Figura 9.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=25cm')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(3,2,6)
+    plot2d(f_a25_6, espectro_a25_6_filt, style = color(cores(6)));
+    title('Figura 9.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
