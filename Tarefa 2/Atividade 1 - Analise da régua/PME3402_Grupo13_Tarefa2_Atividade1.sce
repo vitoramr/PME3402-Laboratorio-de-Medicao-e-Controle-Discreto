@@ -285,10 +285,33 @@ valores para baixas frequências, o que provavelmente é proveniente do ruído
 presente na medição. Uma maneira de reduzir esse problema é aplicar um filtro passa alta, que reduzi-
 ria o valor das baixas frequências.
 
-Assim chegamos à figura 8, onde podemos analisar os valores que provém do estímulo à regua, e que 
+Assim chega-se à figura 8, onde podemos analisar os valores que provém do estímulo à regua, e que 
 excluem os ruidos.
 Nesta figura, se pode analisar melhor os efeitos da aceleração produzida, tendo um isolamento dos ruidos.
-No entanto, é 
+Em relação às frequências é possível notar picos em diferentes regiões do espectro, porém o que mais se destaca
+é o em torno de 4 a 8 Hz para ambos comprimentos da barra, podendo ser nessa região a frequência natural do sistema. 
+Para o comprimento de 20 cm, é possível observar um pico próximo aos 22 Hz e para a L = 25 cm não há mais 
+nenhum um pico de frequência que se repita para todos os pulsos.
+
+É necessário, no entanto, analisar cada pulso para cada L diferente, para sabermos se os resultados encontrados
+se aproximam do esperado ou não. 
+
+Assim, chega-se às figuras 9 e 10, onde tem-se, respectivamente, a separação
+de cada pulso de L=20cm e L=25cm. Para este primeiro, nota-se que as acelerações pouco passaram, em módulo, de
+100m/s^2. Já para L=25cm, nota-se que em diversos pontos ela ultrapassa oa 100m/s^2, chegando à picos de 200m/s^2.
+
+Tal diferença entre as acelerações era esperada, uma vez que, para a régua de 20cm um módulo de aceleração deveria ser inferior. 
+
+Mesmo que este resultado se acerque da teoria, nota-se que há discordâncias com o resultado esperado. Nas figuras 9 e 10,
+era de se esperar que o módulo da aceleração fosse decrescendo em módulo conforme o passar dos pulsos.
+Ou seja, o módulo de aceleração da figura 9.2 deveria ser, em média, menor do que o da figura 9.1, e analogamente às demais figuras.
+Este comportamento não se mostra concretizado, uma vez que na figura 9.2 há picos acima de 50m/s^2, e apenas se nota uma desaceleração
+significativa no último pulso.
+
+Além disso, se nota picos inesperados de aceleração, que provavelmente decorrem de erros experimentais referentes ao aplicativo utilizado,
+à incertezas do celular (como visto na figura 5), ou mesmo interferências externas, como o fato da régua não estar totalmente engastada.
+
+
 
 */
 
