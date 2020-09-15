@@ -21,8 +21,10 @@
 
 INSTRUÇÕES PARA RODAR O PROGRAMA
 Antes de rodar o programa, siga os seguintes passos
-1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 1 - Análise da régua/" em que o programa se encontra
-2) Certifique-se de que os dados do acelerômetro estão na pasta "/Atividade 1 - Análise da régua/Dados" dentro da pasta do programa
+1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 1 - Análise da régua/"
+em que o programa se encontra
+2) Certifique-se de que os dados do acelerômetro estão na pasta "/Atividade 1 - Análise da régua/Dados"
+dentro da pasta do programa
 3) Rode o programa
 */
 
@@ -165,22 +167,22 @@ do aparelho.
 
 Uma hipótese da equipe para a grande variação na frequência de amostragem dos
 dados era um possível erro na contagem de tempo pelo aplicativo.
-Para validar a hipótese, nossa equipe utilizou outro aparelho celular para
-fazer um experimento grosseiro. No experimento (figura 5), o tempo foi cronometrando por 
-outro dispositivo e o mesmo aplicativo foi utilizado para medir a aceleração
-do celular no qual dois impulsos foram realizados, espaçados de
-aproximadamente 5s. Os gráficos temporais e os cálculos das frequências amostrais
-do experimento estão presentes na figura 5.1 e 5.2.
+Para validar a hipótese, nossa equipe utilizou dois aparelhos celulares para
+fazer um experimento grosseiro: um iPhone, que foi o celular utilizado para
+realizar as medições das acelerações, e um Android. No experimento (figura 5),
+o tempo foi cronometrando por outro dispositivo e o mesmo aplicativo foi utilizado
+para medir a aceleração dos celulares, nos quais dois impulsos foram realizados,
+espaçados de aproximadamente 5s. Os gráficos temporais e os cálculos das frequências
+amostrais do experimento estão presentes na figura 5.1 e 5.2.
 
 Como visto na figura 5.1, os espaçamentos entre os impulsos foram de aproximadamente
-de 5s e, na figura 5.2, a frequênciade amostragem manteve-se ao redor dos 100Hz
-como esperado. Sendo assim, nossa hipótese não foi validada.
+de 5s para os dois aparelhos. Porém, na figura 5.2, a frequênciade amostragem
+manteve-se ao redor dos 100Hz para o Android, enquanto teve grande variação no
+iPhone que foi utlizado para as medições das acelerações. Sendo assim, nossa
+hipótese não foi validada.
 
-Dessa forma, uma possível causa proposta pela equipe para a discrepância do vetor
-de tempo é uma baixa compatibilidade entre o aplicativo utilizado e os aparelhos
-da Apple, já que as medições das acelerações da régua foram medidas com um aparelho
-Apple, enquanto as medições de teste foram medidas com um aparelho Android. 
-
+Dessa forma, é possivel ver que o iPhone possui uma baixa compatibilidade com o
+o aplicativo utilizado, possuindo uma grande variação da sua frequência amostral.
 Mesmo assim, para a sequência do trabalho, será adotada uma frequência de
 amostragem de 100Hz. A variação pode afetar os resultados da FFT, que considera
 a frequência de amostragem do sinal um valor constante
@@ -194,8 +196,11 @@ fa_a25_b = 1.0 ./( a25_b(2:$ ,1) - a25_b(1:$-1 ,1) )
 fa_a25_c = 1.0 ./( a25_c(2:$ ,1) - a25_c(1:$-1 ,1) )
 
 // Teste de impulsos
-teste_freq   = csvRead(data_directory + s + 'impulsos_5s_10s.csv', ';',',','double', [], [], [], header );
-fa_teste = 1.0 ./( teste_freq(2:$ ,1) - teste_freq(1:$-1 ,1) )
+teste_freq_android = csvRead(data_directory + s + 'impulsos_5s_10s_Andoid.csv', ';',',','double', [], [], [], header );
+teste_freq_iphone  = csvRead(data_directory + s + 'impulsos_5s_10s_iPhone.csv', ',','.','double', [], [], [], header );
+
+fa_teste_android = 1.0 ./( teste_freq_android(2:$ ,1) - teste_freq_android(1:$-1 ,1) )
+fa_teste_iphone  = 1.0 ./( teste_freq_iphone(2:$ ,1) - teste_freq_iphone(1:$-1 ,1) )
 
 // ============================================================
 // ANÁLISE ESPECTRAL
@@ -282,7 +287,6 @@ ria o valor das baixas frequências.
 
 // ============================================================
 // PLOTAGEM DOS GRÁFICOS
-cmap = hsvcolormap(7);
 
 cores = [
 'blue4',
@@ -442,19 +446,23 @@ f4= scf(4)
 f5= scf(5)
     subplot(2,1,1)
     // plot2da-se os valores entre 5s e 11s
-    plot2d_teste = teste_freq(teste_freq(:,1) >5 & teste_freq(:,1) < 11,:)
-    plot2d(plot2d_teste(:,1), plot2d_teste(:,5), style = color('dark blue'))
-    title('Figura 5.1: Teste da precisão da medição de tempo do aplicativo')
+    plot2d(teste_freq_iphone(:,1), teste_freq_iphone(:,5), style = color('cyan'))
+    plot2d(teste_freq_android(:,1), teste_freq_android(:,5), style = color('dark blue'))
+
+    title('Figura 5.1: Acelerações de impulsos aplicados espaçados de 5s')
     xlabel('t(s)')
     ylabel('|a| (m/s^2)')
-    legend(['Picos espaçados em 5s no experimento'])
+    legend(['iPhone';'Android'])
     
     subplot(2,1,2)
-    plot2d(1:length(fa_teste),fa_teste, style = color('purple3'))
+    plot2d(1:length(fa_teste_iphone),fa_teste_iphone, style = color('cyan'))
+    plot2d(1:length(fa_teste_android),fa_teste_android, style = color('dark blue'))
+    
     title('Figura 5.2: Frequência de amostragem das medidas do acelerômetro para o experimento teste')
     xlabel('Intervalo de medida')
     ylabel('fa [Hz]')
-
+    legend(['iPhone';'Android'])
+    
 f6 = scf(6)
     // Figura 6: plot2d dos espectros de pulsos para L=20cm e para L=25
     subplot(2,1,1)
