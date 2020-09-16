@@ -3,7 +3,7 @@
                 Escola Politécnica da USP
  PME3402 - Laboratório de Medição e Controle Discreto
 --------------------------------------------------------------
-                  TAREFA 2 ATIVIDADE 1
+                  ATIVIDADE 2 TAREFA 1 
 --------------------------------------------------------------
                         GRUPO 13
                         Membros:
@@ -50,6 +50,8 @@ file_names = [
     'acelerometro_25cm_2.csv',
     'acelerometro_25cm_3.csv'
 ];
+
+file_path = data_directory + s + file_names;
 
 //Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
 

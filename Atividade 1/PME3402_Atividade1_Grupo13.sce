@@ -3,7 +3,7 @@
                 Escola Politécnica da USP
  PME3402 - Laboratório de Medição e Controle Discreto
 --------------------------------------------------------------
-                        TAREFA 1
+                       ATIVIDADE 1
 --------------------------------------------------------------
                         GRUPO 13
                         Membros:

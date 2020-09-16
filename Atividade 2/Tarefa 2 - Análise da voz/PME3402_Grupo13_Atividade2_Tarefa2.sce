@@ -3,7 +3,7 @@
                 Escola Politécnica da USP
  PME3402 - Laboratório de Medição e Controle Discreto
 --------------------------------------------------------------
-                   TAREFA 2 ATIVIDADE 2
+                   ATIVIDADE 2 TAREFA 2
              Análise espectral do som de vogais
 --------------------------------------------------------------
                         GRUPO 13
