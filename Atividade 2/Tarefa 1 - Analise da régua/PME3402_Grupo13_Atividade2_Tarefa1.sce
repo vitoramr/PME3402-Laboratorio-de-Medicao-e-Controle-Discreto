@@ -150,6 +150,11 @@ a25_5 = a25_c( a25_c(:,1)> 9.8  & a25_c(:,1)<12.1  , :);
 a25_6 = a25_c( a25_c(:,1)>12.5  & a25_c(:,1)<14.4  , :);
 
 /*
+Nas figuras 2 e 3, cada pulsos de L=20cm e L=25cm, respectivamente, 
+são analisados de forma individual, de modo a se obter uma visão mais detalhada de cada pulso.
+Para cada caso foi utilizado um vetor de corte visual, uma vez que para L=20cm o período
+se mostrou menor do que o de L=25cm.
+
 Além disso, é possível verificar pelo vetor de tempo qual foi a frequência de 
 amostragem das medidas do acelerômetro. O cálculo dessa grandeaza é feito por
 meio da expressão:
@@ -281,6 +286,33 @@ o pico em zero dos espectros foi reduzido, mas ainda assim, existem grandes
 valores para baixas frequências, o que provavelmente é proveniente do ruído
 presente na medição. Uma maneira de reduzir esse problema é aplicar um filtro passa alta, que reduzi-
 ria o valor das baixas frequências.
+
+Assim chega-se à figura 8, onde podemos analisar os valores que provém do estímulo à regua, e que 
+excluem os ruidos.
+Nesta figura, se pode analisar melhor os efeitos da aceleração produzida, tendo um isolamento dos ruidos.
+Em relação às frequências é possível notar picos em diferentes regiões do espectro, porém o que mais se destaca
+é o em torno de 4 a 8 Hz para ambos comprimentos da barra, podendo ser nessa região a frequência natural do sistema. 
+Para o comprimento de 20 cm, é possível observar um pico próximo aos 22 Hz e para a L = 25 cm não há mais 
+nenhum um pico de frequência que se repita para todos os pulsos.
+
+É necessário, no entanto, analisar cada pulso para cada L diferente, para sabermos se os resultados encontrados
+se aproximam do esperado ou não. 
+
+Assim, chega-se às figuras 9 e 10, onde tem-se, respectivamente, a separação
+de cada pulso de L=20cm e L=25cm. Para este primeiro, nota-se que as acelerações pouco passaram, em módulo, de
+100m/s^2. Já para L=25cm, nota-se que em diversos pontos ela ultrapassa oa 100m/s^2, chegando à picos de 200m/s^2.
+
+Tal diferença entre as acelerações era esperada, uma vez que, para a régua de 20cm um módulo de aceleração deveria ser inferior. 
+
+Mesmo que este resultado se acerque da teoria, nota-se que há discordâncias com o resultado esperado. Nas figuras 9 e 10,
+era de se esperar que o módulo da aceleração fosse decrescendo em módulo conforme o passar dos pulsos.
+Ou seja, o módulo de aceleração da figura 9.2 deveria ser, em média, menor do que o da figura 9.1, e analogamente às demais figuras.
+Este comportamento não se mostra concretizado, uma vez que na figura 9.2 há picos acima de 50m/s^2, e apenas se nota uma desaceleração
+significativa no último pulso.
+
+Além disso, se nota picos inesperados de aceleração, que provavelmente decorrem de erros experimentais referentes ao aplicativo utilizado,
+à incertezas do celular (como visto na figura 5), ou mesmo interferências externas, como o fato da régua não estar totalmente engastada.
+
 
 
 */
@@ -547,85 +579,85 @@ f8 = scf(8)
     ylabel('|A(f)|');
 
 f9 = scf(9)
-    // Figura 8: plot2d individuais dos espectros de pulsos para L=20cm
+    // Figura 9: plot2d individuais dos espectros de pulsos para L=20cm
     //[espectro_a20_1, f_a20_1]
     subplot(4,2,1)
     plot2d(f_a20_1, espectro_a20_1_filt, style = color(cores(1)));
-    title('Figura 8.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,2,2)
     plot2d(f_a20_2, espectro_a20_2_filt, style = color(cores(2)));
-    title('Figura 8.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,2,3)
     plot2d(f_a20_3, espectro_a20_3_filt, style = color(cores(3)));
-    title('Figura 8.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,2,4)
     plot2d(f_a20_4, espectro_a20_4_filt, style = color(cores(4)));
-    title('Figura 8.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,2,5)
     plot2d(f_a20_5, espectro_a20_5_filt, style = color(cores(5)));
-    title('Figura 8.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,2,6)
     plot2d(f_a20_6, espectro_a20_6_filt, style = color(cores(6)));
-    title('Figura 8.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,1,4)
     plot2d(f_a20_7, espectro_a20_7_filt, style = color(cores(7)));
-    title('Figura 8.7: Espectro filtrado da aceleração do pulso 7 medidos pelo acelerômetro em L=20cm')
+    title('Figura 9.7: Espectro filtrado da aceleração do pulso 7 medidos pelo acelerômetro em L=20cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
 
 f10= scf(10)
-    // Figura 8: plot2d individuais dos espectros de pulsos para L=25cm
+    // Figura 10: plot2d individuais dos espectros de pulsos para L=25cm
     //[espectro_a20_1, f_a20_1]
     subplot(3,2,1)
     plot2d(f_a25_1, espectro_a25_1_filt, style = color(cores(1)));
-    title('Figura 9.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.1: Espectro filtrado da aceleração do pulso 1 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(3,2,2)
     plot2d(f_a25_2, espectro_a25_2_filt, style = color(cores(2)));
-    title('Figura 9.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.2: Espectro filtrado da aceleração do pulso 2 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(3,2,3)
     plot2d(f_a25_3, espectro_a25_3_filt, style = color(cores(3)));
-    title('Figura 9.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.3: Espectro filtrado da aceleração do pulso 3 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(3,2,4)
     plot2d(f_a25_4, espectro_a25_4_filt, style = color(cores(4)));
-    title('Figura 9.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.4: Espectro filtrado da aceleração do pulso 4 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(3,2,5)
     plot2d(f_a25_5, espectro_a25_5_filt, style = color(cores(5)));
-    title('Figura 9.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.5: Espectro filtrado da aceleração do pulso 5 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(3,2,6)
     plot2d(f_a25_6, espectro_a25_6_filt, style = color(cores(6)));
-    title('Figura 9.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=25cm')
+    title('Figura 10.6: Espectro filtrado da aceleração do pulso 6 medidos pelo acelerômetro em L=25cm')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
