@@ -122,14 +122,14 @@ M_V_Sol4_Fs = Fs;
 
 
 // Parâmetro
-fam = 100; //[Hz] Frequência de amostragem do microfone
-fac = 100; //[Hz] Frequência de amostragem do celular
+fam = 44100; //[Hz] Frequência de amostragem do microfone
+fac = 44000; //[Hz] Frequência de amostragem do celular
 
 // ============================================================
 // ANÁLISE DOS DADOS
 
 
-function y = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+function [y] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
     /*
     Recebe um sinal temporal discretizado e aplica um filtro digital de 1ª ordem
     a partir de um filtro no tempo contínuo por meio de equações de diferenças.
@@ -182,6 +182,26 @@ function y = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
     end
 
 endfunction
+
+[C_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da Flauta do Celular
+[C_F_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[C_F_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[C_F_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+
+[C_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do Violao no Celular
+[C_V_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[C_V_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[C_V_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+
+[M_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da Flauta do Microfone
+[M_F_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[M_F_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[M_F_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+
+[M_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do Violao no Microfone
+[M_V_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[M_V_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[M_V_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 
 // ============================================================
 // ANÁLISE ESPECTRAL
