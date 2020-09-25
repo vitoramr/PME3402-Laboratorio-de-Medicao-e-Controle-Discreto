@@ -61,7 +61,15 @@ file_names = [
     'Microfone_Violao_Do4.wav',
     'Microfone_Violao_Do5.wav',
     'Microfone_Violao_Sol3.wav',
-    'Microfone_Violao_Sol4.wav'
+    'Microfone_Violao_Sol4.wav',
+    
+    'Celular_flauta_sol3_2.wav',
+    'Celular_flauta_sol3_3.wav',
+    'celular_flauta_sol3_4.wav',
+    'Microfone_Flauta_Sol3_2.wav',
+    'Microfone_Flauta_Sol3_3.wav',
+    'Microfone_Flauta_Sol3_4.wav',
+    
 ];
 
 file_path = data_directory + s + file_names;
@@ -119,6 +127,26 @@ M_V_Sol3_Fs = Fs;
 [y, Fs] = wavread(file_path(16), [int(3.93*44100),int(4.33*44100)]);
 M_V_Sol4 = y(1,:);
 M_V_Sol4_Fs = Fs;
+
+[y, Fs] = wavread(file_path(17), [int(3.93*44100),int(4.33*44100)]);
+C_F_Sol3_2 = y(1,:);
+C_F_Sol3_2_Fs = Fs;
+[y, Fs] = wavread(file_path(18), [int(3.93*44100),int(4.33*44100)]);
+C_F_Sol3_3 = y(1,:);
+C_F_Sol3_3_Fs = Fs;
+[y, Fs] = wavread(file_path(19), [int(3.93*44100),int(4.33*44100)]);
+C_F_Sol3_4 = y(1,:);
+C_F_Sol3_4_Fs = Fs;
+
+[y, Fs] = wavread(file_path(20), [int(3.93*44100),int(4.33*44100)]);
+M_F_Sol3_2 = y(1,:);
+M_F_Sol3_2_Fs = Fs;
+[y, Fs] = wavread(file_path(21), [int(3.93*44100),int(4.33*44100)]);
+M_F_Sol3_3 = y(1,:);
+M_F_Sol3_3_Fs = Fs;
+[y, Fs] = wavread(file_path(22), [int(3.93*44100),int(4.33*44100)]);
+M_F_Sol3_3 = y(1,:);
+M_F_Sol3_3_Fs = Fs;
 
 
 // Parâmetro
@@ -183,25 +211,33 @@ function [y] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 
 endfunction
 
-[C_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da Flauta do Celular
+[C_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da flauta do celular
 [C_F_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [C_F_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [C_F_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 
-[C_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do Violao no Celular
+[C_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do violao no celular
 [C_V_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [C_V_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [C_V_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 
-[M_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da Flauta do Microfone
+[M_F_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 da flauta do microfone
 [M_F_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [M_F_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [M_F_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 
-[M_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do Violao no Microfone
+[M_V_Do4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Do4 do violao no microfone
 [M_V_Do5] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [M_V_Sol3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
 [M_V_Sol4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+
+[C_F_Sol3_2] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Sol3 na segunda oitava da Flauta no celular
+[C_F_Sol3_3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Sol3 na terceira oitava da Flauta no celular
+[C_F_Sol3_3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+[M_F_Sol3_2] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Sol3 na segunda oitava da Flauta no microfone
+[M_F_Sol3_3] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc) //Sinal filtrado para Sol3 na terceira oitava da Flauta no microfone
+[M_F_Sol3_4] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
+
 
 // ============================================================
 // ANÁLISE ESPECTRAL
