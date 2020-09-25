@@ -41,9 +41,10 @@ xdel(winsid()) // Fecha as janelas abertas
 base_path = pwd(); // Diretório atual onde o programa está
 s = filesep();     // Separador de arquivos para o OS atual ( '\' para Windows e '/' para Linux)
 
+base_path = 'D:\Poli\8 semestre\Lab de medicoes\PME3402-Laboratorio-de-Medicao-e-Controle-Discreto-master\Atividade 3';
 data_directory = base_path + s + 'Dados';
 
-// Lendo arquivos
+// Identificação dos arquivos a serem lidos
 file_names = [
     'Celular_Flauta_Do4.wav',
     'Celular_Flauta_Do5.wav',
@@ -53,9 +54,6 @@ file_names = [
     'Celular_Violao_Do5.wav',
     'Celular_Violao_Sol3.wav',
     'Celular_Violao_Sol4.wav',
-    'Celular_flauta_sol3_2.wav',
-    'Celular_flauta_sol3_3.wav',
-    'celular_flauta_sol3_4.wav',
     'Microfone_Flauta_Do4.wav',
     'Microfone_Flauta_Do5.wav',
     'Microfone_Flauta_Sol3.wav',
@@ -63,109 +61,73 @@ file_names = [
     'Microfone_Violao_Do4.wav',
     'Microfone_Violao_Do5.wav',
     'Microfone_Violao_Sol3.wav',
-    'Microfone_Violao_Sol4.wav',
-    'Microfone_flauta_sol3_2.wav',
-    'Microfone_flauta_sol3_3.wav',
-    'Microfone_flauta_sol3_4.wav'
+    'Microfone_Violao_Sol4.wav'
 ];
 
 file_path = data_directory + s + file_names;
 
-//Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
+//Leitura dos arquivos de áudio e de sua frequência de amostragem
 
-header = 1; // Pulando a primeira linha do arquivo (header)
-c_f_do4 = csvRead(data_directory + s + file_names(1), ',','.','double', [], [], [], header );
-c_f_do5 = csvRead(data_directory + s + file_names(2), ',','.','double', [], [], [], header );
-c_f_sol3 = csvRead(data_directory + s + file_names(3), ',','.','double', [], [], [], header );
-c_f_sol4 = csvRead(data_directory + s + file_names(4), ',','.','double', [], [], [], header );
-c_v_do4 = csvRead(data_directory + s + file_names(5), ',','.','double', [], [], [], header );
-c_v_do5 = csvRead(data_directory + s + file_names(6), ',','.','double', [], [], [], header );
-c_v_sol3 = csvRead(data_directory + s + file_names(7), ',','.','double', [], [], [], header );
-c_v_sol4 = csvRead(data_directory + s + file_names(8), ',','.','double', [], [], [], header );
-c_f_sol3_2 = csvRead(data_directory + s + file_names(9), ',','.','double', [], [], [], header );
-c_f_sol3_3 = csvRead(data_directory + s + file_names(10), ',','.','double', [], [], [], header );
-c_f_sol3_4 = csvRead(data_directory + s + file_names(11), ',','.','double', [], [], [], header );
-m_f_do4 = csvRead(data_directory + s + file_names(12), ',','.','double', [], [], [], header );
-m_f_do5 = csvRead(data_directory + s + file_names(13), ',','.','double', [], [], [], header );
-m_f_sol3 = csvRead(data_directory + s + file_names(14), ',','.','double', [], [], [], header );
-m_f_sol4 = csvRead(data_directory + s + file_names(15), ',','.','double', [], [], [], header );
-m_v_do4 = csvRead(data_directory + s + file_names(16), ',','.','double', [], [], [], header );
-m_v_do5 = csvRead(data_directory + s + file_names(17), ',','.','double', [], [], [], header );
-m_v_sol3 = csvRead(data_directory + s + file_names(18), ',','.','double', [], [], [], header );
-m_v_sol4 = csvRead(data_directory + s + file_names(19), ',','.','double', [], [], [], header );
-m_f_sol3_2 = csvRead(data_directory + s + file_names(20), ',','.','double', [], [], [], header );
-m_f_sol3_3 = csvRead(data_directory + s + file_names(21), ',','.','double', [], [], [], header );
-m_f_sol3_4 = csvRead(data_directory + s + file_names(22), ',','.','double', [], [], [], header );
+//Vê-se necessário cortar os áudios nos pontos em que o som é efetivamente emitido, visto que a gravação começa antes e termina depois da emissão do som e isso poderia afetar a precisão da FFT
+//Tal processo foi feito visualmente, analisando o instante do sinal em que o som foi emitido
+
+[y, Fs] = wavread(file_path(1), [int(4.04*44000),int(8.88*44000)]);
+C_F_Do4 = y;
+C_F_Do4_Fs = Fs;
+[y, Fs] = wavread(file_path(2), [int(4.85*44000),int(9.48*44000)]);
+C_F_Do5 = y;
+C_F_Do5_Fs = Fs;
+[y, Fs] = wavread(file_path(3), [int(5.53*44000),int(10.71*44000)]);
+C_F_Sol3 = y;
+C_F_Sol3_Fs = Fs;
+[y, Fs] = wavread(file_path(4), [int(3.82*44000),int(8.4*44000)]);
+C_F_Sol4 = y;
+C_F_Sol4_Fs = Fs;
+[y, Fs] = wavread(file_path(5), [int(1.23*44000),int(4.85*44000)]);
+C_V_Do4 = y;
+C_V_Do4_Fs = Fs;
+[y, Fs] = wavread(file_path(6), [int(2.18*44000),int(6.94*44000)]);
+C_V_Do5 = y;
+C_V_Do5_Fs = Fs;
+[y, Fs] = wavread(file_path(7), [int(2.2*44000),int(7*44000)]);
+C_V_Sol3 = y;
+C_V_Sol3_Fs = Fs;
+[y, Fs] = wavread(file_path(8), [int(2.64*44000),int(7.55*44000)]);
+C_V_Sol4 = y;
+C_V_Sol4_Fs = Fs;
+[y, Fs] = wavread(file_path(9), [int(0.04*44100),int(4.775*44100)]);
+M_F_Do4 = y(1,:);
+M_F_Do4_Fs = Fs;
+[y, Fs] = wavread(file_path(10), [int(2.155*44100),int(6.45*44100)]);
+M_F_Do5 = y(1,:);
+M_F_Do5_Fs = Fs;
+[y, Fs] = wavread(file_path(11), [int(0.05*44100),int(5.2*44100)]);
+M_F_Sol3 = y(1,:);
+M_F_Sol3_Fs = Fs;
+[y, Fs] = wavread(file_path(12), [int(3.1*44100),int(7.45*44100)]);
+M_F_Sol4 = y(1,:);
+M_F_Sol4_Fs = Fs;
+[y, Fs] = wavread(file_path(13), [int(2.4*44100),int(4.95*44100)]);
+M_V_Do4 = y(1,:);
+M_V_Do4_Fs = Fs;
+[y, Fs] = wavread(file_path(14), [int(3.64*44100),int(4.75*44100)]);
+M_V_Do5 = y(1,:);
+M_V_Do5_Fs = Fs;
+[y, Fs] = wavread(file_path(15), [int(2.35*44100),int(3.55*44100)]);
+M_V_Sol3 = y(1,:);
+M_V_Sol3_Fs = Fs;
+[y, Fs] = wavread(file_path(16), [int(3.93*44100),int(4.33*44100)]);
+M_V_Sol4 = y(1,:);
+M_V_Sol4_Fs = Fs;
+
 
 // Parâmetro
-fc = 44000; //[Hz] Frequência de gravação para o celular 
-fm = 44100; //[Hz] Frequência de gravação para o microfone 
+fam = 100; //[Hz] Frequência de amostragem do microfone
+fac = 100; //[Hz] Frequência de amostragem do celular
 
 // ============================================================
 // ANÁLISE DOS DADOS
-/*
-Primeiramente, analisamos os dados temporais dos dados para compreender os
-sinais com que estamos trabalhando.
 
-Cada matriz de sinais possui as colunas no formato:
-Coluna 1: Tempo (s)
-Coluna 2: Aceleração X         ax (m/s^2)
-Coluna 3: Aceleração Y         ay (m/s^2)
-Coluna 4: Aceleração Z         az (m/s^2)
-Coluna 5: Módulo da aceleração |a|(m/s^2)
-*/
-
-/*
-A partir dos dados, é possível verificar a precisão do valor do módulo das
-acelerações - presente nas colunas 5 das matrizes.
-*/
-
-function norma_linhas = norma_das_linhas(matriz_de_aceleracoes)
-    /*
-    Recebe uma matriz de tamanho (mxn)
-    retorna um vetor de tamanho (mx1) com os valores da norma em L2 de cada linha da matriz
-    */
-    
-    norma_linhas = zeros(size(matriz_de_aceleracoes,1) ,1); //Tamanho
-    for i = 1:size(norma_linhas,1) //Para cada linha da matriz
-        norma_linhas(i) = norm(matriz_de_aceleracoes(i,:)); //Calcula-se a norma do vetor da linha
-    end
-endfunction
-
-// Substituição dos valores da coluna 5 dos vetores, com a norma das acelerações
-a20  (:,5) = norma_das_linhas(a20(:,2:4))  ; // Calcula as normas dos vetores [ax,ay,az]
-a25_a(:,5) = norma_das_linhas(a25_a(:,2:4));
-a25_b(:,5) = norma_das_linhas(a25_b(:,2:4));
-a25_c(:,5) = norma_das_linhas(a25_c(:,2:4));
-
-/*
-A partir da figura 1, pode-se ver que será necessária a separação dos vetores
-temporais, já que um vetor possui mais de um ensaio de impacto da régua,
-além de alguns dos vetores possuirem medidas em tempos neutro (régua em
-posição estática), o que pode afetar na precisão da FFT.
-
-A obtenção dos intervalos de corte foi feita visualmente analisando os intervalos
-de tempo em que os picos de aceleração ocorriam
-*/
-
-// Separação dos vetores de impulsos
-a20_1 = a20( a20(:,1)> 1.95  & a20(:,1) <3.0  , :); // Pega o vetor a20 entre os tempos 1.95s e 2.8s
-a20_2 = a20( a20(:,1)> 4.95  & a20(:,1)< 6.2  , :);
-a20_3 = a20( a20(:,1)> 8.4   & a20(:,1)< 9.25 , :);
-a20_4 = a20( a20(:,1)>11.1   & a20(:,1)<12.2  , :);
-a20_5 = a20( a20(:,1)>13.75  & a20(:,1)<14.8  , :);
-a20_6 = a20( a20(:,1)>15.8   & a20(:,1)<16.8  , :);
-a20_7 = a20( a20(:,1)>17.8   & a20(:,1)<19.0  , :);
-
-
-a25_1 = a25_a( a25_a(:,1)>1.95  & a25_a(:,1)< 4.7  , :);
-
-a25_2 = a25_b( a25_b(:,1)>1.6   & a25_b(:,1)< 3.6  , :);
-
-a25_3 = a25_c( a25_c(:,1)> 4.1  & a25_c(:,1)< 6.0  , :);
-a25_4 = a25_c( a25_c(:,1)> 6.85 & a25_c(:,1)< 9.1  , :);
-a25_5 = a25_c( a25_c(:,1)> 9.8  & a25_c(:,1)<12.1  , :);
-a25_6 = a25_c( a25_c(:,1)>12.5  & a25_c(:,1)<14.4  , :);
 
 function y = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
     /*
@@ -326,3 +288,4 @@ f2= scf(2)
     title('Espectro da aceleração do pulso 4 em L=25cm, fc = 1Hz, método: Euler-Foward')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
+*/
