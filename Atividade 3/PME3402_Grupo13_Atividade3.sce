@@ -45,10 +45,28 @@ data_directory = base_path + s + 'Dados';
 
 // Lendo arquivos
 file_names = [
-    'acelerometro_20cm.csv',
-    'acelerometro_25cm_1.csv',
-    'acelerometro_25cm_2.csv',
-    'acelerometro_25cm_3.csv'
+    'Celular_Flauta_Do4.wav',
+    'Celular_Flauta_Do5.wav',
+    'Celular_Flauta_Sol3.wav',
+    'Celular_Flauta_Sol4.wav',
+    'Celular_Violao_Do4.wav',
+    'Celular_Violao_Do5.wav',
+    'Celular_Violao_Sol3.wav',
+    'Celular_Violao_Sol4.wav',
+    'Celular_flauta_sol3_2.wav',
+    'Celular_flauta_sol3_3.wav',
+    'celular_flauta_sol3_4.wav',
+    'Microfone_Flauta_Do4.wav',
+    'Microfone_Flauta_Do5.wav',
+    'Microfone_Flauta_Sol3.wav',
+    'Microfone_Flauta_Sol4.wav',
+    'Microfone_Violao_Do4.wav',
+    'Microfone_Violao_Do5.wav',
+    'Microfone_Violao_Sol3.wav',
+    'Microfone_Violao_Sol4.wav',
+    'Microfone_flauta_sol3_2.wav',
+    'Microfone_flauta_sol3_3.wav',
+    'Microfone_flauta_sol3_4.wav'
 ];
 
 file_path = data_directory + s + file_names;
@@ -56,13 +74,32 @@ file_path = data_directory + s + file_names;
 //Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
 
 header = 1; // Pulando a primeira linha do arquivo (header)
-a20   = csvRead(data_directory + s + file_names(1), ',','.','double', [], [], [], header );
-a25_a = csvRead(data_directory + s + file_names(2), ',','.','double', [], [], [], header );
-a25_b = csvRead(data_directory + s + file_names(3), ',','.','double', [], [], [], header );
-a25_c = csvRead(data_directory + s + file_names(4), ',','.','double', [], [], [], header );
+c_f_do4 = csvRead(data_directory + s + file_names(1), ',','.','double', [], [], [], header );
+c_f_do5 = csvRead(data_directory + s + file_names(2), ',','.','double', [], [], [], header );
+c_f_sol3 = csvRead(data_directory + s + file_names(3), ',','.','double', [], [], [], header );
+c_f_sol4 = csvRead(data_directory + s + file_names(4), ',','.','double', [], [], [], header );
+c_v_do4 = csvRead(data_directory + s + file_names(5), ',','.','double', [], [], [], header );
+c_v_do5 = csvRead(data_directory + s + file_names(6), ',','.','double', [], [], [], header );
+c_v_sol3 = csvRead(data_directory + s + file_names(7), ',','.','double', [], [], [], header );
+c_v_sol4 = csvRead(data_directory + s + file_names(8), ',','.','double', [], [], [], header );
+c_f_sol3_2 = csvRead(data_directory + s + file_names(9), ',','.','double', [], [], [], header );
+c_f_sol3_3 = csvRead(data_directory + s + file_names(10), ',','.','double', [], [], [], header );
+c_f_sol3_4 = csvRead(data_directory + s + file_names(11), ',','.','double', [], [], [], header );
+m_f_do4 = csvRead(data_directory + s + file_names(12), ',','.','double', [], [], [], header );
+m_f_do5 = csvRead(data_directory + s + file_names(13), ',','.','double', [], [], [], header );
+m_f_sol3 = csvRead(data_directory + s + file_names(14), ',','.','double', [], [], [], header );
+m_f_sol4 = csvRead(data_directory + s + file_names(15), ',','.','double', [], [], [], header );
+m_v_do4 = csvRead(data_directory + s + file_names(16), ',','.','double', [], [], [], header );
+m_v_do5 = csvRead(data_directory + s + file_names(17), ',','.','double', [], [], [], header );
+m_v_sol3 = csvRead(data_directory + s + file_names(18), ',','.','double', [], [], [], header );
+m_v_sol4 = csvRead(data_directory + s + file_names(19), ',','.','double', [], [], [], header );
+m_f_sol3_2 = csvRead(data_directory + s + file_names(20), ',','.','double', [], [], [], header );
+m_f_sol3_3 = csvRead(data_directory + s + file_names(21), ',','.','double', [], [], [], header );
+m_f_sol3_4 = csvRead(data_directory + s + file_names(22), ',','.','double', [], [], [], header );
 
 // Parâmetro
-fa = 100; //[Hz] Frequência de amostragem do sensor do acelerômetro
+fc = 44000; //[Hz] Frequência de gravação para o celular 
+fm = 44100; //[Hz] Frequência de gravação para o microfone 
 
 // ============================================================
 // ANÁLISE DOS DADOS
