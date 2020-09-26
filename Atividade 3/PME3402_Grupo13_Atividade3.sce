@@ -86,72 +86,67 @@ fac = 44000; //[Hz] Frequência de amostragem do celular
 
 [y, Fs] = wavread(file_path(1), [int(4.04*fac),int(8.88*fac)]);
 C_F_Do4 = y;
-C_F_Do4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(2), [int(4.85*fac),int(9.48*fac)]);
 C_F_Do5 = y;
-C_F_Do5_Fs = Fs;
+
 [y, Fs] = wavread(file_path(3), [int(5.53*fac),int(10.71*fac)]);
 C_F_Sol3 = y;
-C_F_Sol3_Fs = Fs;
+
 [y, Fs] = wavread(file_path(4), [int(3.82*fac),int(8.4*fac)]);
 C_F_Sol4 = y;
-C_F_Sol4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(5), [int(1.23*fac),int(4.85*fac)]);
 C_V_Do4 = y;
-C_V_Do4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(6), [int(2.18*fac),int(6.94*fac)]);
 C_V_Do5 = y;
-C_V_Do5_Fs = Fs;
+
 [y, Fs] = wavread(file_path(7), [int(2.2*fac),int(7*fac)]);
 C_V_Sol3 = y;
-C_V_Sol3_Fs = Fs;
+
 [y, Fs] = wavread(file_path(8), [int(2.64*fac),int(7.55*fac)]);
 C_V_Sol4 = y;
-C_V_Sol4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(9), [int(0.04*fam),int(4.775*fam)]);
 M_F_Do4 = y(1,:);   //Microfone possui dois canais de gravação, porém a gravação foi feita em Mono, por isso considerou-se a gravação dos canais iguais
-M_F_Do4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(10), [int(2.155*fam),int(6.45*fam)]);
 M_F_Do5 = y(1,:);
-M_F_Do5_Fs = Fs;
+
 [y, Fs] = wavread(file_path(11), [int(0.05*fam),int(5.2*fam)]);
 M_F_Sol3 = y(1,:);
-M_F_Sol3_Fs = Fs;
+
 [y, Fs] = wavread(file_path(12), [int(3.1*fam),int(7.45*fam)]);
 M_F_Sol4 = y(1,:);
-M_F_Sol4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(13), [int(2.4*fam),int(4.95*fam)]);
 M_V_Do4 = y(1,:);
-M_V_Do4_Fs = Fs;
+
 [y, Fs] = wavread(file_path(14), [int(3.64*fam),int(4.75*fam)]);
 M_V_Do5 = y(1,:);
-M_V_Do5_Fs = Fs;
+
 [y, Fs] = wavread(file_path(15), [int(2.35*fam),int(3.55*fam)]);
 M_V_Sol3 = y(1,:);
-M_V_Sol3_Fs = Fs;
+
 [y, Fs] = wavread(file_path(16), [int(3.93*fam),int(4.33*fam)]);
 M_V_Sol4 = y(1,:);
-M_V_Sol4_Fs = Fs;
+
 
 [y, Fs] = wavread(file_path(17), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_2 = y;
-C_F_Sol3_2_Fs = Fs;
 [y, Fs] = wavread(file_path(18), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_3 = y;
-C_F_Sol3_3_Fs = Fs;
 [y, Fs] = wavread(file_path(19), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_4 = y;
-C_F_Sol3_4_Fs = Fs;
 
 [y, Fs] = wavread(file_path(20), [int(3.93*fam),int(4.33*fam)]);
 M_F_Sol3_2 = y(1,:);
-M_F_Sol3_2_Fs = Fs;
 [y, Fs] = wavread(file_path(21), [int(3.93*fam),int(4.33*fam)]);
 M_F_Sol3_3 = y(1,:);
-M_F_Sol3_3_Fs = Fs;
 [y, Fs] = wavread(file_path(22), [int(3.93*fam),int(4.33*fam)]);
-M_F_Sol3_3 = y(1,:);
-M_F_Sol3_3_Fs = Fs;
+M_F_Sol3_4 = y(1,:);
+
 
 
 // ============================================================
@@ -250,73 +245,467 @@ endfunction
 // Obtenção dos espectros de frequência
 metodos = ['euler-foward','euler-backward', 'trapezoid'];
 fc = 30;    //analisar qual a frequência do ruído a ser cortado
-[C_F_Do4_filtrado, f_C_F_Do4, espectro_C_F_Do4, espectro_C_F_Do4_filt] = analise_espectral(C_F_Do4,'euler-foward', fac, fc)
+[C_F_Do4_filtrado, f_C_F_Do4, espectro_C_F_Do4, espectro_C_F_Do4_filtrado] = analise_espectral(C_F_Do4,'euler-foward', fac, fc)
+[C_F_Do5_filtrado, f_C_F_Do5, espectro_C_F_Do5, espectro_C_F_Do5_filtrado] = analise_espectral(C_F_Do5,'euler-foward', fac, fc)
+[C_F_Sol3_filtrado, f_C_F_Sol3, espectro_C_F_Sol3, espectro_C_F_Sol3_filtrado] = analise_espectral(C_F_Sol3,'euler-foward', fac, fc)
+[C_F_Sol4_filtrado, f_C_F_Sol4, espectro_C_F_Sol4, espectro_C_F_Sol4_filtrado] = analise_espectral(C_F_Sol4,'euler-foward', fac, fc)
+[C_V_Do4_filtrado, f_C_V_Do4, espectro_C_V_Do4, espectro_C_V_Do4_filtrado] = analise_espectral(C_V_Do4,'euler-foward', fac, fc)
+[C_V_Do5_filtrado, f_C_V_Do5, espectro_C_V_Do5, espectro_C_V_Do5_filtrado] = analise_espectral(C_V_Do5,'euler-foward', fac, fc)
+[C_V_Sol3_filtrado, f_C_V_Sol3, espectro_C_V_Sol3, espectro_C_V_Sol3_filtrado] = analise_espectral(C_V_Sol3,'euler-foward', fac, fc)
+[C_V_Sol4_filtrado, f_C_V_Sol4, espectro_C_V_Sol4, espectro_C_V_Sol4_filtrado] = analise_espectral(C_V_Sol4,'euler-foward', fac, fc)
+[M_F_Do4_filtrado, f_M_F_Do4, espectro_M_F_Do4, espectro_M_F_Do4_filtrado] = analise_espectral(M_F_Do4,'euler-foward', fam, fc)
+[M_F_Do5_filtrado, f_M_F_Do5, espectro_M_F_Do5, espectro_M_F_Do5_filtrado] = analise_espectral(M_F_Do5,'euler-foward', fam, fc)
+[M_F_Sol3_filtrado, f_M_F_Sol3, espectro_M_F_Sol3, espectro_M_F_Sol3_filtrado] = analise_espectral(M_F_Sol3,'euler-foward', fam, fc)
+[M_F_Sol4_filtrado, f_M_F_Sol4, espectro_M_F_Sol4, espectro_M_F_Sol4_filtrado] = analise_espectral(M_F_Sol4,'euler-foward', fam, fc)
+[M_V_Do4_filtrado, f_M_V_Do4, espectro_M_V_Do4, espectro_M_V_Do4_filtrado] = analise_espectral(M_V_Do4,'euler-foward', fam, fc)
+[M_V_Do5_filtrado, f_M_V_Do5, espectro_M_V_Do5, espectro_M_V_Do5_filtrado] = analise_espectral(M_V_Do5,'euler-foward', fam, fc)
+[M_V_Sol3_filtrado, f_M_V_Sol3, espectro_M_V_Sol3, espectro_M_V_Sol3_filtrado] = analise_espectral(M_V_Sol3,'euler-foward', fam, fc)
+[M_V_Sol4_filtrado, f_M_V_Sol4, espectro_M_V_Sol4, espectro_M_V_Sol4_filtrado] = analise_espectral(M_V_Sol4,'euler-foward', fam, fc)
 
-[a25_4_filt_5,    #   ,        #      , espectro_a25_4_filt_5] = analise_espectral(a25_4(:,5),'euler-foward', fa, 5)
-[a25_4_filt_30,    #   ,        #      , espectro_a25_4_filt_30] = analise_espectral(a25_4(:,5),'euler-foward', fa, 30)
+[C_F_Sol3_2_filtrado, f_C_F_Sol3_2, espectro_C_F_Sol3_2, espectro_C_F_Sol3_2_filtrado] = analise_espectral(C_F_Sol3_2,'euler-foward', fac, fc)
+[C_F_Sol3_3_filtrado, f_C_F_Sol3_3, espectro_C_F_Sol3_3, espectro_C_F_Sol3_3_filtrado] = analise_espectral(C_F_Sol3_3,'euler-foward', fac, fc)
+[C_F_Sol3_4_filtrado, f_C_F_Sol3_4, espectro_C_F_Sol3_4, espectro_C_F_Sol3_4_filtrado] = analise_espectral(C_F_Sol3_4,'euler-foward', fac, fc)
+
+[M_F_Sol3_2_filtrado, f_M_F_Sol3_2, espectro_M_F_Sol3_2, espectro_M_F_Sol3_2_filtrado] = analise_espectral(M_F_Sol3_2,'euler-foward', fam, fc)
+[M_F_Sol3_3_filtrado, f_M_F_Sol3_3, espectro_M_F_Sol3_3, espectro_M_F_Sol3_3_filtrado] = analise_espectral(M_F_Sol3_3,'euler-foward', fam, fc)
+[M_F_Sol3_4_filtrado, f_M_F_Sol3_4, espectro_M_F_Sol3_4, espectro_M_F_Sol3_4_filtrado] = analise_espectral(M_F_Sol3_4,'euler-foward', fam, fc)
+
 
 // ============================================================
 // PLOTAGEM DOS GRÁFICOS
 
+tempo_C_F_Do4 = linspace(0, size(C_F_Do4)(2)/fac, size(C_F_Do4)(2))
+tempo_C_F_Do5 = linspace(0, size(C_F_Do5)(2)/fac, size(C_F_Do5)(2))
+tempo_C_F_Sol3 = linspace(0, size(C_F_Sol3)(2)/fac, size(C_F_Sol3)(2))
+tempo_C_F_Sol4 = linspace(0, size(C_F_Sol4)(2)/fac, size(C_F_Sol4)(2))
+tempo_C_V_Do4 = linspace(0, size(C_V_Do4)(2)/fac, size(C_V_Do4)(2))
+tempo_C_V_Do5 = linspace(0, size(C_V_Do5)(2)/fac, size(C_V_Do5)(2))
+tempo_C_V_Sol3 = linspace(0, size(C_V_Sol3)(2)/fac, size(C_V_Sol3)(2))
+tempo_C_V_Sol4 = linspace(0, size(C_V_Sol4)(2)/fac, size(C_V_Sol4)(2))
+tempo_M_F_Do4 = linspace(0, size(M_F_Do4)(2)/fam, size(M_F_Do4)(2))
+tempo_M_F_Do5 = linspace(0, size(M_F_Do5)(2)/fam, size(M_F_Do5)(2))
+tempo_M_F_Sol3 = linspace(0, size(M_F_Sol3)(2)/fam, size(M_F_Sol3)(2))
+tempo_M_F_Sol4 = linspace(0, size(M_F_Sol4)(2)/fam, size(M_F_Sol4)(2))
+tempo_M_V_Do4 = linspace(0, size(M_V_Do4)(2)/fam, size(M_V_Do4)(2))
+tempo_M_V_Do5 = linspace(0, size(M_V_Do5)(2)/fam, size(M_V_Do5)(2))
+tempo_M_V_Sol3 = linspace(0, size(M_V_Sol3)(2)/fam, size(M_V_Sol3)(2))
+tempo_M_V_Sol4 = linspace(0, size(M_V_Sol4)(2)/fam, size(M_V_Sol4)(2))
+
+/*
+tempo_C_F_Sol3_2 = linspace(0, size(C_F_Sol3_2)(2)/fac, size(C_F_Sol3_2)(2))
+tempo_C_F_Sol3_3 = linspace(0, size(C_F_Sol3_3)(2)/fac, size(C_F_Sol3_3)(2))
+tempo_C_F_Sol3_4 = linspace(0, size(C_F_Sol3_4)(2)/fac, size(C_F_Sol3_4)(2))
+
+tempo_M_F_Sol3_2 = linspace(0, size(M_F_Sol3_2)(2)/fac, size(M_F_Sol3_2)(2))
+tempo_M_F_Sol3_3 = linspace(0, size(M_F_Sol3_3)(2)/fac, size(M_F_Sol3_3)(2))
+tempo_M_F_Sol3_4 = linspace(0, size(M_F_Sol3_4)(2)/fac, size(M_F_Sol3_4)(2))
+*/
+
 cores = [
 'blue4',
-'deepskyblue3',
-'aquamarine3',
 'springgreen4',
-'gold3',
 'firebrick1',
 'magenta3',
 ]
 
 f1 = scf(1)
     subplot(4,1,1)
-    plot2d(a25_4(:,1),a25_4(:,5), color(cores(1)) );
-    title('Pulso 4 a L=25cm')
+    plot2d(tempo_C_F_Do4, C_F_Do4, color(cores(1)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Do4)')
     xlabel('t (s)');
-    ylabel('a (m/s^2)');
+    ylabel('Amplitude');
     
     subplot(4,1,2)
-    plot2d(a25_4(:,1),a25_4_filt_30, color(cores(2)));
-    title('Pulso 4 a L=25cm e fc= 30Hz, método: Euler-Foward')
+    plot2d(tempo_C_F_Do4, C_F_Do4_filtrado, color(cores(1)) );
+    title('Sinal temporal discretizado filtrado (Celular, Flauta, Do4)')
     xlabel('t (s)');
-    ylabel('a (m/s^2)');
-    
+    ylabel('Amplitude');
+
     subplot(4,1,3)
-    plot2d(a25_4(:,1),a25_4_filt_5, color(cores(3)));
-    title('Pulso 4 a L=25cm e fc= 5Hz, método: Euler-Foward')
-    xlabel('t (s)');
-    ylabel('a (m/s^2)');
+    plot2d(f_C_F_Do4, espectro_C_F_Do4, color(cores(1)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
     
     subplot(4,1,4)
-    plot2d(a25_4(:,1),a25_4_filt_1, color(cores(4)));
-    title('Pulso 4 a L=25cm e fc= 1Hz, método: Euler-Foward')
-    xlabel('t (s)');
-    ylabel('a (m/s^2)');
-    
-f2= scf(2)
-    // Figura 8: plot2d individuais dos espectros de pulsos para L=25cm
-    //[espectro_a20_1, f_a20_1]
+    plot2d(f_C_F_Do4, espectro_C_F_Do4_filtrado, color(cores(1)) );
+    title('Espectro de frequência do sinal filtrado (Celular, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f2 = scf(2)
     subplot(4,1,1)
-    plot2d(f_a25_4, espectro_a25_4, style = color(cores(1)));
-    title('Espectro da aceleração do pulso 4 em L=25cm')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
+    plot2d(tempo_C_F_Do5, C_F_Do5, color(cores(2)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
     
     subplot(4,1,2)
-    plot2d(f_a25_4, espectro_a25_4_filt_30, style = color(cores(2)));
-    title('Espectro da aceleração do pulso 4 em L=25cm, fc = 30Hz, método: Euler-Foward')
-    xlabel('f (Hz)');
-    ylabel('|A(f)|');
-    
+    plot2d(tempo_C_F_Do5, C_F_Do5_filtrado, color(cores(2)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
     subplot(4,1,3)
-    plot2d(f_a25_4, espectro_a25_4_filt_5, style = color(cores(3)));
-    title('Espectro da aceleração do pulso 4 em L=25cm, fc = 5Hz, método: Euler-Foward')
+    plot2d(f_C_F_Do5, espectro_C_F_Do5, color(cores(2)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Do5)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
     subplot(4,1,4)
-    plot2d(f_a25_4, espectro_a25_4_filt_1, style = color(cores(4)));
-    title('Espectro da aceleração do pulso 4 em L=25cm, fc = 1Hz, método: Euler-Foward')
+    plot2d(f_C_F_Do5, espectro_C_F_Do5_filtrado, color(cores(2)) );
+    title('Espectro de frequência do sinal filtrado (Celular, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f3 = scf(3)
+    subplot(4,1,1)
+    plot2d(tempo_C_F_Sol3, C_F_Sol3, color(cores(3)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_F_Sol3, C_F_Sol3_filtrado, color(cores(3)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_C_F_Sol3, espectro_C_F_Sol3, color(cores(3)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_F_Sol3, espectro_C_F_Sol3_filtrado, color(cores(3)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f4 = scf(4)
+    subplot(4,1,1)
+    plot2d(tempo_C_F_Sol4, C_F_Sol4, color(cores(4)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_F_Sol4, C_F_Sol4_filtrado, color(cores(4)) );
+    title('Sinal temporal discretizado (Celular, Flauta, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_C_F_Sol4, espectro_C_F_Sol4, color(cores(4)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_F_Sol4, espectro_C_F_Sol4_filtrado, color(cores(4)) );
+    title('Espectro de frequência do sinal (Celular, Flauta, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+/*
+f5 = scf(5)
+    subplot(4,1,1)
+    plot2d(tempo_C_V_Do4, C_V_Do4, color(cores(1)) );
+    title('Sinal temporal discretizado (Celular, Violão, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_V_Do4, C_V_Do4_filtrado, color(cores(1)) );
+    title('Sinal temporal discretizado filtrado (Celular, Violão, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_C_V_Do4, espectro_C_V_Do4, color(cores(1)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_V_Do4, espectro_C_V_Do4_filtrado, color(cores(1)) );
+    title('Espectro de frequência do sinal filtrado (Celular, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f6 = scf(6)
+    subplot(4,1,1)
+    plot2d(tempo_C_V_Do5, C_V_Do5, color(cores(2)) );
+    title('Sinal temporal discretizado (Celular, Violão, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_V_Do5, C_V_Do5_filtrado, color(cores(2)) );
+    title('Sinal temporal discretizado (Celular, Violão, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_C_V_Do5, espectro_C_V_Do5, color(cores(2)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Do5)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_V_Do5, espectro_C_V_Do5_filtrado, color(cores(2)) );
+    title('Espectro de frequência do sinal filtrado (Celular, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f7 = scf(7)
+    subplot(4,1,1)
+    plot2d(tempo_C_V_Sol3, C_V_Sol3, color(cores(3)) );
+    title('Sinal temporal discretizado (Celular, Violão, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_V_Sol3, C_V_Sol3_filtrado, color(cores(3)) );
+    title('Sinal temporal discretizado (Celular, Violão, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_C_V_Sol3, espectro_C_V_Sol3, color(cores(3)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_V_Sol3, espectro_C_V_Sol3_filtrado, color(cores(3)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f8 = scf(8)
+    subplot(4,1,1)
+    plot2d(tempo_C_V_Sol4, C_V_Sol4, color(cores(4)) );
+    title('Sinal temporal discretizado (Celular, Violão, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_C_V_Sol4, C_V_Sol4_filtrado, color(cores(4)) );
+    title('Sinal temporal discretizado (Celular, Violão, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_C_V_Sol4, espectro_C_V_Sol4, color(cores(4)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_C_V_Sol4, espectro_C_V_Sol4_filtrado, color(cores(4)) );
+    title('Espectro de frequência do sinal (Celular, Violão, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    
+f9 = scf(9)
+    subplot(4,1,1)
+    plot2d(tempo_M_F_Do4, M_F_Do4, color(cores(1)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_F_Do4, M_F_Do4_filtrado, color(cores(1)) );
+    title('Sinal temporal discretizado filtrado (Microfone, Flauta, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_M_F_Do4, espectro_M_F_Do4, color(cores(1)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_F_Do4, espectro_M_F_Do4_filtrado, color(cores(1)) );
+    title('Espectro de frequência do sinal filtrado (Microfone, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f10 = scf(10)
+    subplot(4,1,1)
+    plot2d(tempo_M_F_Do5, M_F_Do5, color(cores(2)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_F_Do5, M_F_Do5_filtrado, color(cores(2)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_M_F_Do5, espectro_M_F_Do5, color(cores(2)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Do5)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_F_Do5, espectro_M_F_Do5_filtrado, color(cores(2)) );
+    title('Espectro de frequência do sinal filtrado (Microfone, Flauta, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f11 = scf(11)
+    subplot(4,1,1)
+    plot2d(tempo_M_F_Sol3, M_F_Sol3, color(cores(3)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_F_Sol3, M_F_Sol3_filtrado, color(cores(3)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_M_F_Sol3, espectro_M_F_Sol3, color(cores(3)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_F_Sol3, espectro_M_F_Sol3_filtrado, color(cores(3)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f12 = scf(12)
+    subplot(4,1,1)
+    plot2d(tempo_M_F_Sol4, M_F_Sol4, color(cores(4)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_F_Sol4, M_F_Sol4_filtrado, color(cores(4)) );
+    title('Sinal temporal discretizado (Microfone, Flauta, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_M_F_Sol4, espectro_M_F_Sol4, color(cores(4)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_F_Sol4, espectro_M_F_Sol4_filtrado, color(cores(4)) );
+    title('Espectro de frequência do sinal (Microfone, Flauta, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f13 = scf(13)
+    subplot(4,1,1)
+    plot2d(tempo_M_V_Do4, M_V_Do4, color(cores(1)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_V_Do4, M_V_Do4_filtrado, color(cores(1)) );
+    title('Sinal temporal discretizado filtrado (Microfone, Violão, Do4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_M_V_Do4, espectro_M_V_Do4, color(cores(1)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_V_Do4, espectro_M_V_Do4_filtrado, color(cores(1)) );
+    title('Espectro de frequência do sinal filtrado (Microfone, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f14 = scf(14)
+    subplot(4,1,1)
+    plot2d(tempo_M_V_Do5, M_V_Do5, color(cores(2)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_V_Do5, M_V_Do5_filtrado, color(cores(2)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Do5)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+
+    subplot(4,1,3)
+    plot2d(f_M_V_Do5, espectro_M_V_Do5, color(cores(2)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Do5)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_V_Do5, espectro_M_V_Do5_filtrado, color(cores(2)) );
+    title('Espectro de frequência do sinal filtrado (Microfone, Violão, Do4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f15 = scf(15)
+    subplot(4,1,1)
+    plot2d(tempo_M_V_Sol3, M_V_Sol3, color(cores(3)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_V_Sol3, M_V_Sol3_filtrado, color(cores(3)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Sol3)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_M_V_Sol3, espectro_M_V_Sol3, color(cores(3)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_V_Sol3, espectro_M_V_Sol3_filtrado, color(cores(3)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Sol3)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+f16 = scf(16)
+    subplot(4,1,1)
+    plot2d(tempo_M_V_Sol4, M_V_Sol4, color(cores(4)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,2)
+    plot2d(tempo_M_V_Sol4, M_V_Sol4_filtrado, color(cores(4)) );
+    title('Sinal temporal discretizado (Microfone, Violão, Sol4)')
+    xlabel('t (s)');
+    ylabel('Amplitude');
+    
+    subplot(4,1,3)
+    plot2d(f_M_V_Sol4, espectro_M_V_Sol4, color(cores(4)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Sol4)')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+    
+    subplot(4,1,4)
+    plot2d(f_M_V_Sol4, espectro_M_V_Sol4_filtrado, color(cores(4)) );
+    title('Espectro de frequência do sinal (Microfone, Violão, Sol4)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
 */
