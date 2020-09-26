@@ -79,79 +79,80 @@ file_path = data_directory + s + file_names;
 //Vê-se necessário cortar os áudios nos pontos em que o som é efetivamente emitido, visto que a gravação começa antes e termina depois da emissão do som e isso poderia afetar a precisão da FFT
 //Tal processo foi feito visualmente, analisando o instante do sinal em que o som foi emitido
 
-[y, Fs] = wavread(file_path(1), [int(4.04*44000),int(8.88*44000)]);
+// Parâmetros de amostragem
+fam = 44100; //[Hz] Frequência de amostragem do microfone
+fac = 44000; //[Hz] Frequência de amostragem do celular
+
+
+[y, Fs] = wavread(file_path(1), [int(4.04*fac),int(8.88*fac)]);
 C_F_Do4 = y;
 C_F_Do4_Fs = Fs;
-[y, Fs] = wavread(file_path(2), [int(4.85*44000),int(9.48*44000)]);
+[y, Fs] = wavread(file_path(2), [int(4.85*fac),int(9.48*fac)]);
 C_F_Do5 = y;
 C_F_Do5_Fs = Fs;
-[y, Fs] = wavread(file_path(3), [int(5.53*44000),int(10.71*44000)]);
+[y, Fs] = wavread(file_path(3), [int(5.53*fac),int(10.71*fac)]);
 C_F_Sol3 = y;
 C_F_Sol3_Fs = Fs;
-[y, Fs] = wavread(file_path(4), [int(3.82*44000),int(8.4*44000)]);
+[y, Fs] = wavread(file_path(4), [int(3.82*fac),int(8.4*fac)]);
 C_F_Sol4 = y;
 C_F_Sol4_Fs = Fs;
-[y, Fs] = wavread(file_path(5), [int(1.23*44000),int(4.85*44000)]);
+[y, Fs] = wavread(file_path(5), [int(1.23*fac),int(4.85*fac)]);
 C_V_Do4 = y;
 C_V_Do4_Fs = Fs;
-[y, Fs] = wavread(file_path(6), [int(2.18*44000),int(6.94*44000)]);
+[y, Fs] = wavread(file_path(6), [int(2.18*fac),int(6.94*fac)]);
 C_V_Do5 = y;
 C_V_Do5_Fs = Fs;
-[y, Fs] = wavread(file_path(7), [int(2.2*44000),int(7*44000)]);
+[y, Fs] = wavread(file_path(7), [int(2.2*fac),int(7*fac)]);
 C_V_Sol3 = y;
 C_V_Sol3_Fs = Fs;
-[y, Fs] = wavread(file_path(8), [int(2.64*44000),int(7.55*44000)]);
+[y, Fs] = wavread(file_path(8), [int(2.64*fac),int(7.55*fac)]);
 C_V_Sol4 = y;
 C_V_Sol4_Fs = Fs;
-[y, Fs] = wavread(file_path(9), [int(0.04*44100),int(4.775*44100)]);
-M_F_Do4 = y(1,:);   //Microfone possui dois canais de gravação, porém a gravação foi feita em Mono, por isso consideramos a gravação dos canais iguais
+[y, Fs] = wavread(file_path(9), [int(0.04*fam),int(4.775*fam)]);
+M_F_Do4 = y(1,:);   //Microfone possui dois canais de gravação, porém a gravação foi feita em Mono, por isso considerou-se a gravação dos canais iguais
 M_F_Do4_Fs = Fs;
-[y, Fs] = wavread(file_path(10), [int(2.155*44100),int(6.45*44100)]);
+[y, Fs] = wavread(file_path(10), [int(2.155*fam),int(6.45*fam)]);
 M_F_Do5 = y(1,:);
 M_F_Do5_Fs = Fs;
-[y, Fs] = wavread(file_path(11), [int(0.05*44100),int(5.2*44100)]);
+[y, Fs] = wavread(file_path(11), [int(0.05*fam),int(5.2*fam)]);
 M_F_Sol3 = y(1,:);
 M_F_Sol3_Fs = Fs;
-[y, Fs] = wavread(file_path(12), [int(3.1*44100),int(7.45*44100)]);
+[y, Fs] = wavread(file_path(12), [int(3.1*fam),int(7.45*fam)]);
 M_F_Sol4 = y(1,:);
 M_F_Sol4_Fs = Fs;
-[y, Fs] = wavread(file_path(13), [int(2.4*44100),int(4.95*44100)]);
+[y, Fs] = wavread(file_path(13), [int(2.4*fam),int(4.95*fam)]);
 M_V_Do4 = y(1,:);
 M_V_Do4_Fs = Fs;
-[y, Fs] = wavread(file_path(14), [int(3.64*44100),int(4.75*44100)]);
+[y, Fs] = wavread(file_path(14), [int(3.64*fam),int(4.75*fam)]);
 M_V_Do5 = y(1,:);
 M_V_Do5_Fs = Fs;
-[y, Fs] = wavread(file_path(15), [int(2.35*44100),int(3.55*44100)]);
+[y, Fs] = wavread(file_path(15), [int(2.35*fam),int(3.55*fam)]);
 M_V_Sol3 = y(1,:);
 M_V_Sol3_Fs = Fs;
-[y, Fs] = wavread(file_path(16), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(16), [int(3.93*fam),int(4.33*fam)]);
 M_V_Sol4 = y(1,:);
 M_V_Sol4_Fs = Fs;
 
-[y, Fs] = wavread(file_path(17), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(17), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_2 = y;
 C_F_Sol3_2_Fs = Fs;
-[y, Fs] = wavread(file_path(18), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(18), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_3 = y;
 C_F_Sol3_3_Fs = Fs;
-[y, Fs] = wavread(file_path(19), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(19), [int(3.93*fac),int(4.33*fac)]);
 C_F_Sol3_4 = y;
 C_F_Sol3_4_Fs = Fs;
 
-[y, Fs] = wavread(file_path(20), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(20), [int(3.93*fam),int(4.33*fam)]);
 M_F_Sol3_2 = y(1,:);
 M_F_Sol3_2_Fs = Fs;
-[y, Fs] = wavread(file_path(21), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(21), [int(3.93*fam),int(4.33*fam)]);
 M_F_Sol3_3 = y(1,:);
 M_F_Sol3_3_Fs = Fs;
-[y, Fs] = wavread(file_path(22), [int(3.93*44100),int(4.33*44100)]);
+[y, Fs] = wavread(file_path(22), [int(3.93*fam),int(4.33*fam)]);
 M_F_Sol3_3 = y(1,:);
 M_F_Sol3_3_Fs = Fs;
 
-
-// Parâmetro
-fam = 44100; //[Hz] Frequência de amostragem do microfone
-fac = 44000; //[Hz] Frequência de amostragem do celular
 
 // ============================================================
 // ANÁLISE DOS DADOS
