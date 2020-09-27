@@ -64,6 +64,9 @@ multiplicar a frequência natural da primeira oitava pela oitava correspondente.
     - Sol3: 594 Hz
     - Sol4: 792 Hz
     
+    É importante ter em conta estas frequências naturais na hora de aplicar a frequência de corte no filtro, uma fez que 
+não se deve utilizar um filtro com uma frequência de corte muito baixa, já que isso cortaria o sinal que se quer evidenciar.
+    
     Neste experimento, vamos filtrar os resultados encontrados, eliminando ruídos do ambientes e dos dispositivos e
 avaliar se os resultados de frequências naturais condizem com a da literatura. Além disso, serão analisados os diferentes métodos 
 (flauta x violão e microfone x celular), e será averiguado se há diferenças significativas entre o nível de ruído entre eles
@@ -181,6 +184,11 @@ M_F_Sol3_4 = y(1,:);
 // ============================================================
 // ANÁLISE DOS DADOS
 
+/*
+
+
+*/
+
 
 function [y] = filtro_passa_baixa_1a_ordem(e, metodo , fa, fc)
     /*
@@ -273,7 +281,7 @@ endfunction
 
 // Obtenção dos espectros de frequência
 metodos = ['euler-foward','euler-backward', 'trapezoid'];
-fc = 30;    //analisar qual a frequência do ruído a ser cortado
+fc = 800;    //analisar qual a frequência do ruído a ser cortado
 [C_F_Do4_filtrado, f_C_F_Do4, espectro_C_F_Do4, espectro_C_F_Do4_filtrado] = analise_espectral(C_F_Do4,'euler-foward', fac, fc)
 [C_F_Do5_filtrado, f_C_F_Do5, espectro_C_F_Do5, espectro_C_F_Do5_filtrado] = analise_espectral(C_F_Do5,'euler-foward', fac, fc)
 [C_F_Sol3_filtrado, f_C_F_Sol3, espectro_C_F_Sol3, espectro_C_F_Sol3_filtrado] = analise_espectral(C_F_Sol3,'euler-foward', fac, fc)
