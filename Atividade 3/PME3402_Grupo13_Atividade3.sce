@@ -41,8 +41,37 @@ xdel(winsid()) // Fecha as janelas abertas
 base_path = pwd(); // Diretório atual onde o programa está
 s = filesep();     // Separador de arquivos para o OS atual ( '\' para Windows e '/' para Linux)
 
-base_path = 'D:\Poli\8 semestre\Lab de medicoes\PME3402-Laboratorio-de-Medicao-e-Controle-Discreto-master\Atividade 3';
 data_directory = base_path + s + 'Dados';
+
+/*
+1.Introdução
+
+    Nesta tarefa, o grupo decidiu fazer o experimento de filtros digitais utilizando instrumentos musicais.
+Uma vez que a frequência natural de notas musicais é conhecida pela teoria, considerou-se que a avaliação
+e filtragem de ruidos levando em conta frequências naturais conhecidas se mostra eficaz.
+    Foram realizados ensaios com diferentes instrumentos musicais, tocando diferentes notas em diferentes oitavas, 
+com diferentes métodos de gravação das notas, totalizando 22 ensaios.
+    Os instrumentos utilizados foram flauta e violão, os métodos de gravação foram o celular e um microfone,
+e as notas gravadas foram Do4 (quarta oitava), Do5 (quinta oitava), Sol3 (terceira oitava), Sol4 (quarta oitava).
+
+    Pela teoria, a frequência natural da nota "dó" é 132Hz, na primeira oitava. Para as demais oitavas, é necessário
+multiplicar a frequência natural da primeira oitava pela oitava correspondente. No caso, para o "Do4", a frequência natural
+é igual a 132*4, que iguala a 528 Hz. Fazendo este procedimento para todas as notas e oitavas estudadas, chegamos
+às seguintes frequências naturais:
+
+    - Do4: 528 Hz
+    - Do5: 660 Hz
+    - Sol3: 594 Hz
+    - Sol4: 792 Hz
+    
+    Neste experimento, vamos filtrar os resultados encontrados, eliminando ruídos do ambientes e dos dispositivos e
+avaliar se os resultados de frequências naturais condizem com a da literatura. Além disso, serão analisados os diferentes métodos 
+(flauta x violão e microfone x celular), e será averiguado se há diferenças significativas entre o nível de ruído entre eles
+(por exemplo, se há um instrumento que apresenta um ruído natural de sua estrutura mais significativo, ou se um dos métodos 
+de gravação isola melhor os ruídos do ambiente).
+     
+ */
+      
 
 // Identificação dos arquivos a serem lidos
 file_names = [
