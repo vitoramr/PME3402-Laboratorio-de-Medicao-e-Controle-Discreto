@@ -23,7 +23,7 @@ INSTRUÇÕES PARA RODAR O PROGRAMA
 Antes de rodar o programa, siga os seguintes passos
 1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 3/"
 em que o programa se encontra
-2) Certifique-se de que os dados do acelerômetro estão na pasta "/Atividade 3/Dados"
+2) Certifique-se de que os dados de medida estão na pasta "/Atividade 3/Dados"
 dentro da pasta do programa
 3) Rode o programa
 */
@@ -64,7 +64,7 @@ multiplicar a frequência natural da primeira oitava pela oitava correspondente.
     - Sol3: 594 Hz
     - Sol4: 792 Hz
     
-    É importante ter em conta estas frequências naturais na hora de aplicar a frequência de corte no filtro, uma fez que 
+    É importante ter em conta estas frequências naturais na hora de aplicar a frequência de corte no filtro, uma vez que 
 não se deve utilizar um filtro com uma frequência de corte muito baixa, já que isso cortaria o sinal que se quer evidenciar.
     
     Neste experimento, vamos filtrar os resultados encontrados, eliminando ruídos do ambientes e dos dispositivos e
@@ -281,7 +281,9 @@ endfunction
 
 // Obtenção dos espectros de frequência
 metodos = ['euler-foward','euler-backward', 'trapezoid'];
+
 fc = 800;    //analisar qual a frequência do ruído a ser cortado
+
 [C_F_Do4_filtrado, f_C_F_Do4, espectro_C_F_Do4, espectro_C_F_Do4_filtrado] = analise_espectral(C_F_Do4,'euler-foward', fac, fc)
 [C_F_Do5_filtrado, f_C_F_Do5, espectro_C_F_Do5, espectro_C_F_Do5_filtrado] = analise_espectral(C_F_Do5,'euler-foward', fac, fc)
 [C_F_Sol3_filtrado, f_C_F_Sol3, espectro_C_F_Sol3, espectro_C_F_Sol3_filtrado] = analise_espectral(C_F_Sol3,'euler-foward', fac, fc)
@@ -307,6 +309,33 @@ fc = 800;    //analisar qual a frequência do ruído a ser cortado
 [M_F_Sol3_3_filtrado, f_M_F_Sol3_3, espectro_M_F_Sol3_3, espectro_M_F_Sol3_3_filtrado] = analise_espectral(M_F_Sol3_3,'euler-foward', fam, fc)
 [M_F_Sol3_4_filtrado, f_M_F_Sol3_4, espectro_M_F_Sol3_4, espectro_M_F_Sol3_4_filtrado] = analise_espectral(M_F_Sol3_4,'euler-foward', fam, fc)
 
+// ============================================================
+// ANÁLISE DOS RESULTADOS
+/*
+A partir do tratamento de dados, foi possível obter os espectros de
+frequência de cada uma das notas musicais gravadas (Dó4, Dó5, Sol4, Sol5)
+tocadas na Flauta e no Violão e gravadas tanto por meio de um microfone
+quanto por meio de um aparelho celular. Além disso, um filtro digital
+foi aplicado no sinal temporal e foi possível obter o espectro de frequência
+do som filtrado.
+
+O filtro digital utilizado foi um filtro de primeira ordem e que utiliza
+o método de Euler para integração numérica. Como as notas gravadas
+possuem frequências naturais entre 528 e 792 Hz, o filtro passa-baixa foi
+aplicado no sinal temporal para uma frequência de corte de 800Hz.
+ 
+Como pode-se perceber pela análise espectral dos sinais originais, as
+frequências que apresentam um pico máximo no espectro são próximas às
+frequências naturais da nota tocada tanto para os sinais gravados pelo
+Microfone quanto para o Celular. O sinal também apresenta harmônicos,
+ou picos de amplitudes de espectro cada vez menores nas frequências que
+são múltiplas inteiras da frequência natural da nota original. Esse
+resultado era esperado de acordo com a teoria da transformada de Fourier,
+e indica que o som de um instrumento não é composto apenas de sua frequência
+natural, mas também de seus harmônicos.
+
+
+*/
 
 // ============================================================
 // PLOTAGEM DOS GRÁFICOS
