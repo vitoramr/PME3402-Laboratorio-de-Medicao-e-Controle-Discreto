@@ -832,12 +832,24 @@ f21= scf (21)
     plot2d(f_M_V_Do5, espectro_M_V_Do5_filtrado, color(cores(4)) );
     hl=legend(['Celular';'Microfone']);
     
-    zoom_rect([000,0,800,2000]);
+    zoom_rect([000,0,800,1500]);
     title('Espectro de frequência do sinal filtrado (Celular e microfone, Violão, Do5)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
-
+    
 f22= scf (22)
+    subplot(1,1,1)
+    plot2d(f_C_V_Do5, espectro_C_V_Do5_filtrado, color(cores(2)) );
+    plot2d(f_M_V_Do5, espectro_M_V_Do5_filtrado, color(cores(4)) );
+    hl=legend(['Celular';'Microfone']);
+    
+    zoom_rect([000,0,350,1500]);
+    title('Espectro de frequência do sinal filtrado (Celular e microfone, Violão, Do5), com enfoque no segundo harmônico')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f23= scf (23)
+
     subplot(1,1,1)
     plot2d(f_C_F_Sol3_2, espectro_C_F_Sol3_2_filtrado, color(cores(1)) );
     plot2d(f_C_F_Sol3_3, espectro_C_F_Sol3_3_filtrado, color(cores(2)) );
@@ -845,11 +857,11 @@ f22= scf (22)
     hl=legend(['Teste 1';'Teste 2';'Teste 3']);
     
     zoom_rect([100,0,900,2000]);
-    title('Espectro de frequência do sinal filtrado (Celular, Violão, Sol3, 3 variabilidades)')
+    title('Espectro de frequência do sinal filtrado (Celular, Flauta, Sol3, 3 variabilidades)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
-f23= scf (23)
+f24= scf (24)
 
     subplot(1,1,1)
     plot2d(f_M_F_Sol3_2, espectro_M_F_Sol3_2_filtrado, color(cores(1)) );
@@ -858,6 +870,6 @@ f23= scf (23)
     hl=legend(['Teste 1';'Teste 2';'Teste 3']);
     
     zoom_rect([100,0,900,2000]);
-    title('Espectro de frequência do sinal filtrado (Celular, Violão, Sol3, 3 variabilidades)')
+    title('Espectro de frequência do sinal filtrado (Microfone, Flauta, Sol3, 3 variabilidades)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
