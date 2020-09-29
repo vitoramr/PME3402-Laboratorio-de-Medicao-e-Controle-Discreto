@@ -54,6 +54,9 @@ com diferentes métodos de gravação das notas, totalizando 22 ensaios.
     Os instrumentos utilizados foram flauta e violão, os métodos de gravação foram o celular e um microfone,
 e as notas gravadas foram Do4 (quarta oitava), Do5 (quinta oitava), Sol3 (terceira oitava), Sol4 (quarta oitava).
 
+    Os sinais com nomeação final Sol_3_2, Sol_3_3 e Sol_3_4 são repetições da nota "sol na terceira oitava", 
+que será usado para avaliar a repetibilidade do experimento e se há mais variações usando o microfone ou o celular.
+
     Pela teoria, a frequência natural da nota "dó" é 132Hz, na primeira oitava. Para as demais oitavas, é necessário
 multiplicar a frequência natural da primeira oitava pela oitava correspondente. No caso, para o "Do4", a frequência natural
 é igual a 132*4, que iguala a 528 Hz. Fazendo este procedimento para todas as notas e oitavas estudadas, chegamos
@@ -76,7 +79,7 @@ de gravação isola melhor os ruídos do ambiente).
  */
       
 
-// Identificação dos arquivos a serem lidos
+// Identificaç dos arquivos a serem lidos
 file_names = [
     'Celular_Flauta_Do4.wav',
     'Celular_Flauta_Do5.wav',
