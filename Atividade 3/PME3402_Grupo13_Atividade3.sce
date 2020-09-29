@@ -57,6 +57,9 @@ com diferentes métodos de gravação das notas, totalizando 22 ensaios.
     Os instrumentos utilizados foram flauta e violão, os métodos de gravação foram o celular e um microfone,
 e as notas gravadas foram Do4 (quarta oitava), Do5 (quinta oitava), Sol3 (terceira oitava), Sol4 (quarta oitava).
 
+    Os sinais com nomeação final Sol_3_2, Sol_3_3 e Sol_3_4 são repetições da nota "sol na terceira oitava", 
+que será usado para avaliar a repetibilidade do experimento e se há mais variações usando o microfone ou o celular.
+
     Pela teoria, a frequência natural da nota "dó" é 132Hz, na primeira oitava. Para as demais oitavas, é necessário
 multiplicar a frequência natural da primeira oitava pela oitava correspondente. No caso, para o "Do4", a frequência natural
 é igual a 132*4, que iguala a 528 Hz. Fazendo este procedimento para todas as notas e oitavas estudadas, chegamos
@@ -79,7 +82,7 @@ de gravação isola melhor os ruídos do ambiente).
  */
       
 
-// Identificação dos arquivos a serem lidos
+// Identificaç dos arquivos a serem lidos
 file_names = [
     'Celular_Flauta_Do4.wav',
     'Celular_Flauta_Do5.wav',
@@ -842,12 +845,24 @@ f21= scf (21)
     plot2d(f_M_V_Do5, espectro_M_V_Do5_filtrado, color(cores(4)) );
     hl=legend(['Celular';'Microfone']);
     
-    zoom_rect([000,0,800,2000]);
+    zoom_rect([000,0,800,1500]);
     title('Espectro de frequência do sinal filtrado (Celular e microfone, Violão, Do5)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
-
+    
 f22= scf (22)
+    subplot(1,1,1)
+    plot2d(f_C_V_Do5, espectro_C_V_Do5_filtrado, color(cores(2)) );
+    plot2d(f_M_V_Do5, espectro_M_V_Do5_filtrado, color(cores(4)) );
+    hl=legend(['Celular';'Microfone']);
+    
+    zoom_rect([000,0,350,1500]);
+    title('Espectro de frequência do sinal filtrado (Celular e microfone, Violão, Do5), com enfoque no segundo harmônico')
+    xlabel('f (Hz)');
+    ylabel('|A(f)|');
+
+f23= scf (23)
+
     subplot(1,1,1)
     plot2d(f_C_F_Sol3_2, espectro_C_F_Sol3_2_filtrado, color(cores(1)) );
     plot2d(f_C_F_Sol3_3, espectro_C_F_Sol3_3_filtrado, color(cores(2)) );
@@ -855,11 +870,11 @@ f22= scf (22)
     hl=legend(['Teste 1';'Teste 2';'Teste 3']);
     
     zoom_rect([100,0,900,2000]);
-    title('Espectro de frequência do sinal filtrado (Celular, Violão, Sol3, 3 variabilidades)')
+    title('Espectro de frequência do sinal filtrado (Celular, Flauta, Sol3, 3 variabilidades)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
     
-f23= scf (23)
+f24= scf (24)
 
     subplot(1,1,1)
     plot2d(f_M_F_Sol3_2, espectro_M_F_Sol3_2_filtrado, color(cores(1)) );
@@ -868,6 +883,6 @@ f23= scf (23)
     hl=legend(['Teste 1';'Teste 2';'Teste 3']);
     
     zoom_rect([100,0,900,2000]);
-    title('Espectro de frequência do sinal filtrado (Celular, Violão, Sol3, 3 variabilidades)')
+    title('Espectro de frequência do sinal filtrado (Microfone, Flauta, Sol3, 3 variabilidades)')
     xlabel('f (Hz)');
     ylabel('|A(f)|');
