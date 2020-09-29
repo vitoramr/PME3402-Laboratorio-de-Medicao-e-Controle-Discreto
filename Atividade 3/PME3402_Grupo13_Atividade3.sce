@@ -317,6 +317,13 @@ fc = 800;    //analisar qual a frequência do ruído a ser cortado
 // ============================================================
 // ANÁLISE DOS RESULTADOS
 /*
+Primeiramente, os sinais de áudio foram cortados em um software secundário
+para que os dados utilizados possuam o instante em que a nota começa a ser tocada.
+Em seguida, um filtro digital utilizado foi um filtro passa-baixa de primeira ordem
+aplicado no sinal discretizado e que utiliza o método de Euler para integração numérica.
+Como as notas gravadas possuem frequências naturais entre 528 e 792 Hz,
+o filtro passa-baixa foi aplicado no sinal temporal para uma frequência
+de corte de 800Hz.
 
 A partir do tratamento de dados, foi possível obter os espectros de
 frequência de cada uma das notas musicais gravadas (Dó4, Dó5, Sol4, Sol5)
@@ -324,11 +331,6 @@ tocadas na Flauta e no Violão e gravadas tanto por meio de um microfone
 quanto por meio de um aparelho celular. Além disso, um filtro digital
 foi aplicado no sinal temporal e foi possível obter o espectro de frequência
 do som filtrado.
-
-O filtro digital utilizado foi um filtro de primeira ordem e que utiliza
-o método de Euler para integração numérica. Como as notas gravadas
-possuem frequências naturais entre 528 e 792 Hz, o filtro passa-baixa foi
-aplicado no sinal temporal para uma frequência de corte de 800Hz.
  
 Como pode-se perceber pela análise espectral dos sinais originais, as
 frequências que apresentam um pico máximo no espectro são próximas às
