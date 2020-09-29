@@ -89,20 +89,20 @@ file_names = [
     'Celular_Flauta_Sol3.wav',
     'Celular_Flauta_Sol4.wav',
     
+    'Celular_Violao_Do3.wav',
     'Celular_Violao_Do4.wav',
-    'Celular_Violao_Do5.wav',
+    'Celular_Violao_Sol2.wav',
     'Celular_Violao_Sol3.wav',
-    'Celular_Violao_Sol4.wav',
     
     'Microfone_Flauta_Do4.wav',
     'Microfone_Flauta_Do5.wav',
     'Microfone_Flauta_Sol3.wav',
     'Microfone_Flauta_Sol4.wav',
     
+    'Microfone_Violao_Do3.wav',
     'Microfone_Violao_Do4.wav',
-    'Microfone_Violao_Do5.wav',
+    'Microfone_Violao_Sol2.wav',
     'Microfone_Violao_Sol3.wav',
-    'Microfone_Violao_Sol4.wav',
     
     'Celular_flauta_sol3_2.wav',
     'Celular_flauta_sol3_3.wav',
@@ -139,16 +139,16 @@ C_F_Sol3 = y;
 C_F_Sol4 = y;
 
 [y, Fs] = wavread(file_path(5), [int(1.23*fac),int(4.85*fac)]);
-C_V_Do4 = y;
+C_V_Do3 = y;
 
 [y, Fs] = wavread(file_path(6), [int(2.18*fac),int(6.94*fac)]);
-C_V_Do5 = y;
+C_V_Do4 = y;
 
 [y, Fs] = wavread(file_path(7), [int(2.2*fac),int(7*fac)]);
-C_V_Sol3 = y;
+C_V_Sol2 = y;
 
 [y, Fs] = wavread(file_path(8), [int(2.64*fac),int(7.55*fac)]);
-C_V_Sol4 = y;
+C_V_Sol3 = y;
 
 [y, Fs] = wavread(file_path(9), [int(0.04*fam),int(4.775*fam)]);
 M_F_Do4 = y(1,:);   //Microfone possui dois canais de gravação, porém a gravação foi feita em Mono, por isso considerou-se a gravação dos canais iguais
@@ -163,16 +163,16 @@ M_F_Sol3 = y(1,:);
 M_F_Sol4 = y(1,:);
 
 [y, Fs] = wavread(file_path(13), [int(2.4*fam),int(4.95*fam)]);
-M_V_Do4 = y(1,:);
+M_V_Do3 = y(1,:);
 
 [y, Fs] = wavread(file_path(14), [int(3.64*fam),int(4.75*fam)]);
-M_V_Do5 = y(1,:);
+M_V_Do4 = y(1,:);
 
 [y, Fs] = wavread(file_path(15), [int(2.35*fam),int(3.55*fam)]);
-M_V_Sol3 = y(1,:);
+M_V_Sol2 = y(1,:);
 
 [y, Fs] = wavread(file_path(16), [int(3.93*fam),int(4.33*fam)]);
-M_V_Sol4 = y(1,:);
+M_V_Sol3 = y(1,:);
 
 
 [y, Fs] = wavread(file_path(17), [int(3.93*fac),int(4.33*fac)]);
@@ -298,18 +298,21 @@ fc = 800;    //analisar qual a frequência do ruído a ser cortado
 [C_F_Do5_filtrado, f_C_F_Do5, espectro_C_F_Do5, espectro_C_F_Do5_filtrado] = analise_espectral(C_F_Do5,'euler-foward', fac, fc)
 [C_F_Sol3_filtrado, f_C_F_Sol3, espectro_C_F_Sol3, espectro_C_F_Sol3_filtrado] = analise_espectral(C_F_Sol3,'euler-foward', fac, fc)
 [C_F_Sol4_filtrado, f_C_F_Sol4, espectro_C_F_Sol4, espectro_C_F_Sol4_filtrado] = analise_espectral(C_F_Sol4,'euler-foward', fac, fc)
+
+[C_V_Do3_filtrado, f_C_V_Do3, espectro_C_V_Do3, espectro_C_V_Do3_filtrado] = analise_espectral(C_V_Do3,'euler-foward', fac, fc)
 [C_V_Do4_filtrado, f_C_V_Do4, espectro_C_V_Do4, espectro_C_V_Do4_filtrado] = analise_espectral(C_V_Do4,'euler-foward', fac, fc)
-[C_V_Do5_filtrado, f_C_V_Do5, espectro_C_V_Do5, espectro_C_V_Do5_filtrado] = analise_espectral(C_V_Do5,'euler-foward', fac, fc)
+[C_V_Sol2_filtrado, f_C_V_Sol2, espectro_C_V_Sol2, espectro_C_V_Sol2_filtrado] = analise_espectral(C_V_Sol2,'euler-foward', fac, fc)
 [C_V_Sol3_filtrado, f_C_V_Sol3, espectro_C_V_Sol3, espectro_C_V_Sol3_filtrado] = analise_espectral(C_V_Sol3,'euler-foward', fac, fc)
-[C_V_Sol4_filtrado, f_C_V_Sol4, espectro_C_V_Sol4, espectro_C_V_Sol4_filtrado] = analise_espectral(C_V_Sol4,'euler-foward', fac, fc)
+
 [M_F_Do4_filtrado, f_M_F_Do4, espectro_M_F_Do4, espectro_M_F_Do4_filtrado] = analise_espectral(M_F_Do4,'euler-foward', fam, fc)
 [M_F_Do5_filtrado, f_M_F_Do5, espectro_M_F_Do5, espectro_M_F_Do5_filtrado] = analise_espectral(M_F_Do5,'euler-foward', fam, fc)
 [M_F_Sol3_filtrado, f_M_F_Sol3, espectro_M_F_Sol3, espectro_M_F_Sol3_filtrado] = analise_espectral(M_F_Sol3,'euler-foward', fam, fc)
 [M_F_Sol4_filtrado, f_M_F_Sol4, espectro_M_F_Sol4, espectro_M_F_Sol4_filtrado] = analise_espectral(M_F_Sol4,'euler-foward', fam, fc)
+
+[M_V_Do3_filtrado, f_M_V_Do3, espectro_M_V_Do3, espectro_M_V_Do3_filtrado] = analise_espectral(M_V_Do3,'euler-foward', fam, fc)
 [M_V_Do4_filtrado, f_M_V_Do4, espectro_M_V_Do4, espectro_M_V_Do4_filtrado] = analise_espectral(M_V_Do4,'euler-foward', fam, fc)
-[M_V_Do5_filtrado, f_M_V_Do5, espectro_M_V_Do5, espectro_M_V_Do5_filtrado] = analise_espectral(M_V_Do5,'euler-foward', fam, fc)
+[M_V_Sol2_filtrado, f_M_V_Sol2, espectro_M_V_Sol2, espectro_M_V_Sol2_filtrado] = analise_espectral(M_V_Sol2,'euler-foward', fam, fc)
 [M_V_Sol3_filtrado, f_M_V_Sol3, espectro_M_V_Sol3, espectro_M_V_Sol3_filtrado] = analise_espectral(M_V_Sol3,'euler-foward', fam, fc)
-[M_V_Sol4_filtrado, f_M_V_Sol4, espectro_M_V_Sol4, espectro_M_V_Sol4_filtrado] = analise_espectral(M_V_Sol4,'euler-foward', fam, fc)
 
 [C_F_Sol3_2_filtrado, f_C_F_Sol3_2, espectro_C_F_Sol3_2, espectro_C_F_Sol3_2_filtrado] = analise_espectral(C_F_Sol3_2,'euler-foward', fac, fc)
 [C_F_Sol3_3_filtrado, f_C_F_Sol3_3, espectro_C_F_Sol3_3, espectro_C_F_Sol3_3_filtrado] = analise_espectral(C_F_Sol3_3,'euler-foward', fac, fc)
@@ -357,18 +360,21 @@ tempo_C_F_Do4 = linspace(0, size(C_F_Do4)(2)/fac, size(C_F_Do4)(2))
 tempo_C_F_Do5 = linspace(0, size(C_F_Do5)(2)/fac, size(C_F_Do5)(2))
 tempo_C_F_Sol3 = linspace(0, size(C_F_Sol3)(2)/fac, size(C_F_Sol3)(2))
 tempo_C_F_Sol4 = linspace(0, size(C_F_Sol4)(2)/fac, size(C_F_Sol4)(2))
+
+tempo_C_V_Do3 = linspace(0, size(C_V_Do3)(2)/fac, size(C_V_Do3)(2))
 tempo_C_V_Do4 = linspace(0, size(C_V_Do4)(2)/fac, size(C_V_Do4)(2))
-tempo_C_V_Do5 = linspace(0, size(C_V_Do5)(2)/fac, size(C_V_Do5)(2))
+tempo_C_V_Sol2 = linspace(0, size(C_V_Sol2)(2)/fac, size(C_V_Sol2)(2))
 tempo_C_V_Sol3 = linspace(0, size(C_V_Sol3)(2)/fac, size(C_V_Sol3)(2))
-tempo_C_V_Sol4 = linspace(0, size(C_V_Sol4)(2)/fac, size(C_V_Sol4)(2))
+
 tempo_M_F_Do4 = linspace(0, size(M_F_Do4)(2)/fam, size(M_F_Do4)(2))
 tempo_M_F_Do5 = linspace(0, size(M_F_Do5)(2)/fam, size(M_F_Do5)(2))
 tempo_M_F_Sol3 = linspace(0, size(M_F_Sol3)(2)/fam, size(M_F_Sol3)(2))
 tempo_M_F_Sol4 = linspace(0, size(M_F_Sol4)(2)/fam, size(M_F_Sol4)(2))
+
+tempo_M_V_Do3 = linspace(0, size(M_V_Do3)(2)/fam, size(M_V_Do3)(2))
 tempo_M_V_Do4 = linspace(0, size(M_V_Do4)(2)/fam, size(M_V_Do4)(2))
-tempo_M_V_Do5 = linspace(0, size(M_V_Do5)(2)/fam, size(M_V_Do5)(2))
+tempo_M_V_Sol2 = linspace(0, size(M_V_Sol2)(2)/fam, size(M_V_Sol2)(2))
 tempo_M_V_Sol3 = linspace(0, size(M_V_Sol3)(2)/fam, size(M_V_Sol3)(2))
-tempo_M_V_Sol4 = linspace(0, size(M_V_Sol4)(2)/fam, size(M_V_Sol4)(2))
 
 /*
 tempo_C_F_Sol3_2 = linspace(0, size(C_F_Sol3_2)(2)/fac, size(C_F_Sol3_2)(2))
