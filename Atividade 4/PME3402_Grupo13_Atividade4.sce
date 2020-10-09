@@ -33,7 +33,8 @@ xdel(winsid()) // Fecha as janelas abertas
 // TAREFA 0 (programa fornecido, adaptado para a versão 6.1 do Scilab)
 // =============================================================================
 
-// Valores numéricos obtidos a partir do link: http://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=ControlPID
+// Valores numéricos obtidos a partir do link:
+// http://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=ControlPID
 // Parâmetros do motor de corrente contínua:
 J=0.01;
 b=0.1;
@@ -67,7 +68,7 @@ Gma=Gpid*Gmotor;
 Gfb=syslin('c',s/s); // feedback unitário
 
 // Fechando a malha (Gmf é a função de transferência de malha fechada):
-Gmf=Gma/.Gfb;
+Gmf=Gma/.Gfb; // Comando "/." é o comando de feedback para sistemas lineares SL1/.SL2 --> retorna SL1*(I+SL2*SL1)^-1
 
 // Simulação para entrada degrau unitário:
 DT=0.001;
