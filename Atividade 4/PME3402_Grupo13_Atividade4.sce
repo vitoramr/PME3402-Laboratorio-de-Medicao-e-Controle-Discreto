@@ -29,37 +29,6 @@ clear;
 clc;    // Limpeza de variáveis e do console
 xdel(winsid()) // Fecha as janelas abertas
 
-// APAGAR DEPOIS DE CONCLUIDO<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-/* Instruções para o Filtro Digital da aula anterior 
-1. Como está nas instruções, obtenham (no Scilab) o espectro de frequência do sinal
-antes da filtragem, e, em função dos objetivos do experimento e desse espectro,
-escolham a freqüência de corte.
-
-2. Com a freqüência de corte, definam o filtro em tempo contínuo no Scilab, na forma
- de função de transferência em s, como vocês já devem ter feito na disciplina de Modelagem
-(comando poly para definir a variável s, e o comando syslin).
-
-3. Por uma peculiaridade do Scilab (ao menos na versão 5.x ou anterior), não há
-conversão direta para a função de transferência em z. É preciso usar o comando
-tf2ss para obter o sistema no espaço de estados (ainda em tempo contínuo).
-
-4. Usando o comando cls2dls , se converte o sistema em tempo contínuo, no espaço
-de estados, no sistema em tempo discreto, no espaço de estados.
-
-5. Usando o comando ss2tf , se obtém a função de transferência do filtro em z a
- partir do sistema em tempo discreto no espaço de estados obtido na etapa anterior.
- 
-6. Com essa função de transferência em z, devem ser obtidas as equações de diferenças.
-Usem o inverso do procedimento mostrado na página 4 do arquivo PME3402_TOPICO_04_FILTROS_DIGITAIS_2020.pdf.
-Façam à mão, ou escrevam um algoritmo no Scilab que leia os coeficientes das 
-potências de z na função de transferência em z (na versão 5.x do Scilab pode ser usado o comando coeff).
-
-7. De posse das equações de diferenças, desenvolvam um algoritmo que resolva tais
-equações tendo como entrada o sinal a ser filtrado, e como saída o sinal filtrado.
-Não podem ser usadas funções prontas de análise de sinais do Scilab.
-*/
-
-
 // =============================================================================
 // TAREFA 0 (programa fornecido, adaptado para a versão 6.1 do Scilab)
 // =============================================================================
@@ -115,33 +84,62 @@ f = scf(4)
     plot2d(t,y);
     xtitle('Saida controlada por PID: tempo contínuo – linha preta','t (s)','y(rad/s)');
 
-// ============================================================
-// TAREFA 1
+// =============================================================================
+//                                TAREFA 1
+// =============================================================================
+/*
+1) Obtenha uma aproximação em tempo discreto do compensador PID mostrado na Tarefa 0,
+usando transformada Z e o método do trapézio (à mão), e, usando o Scilab, aplique
+no motor e simule calculando diretamente pelas equações de diferenças (sem usar
+o comando “flts” ou similares).
+
+Usar o inverso do procedimento mostrado na página 4 do arquivo
+PME3402_TOPICO_04_FILTROS_DIGITAIS_2020.pdf
+
+A aproximação do motor usando o método do segurador de ordem zero (comando “dscr” no Scilab)
+já está apresentada neste arquivo.
+
+De posse das equações de diferenças, desenvolvam um algoritmo que resolva tais
+equações tendo como entrada o sinal a ser filtrado, e como saída o sinal filtrado.
+Não podem ser usadas funções prontas de análise de sinais do Scilab.
+
+2) Use os seguintes períodos de amostragem: T=0,25 s; T=0,1 s; T=0,05 s.
+
+3) Compare as respostas do sistema com esses períodos de amostragem entre si e com a
+obtida na simulação do sistema contínuo (Tarefa 0).
+*/
+
 
 // Modelo em tempo discreto do motor de corrente contínua usando o segurador de ordem zero (ZOH):
-//T= [0,25;0,1;0,05]; períodos desejados
+//T= [0,25;0,1;0,05]; //[s] períodos de amostragem desejados
 T=0.25 // Período de amostragem
 
-//dscr obtém o modelo em tempo discreto de uma planta no espaço de estado
+// dscr obtém o modelo em tempo discreto de uma planta no espaço de estado
 // usando o ZOH.
-motorD = dscr(motor,T);
+motorD = dscr(motor,T); 
 
 // função de transferência do motor em tempo discreto (ZOH):
 GmotorD = ss2tf(motorD);
+
 // Simulando o sistema com compensador PID usando as equações de diferenças:
 // Equações de diferenças para o modelo em tempo discreto do motor de corrente
 // contínua:
 
 nMD=coeff(GmotorD('num')); // Coeficientes do numerador
-dMD=coeff(GmotorD('den'));
+dMD=coeff(GmotorD('den')); // Coeficientes do denominador
 n=length(nMD);
 d=length(dMD);
-if d>n then
-    p=d;
+
+// p é o maior grau da função de transferência no numerador ou denominador
+// U(z) = 
+
+if d>n then //Se o grau do polinômio do denominador é maior do que o do denominador 
+    p=d;    //p = d
 else
     p=n;
 end
-// Condições iniciais - motor
+
+// Condições iniciais do motor --> parado
 for i=1:(p-1)
     um(i)=0;
     ym(i)=0;
@@ -155,4 +153,16 @@ end
 // IMPORTANTE: nas Tarefas 1 e 2 as simulações devem ser feitas por meio de
 // equações de diferenças, não podem ser usadas funções “prontas” do Scilab para
 // simulação de sistemas discretos.
+
+
+// =============================================================================
+//                                TAREFA 2
+// =============================================================================
+/*
+Repita a Tarefa 1 usando a regra “para trás” (“backward rule”).
+
+Obs.: não é preciso obter a aproximação em tempo discreto do compensador PID usando
+a regra “para trás”, pode ser usado o resultado já mostrado na página 4 da apostila
+“PME3402_TOPICO_06_PID_DIGITAL_2020.pdf”.
+*/
 
