@@ -29,6 +29,37 @@ clear;
 clc;    // Limpeza de variáveis e do console
 xdel(winsid()) // Fecha as janelas abertas
 
+// APAGAR DEPOIS DE CONCLUIDO<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+/* Instruções para o Filtro Digital da aula anterior 
+1. Como está nas instruções, obtenham (no Scilab) o espectro de frequência do sinal
+antes da filtragem, e, em função dos objetivos do experimento e desse espectro,
+escolham a freqüência de corte.
+
+2. Com a freqüência de corte, definam o filtro em tempo contínuo no Scilab, na forma
+ de função de transferência em s, como vocês já devem ter feito na disciplina de Modelagem
+(comando poly para definir a variável s, e o comando syslin).
+
+3. Por uma peculiaridade do Scilab (ao menos na versão 5.x ou anterior), não há
+conversão direta para a função de transferência em z. É preciso usar o comando
+tf2ss para obter o sistema no espaço de estados (ainda em tempo contínuo).
+
+4. Usando o comando cls2dls , se converte o sistema em tempo contínuo, no espaço
+de estados, no sistema em tempo discreto, no espaço de estados.
+
+5. Usando o comando ss2tf , se obtém a função de transferência do filtro em z a
+ partir do sistema em tempo discreto no espaço de estados obtido na etapa anterior.
+ 
+6. Com essa função de transferência em z, devem ser obtidas as equações de diferenças.
+Usem o inverso do procedimento mostrado na página 4 do arquivo PME3402_TOPICO_04_FILTROS_DIGITAIS_2020.pdf.
+Façam à mão, ou escrevam um algoritmo no Scilab que leia os coeficientes das 
+potências de z na função de transferência em z (na versão 5.x do Scilab pode ser usado o comando coeff).
+
+7. De posse das equações de diferenças, desenvolvam um algoritmo que resolva tais
+equações tendo como entrada o sinal a ser filtrado, e como saída o sinal filtrado.
+Não podem ser usadas funções prontas de análise de sinais do Scilab.
+*/
+
+
 // =============================================================================
 // TAREFA 0 (programa fornecido, adaptado para a versão 6.1 do Scilab)
 // =============================================================================
@@ -48,7 +79,7 @@ B=[0;1/L]
 C=[1 0];
 D=0;
 
-// Syslin cria um sistema linear (continuo ou discreto) com as determinadas matrizes
+// syslin cria um sistema linear (continuo ou discreto) com as respectivas matrizes A,B,C,D
 motor=syslin('c',A,B,C,D);
 
 // Função de transferência do motor:
@@ -88,6 +119,7 @@ f = scf(4)
 // TAREFA 1
 
 // Modelo em tempo discreto do motor de corrente contínua usando o segurador de ordem zero (ZOH):
+//T= [0,25;0,1;0,05]; períodos desejados
 T=0.25 // Período de amostragem
 
 //dscr obtém o modelo em tempo discreto de uma planta no espaço de estado
@@ -124,31 +156,3 @@ end
 // equações de diferenças, não podem ser usadas funções “prontas” do Scilab para
 // simulação de sistemas discretos.
 
-/* Instruções para o Filtro Digital da aula anterior
-1. Como está nas instruções, obtenham (no Scilab) o espectro de frequência do sinal
-antes da filtragem, e, em função dos objetivos do experimento e desse espectro,
-escolham a freqüência de corte.
-
-2. Com a freqüência de corte, definam o filtro em tempo contínuo no Scilab, na forma
- de função de transferência em s, como vocês já devem ter feito na disciplina de Modelagem
-(comando poly para definir a variável s, e o comando syslin).
-
-3. Por uma peculiaridade do Scilab (ao menos na versão 5.x ou anterior), não há
-conversão direta para a função de transferência em z. É preciso usar o comando
-tf2ss para obter o sistema no espaço de estados (ainda em tempo contínuo).
-
-4. Usando o comando cls2dls , se converte o sistema em tempo contínuo, no espaço
-de estados, no sistema em tempo discreto, no espaço de estados.
-
-5. Usando o comando ss2tf , se obtém a função de transferência do filtro em z a
- partir do sistema em tempo discreto no espaço de estados obtido na etapa anterior.
- 
-6. Com essa função de transferência em z, devem ser obtidas as equações de diferenças.
-Usem o inverso do procedimento mostrado na página 4 do arquivo PME3402_TOPICO_04_FILTROS_DIGITAIS_2020.pdf.
-Façam à mão, ou escrevam um algoritmo no Scilab que leia os coeficientes das 
-potências de z na função de transferência em z (na versão 5.x do Scilab pode ser usado o comando coeff).
-
-7. De posse das equações de diferenças, desenvolvam um algoritmo que resolva tais
-equações tendo como entrada o sinal a ser filtrado, e como saída o sinal filtrado.
-Não podem ser usadas funções prontas de análise de sinais do Scilab.
-*/
