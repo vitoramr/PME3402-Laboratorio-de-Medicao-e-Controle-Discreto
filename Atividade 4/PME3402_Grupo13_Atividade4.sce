@@ -303,9 +303,11 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 /*
 Percebe-se que ao aplicar as constantes Kp = 100, Ki = 200, Kd = 10, o sinal discreto
 gerado pelo sistema diverge no método Bilinear. Isso ocorre, pois o sistema discretizado
-do controlador PID por método de integração trapezoidal possui dois polos com raíz
-unitária (z² - 1). Assim, a posição de suas duas raízes devem estar em posições que
-não cumprem o critério de estabilidade de Nyquist, tornando o sistema instável.
+do controlador PID por método de integração trapezoidal possui dois polos com módulo
+unitário (z² - 1). Assim, a posição de suas duas raízes do sistema em malha aberta
+devem estar em posições que não cumprem o critério de estabilidade de Nyquist,
+fazendo com que uma das raízes do sistema fechado tivessem parte real positiva,
+tornando o sistema instável.
 
 O mesmo não ocorre para o método de Backwards Euler, que consegue estabilizar o
 sistema, por possuir apenas um polo em (z -1) e ainda duas rapizes, conseguindo
