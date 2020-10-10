@@ -30,7 +30,7 @@ clc;    // Limpeza de variáveis e do console
 xdel(winsid()) // Fecha as janelas abertas
 
 // =============================================================================
-// TAREFA 0 (programa fornecido, adaptado para a versão 6.1 do Scilab)
+// TAREFA 0 (programa fornecido, adaptado à versão 6.1 do Scilab)
 // =============================================================================
 
 // Valores numéricos obtidos a partir do link:
@@ -92,37 +92,6 @@ f = scf(1)
 // =============================================================================
 //                                TAREFA 1
 // =============================================================================
-/*
-1) Obtenha uma aproximação em tempo discreto do compensador PID mostrado na Tarefa 0,
-usando transformada Z e o método do trapézio (à mão), e, usando o Scilab, aplique
-no motor e simule calculando diretamente pelas equações de diferenças (sem usar
-o comando “flts” ou similares).
-
-Usar o inverso do procedimento mostrado na página 4 do arquivo
-PME3402_TOPICO_04_FILTROS_DIGITAIS_2020.pdf
-
-A aproximação do motor usando o método do segurador de ordem zero (comando “dscr” no Scilab)
-já está apresentada neste arquivo.
-
-De posse das equações de diferenças, desenvolvam um algoritmo que resolva tais
-equações tendo como entrada o sinal de entrada (unitário), e como saída o sinal controlado.
-Não podem ser usadas funções prontas de análise de sinais do Scilab.
-
-2) Use os seguintes períodos de amostragem: T=0,25 s; T=0,1 s; T=0,05 s.
-
-3) Compare as respostas do sistema com esses períodos de amostragem entre si e com a
-obtida na simulação do sistema contínuo (Tarefa 0).
-
-
-// Equações de diferenças:
-// O restante do programa deve ser desenvolvido pelo grupo.
-// É preciso escrever as equações de diferenças do motor e desenvolver
-// e escrever as equações de diferenças do PID.
-// IMPORTANTE: nas Tarefas 1 e 2 as simulações devem ser feitas por meio de
-// equações de diferenças, não podem ser usadas funções “prontas” do Scilab para
-// simulação de sistemas discretos.
-
-*/
 
 // Simulando o sistema com compensador PID usando as equações de diferenças:
 
@@ -195,22 +164,22 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     kA = kA ./ kB($) // Normaliza-se os coeficientes do polinômio
     kB = kB ./ kB($) // Normaliza-se os coeficientes do polinômio
     
-    // Para d>n
+    // Para d>n (como no exemplo)
     // A = [an-1, an-2 , an-3 , ... , an-d]
     // B = [bd-1, bd-2 , bd- 3, ... , 1 ]
     
-    // Para melhor simplicidade de código, invertem-se os vetores A e B
+    // Para facilitar o entendimento do código, invertem-se os vetores A e B
     kA = flipdim(kA,2) // Agora A = [an-d, ..., an-2, an-1, an]
     kB = flipdim(kB,2) // Agora B = [a0, a1, a2, ...]
     
     n=length(kA);
     d=length(kB);
-
+    
     p = max([n,d]); // p é o maior grau da função de transferência no numerador ou denominador
                     // ele significa quantos estados anteriores o sistema utiliza
                     // no cálculo do estado atual
-
-
+    
+    
     
     // Adicionando zeros nos coeficientes complementares do menor polinômio
     if n==d then //Não há necessidade de adicionar zeros
@@ -223,18 +192,26 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     end
     
     // No caso desse exercício, por exemplo, n = 2, d = 3, p = 3
-    //a_2 = kA(1);
-    //a_1 = kA(2);
-    //a_0 = 0;
+    // a_0 = 0;
+    // a_1 = kA(1);
+    // a_2 = kA(2);
+    //
     
-    //b_2 = kB(1);
+    //b_0 = kB(1);
     //b_1 = kB(2);
-    //b_0 = kB(3);
+    //b_2 = kB(3);
     
     
     // Constantes de integração do PID discreto (antes do loop para evitar repetição de cálculos)
     select metodo // Seleciona o tratamento para cada tipo de método de integração
     case 'bilinear' then       // Tarefa 1
+    // Para determinar os coeficientes de aproximação de integração de um PID
+    // de tempo contínuo, substitui-se o 's' da função de transferência do PID
+    // C_PID = Kp + Ki/s + s*Kd
+    // Pela transformação da integração trapezoidal s = (Ta/2)*( 1+z^(-1) )/( 1-z^(-1) )
+    // O cálculo resulta na equação de diferenças:
+    // u(k) = u(k-1)+ Kek*e(k)+ Kek_1*e(k-1)+ Kek_2*e(k-2)
+    // Onde os coeficientes são:
         Kek    =  Kp + Ki*Ta/2 + Kd/Ta;
         Kek_1  = -Kp + Ki*Ta/2 - 2*Kd/Ta;
         Kek_2  =  Kd/Ta;
@@ -280,11 +257,10 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
         
         ed(k)  = 1 - yd(k); // Diferença do sinal de impulso unitário menos o feedback unitário
         ud(k) = ud(k-1)+ Kek*ed(k)+ Kek_1*ed(k-1)+ Kek_2*ed(k-2); // Multiplica-se os coeficientes calculados anteriormente
-        
     end
     
     /*
-    // Plot único do controle obtido
+    // Plot único do sinal obtido
     figure();
     plot2d(td,yd);
     title('Velocidade do motor controlado por um controle PID discreto pelo metodo ' + metodo + ' e tempo de amostragem Ta = ' + string(Ta) +' s.');
@@ -295,12 +271,11 @@ endfunction
 
 Ta = [0.25,0.1,0.05] //[s] períodos de amostragem desejados
 
-Tf = 50;
+Tf = 10;
 
 [td1,ed1,ud1,yd1] = step_response_PID_digital(motor, 'euler-backwards' , KP, KI, KD, Ta(1), Tf);
 [td2,ed2,ud2,yd2] = step_response_PID_digital(motor, 'euler-backwards' , KP, KI, KD, Ta(2), Tf);
 [td3,ed3,ud3,yd3] = step_response_PID_digital(motor, 'euler-backwards' , KP, KI, KD, Ta(3), Tf);
-
 
 // =============================================================================
 //                                TAREFA 2
@@ -313,8 +288,88 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 “PME3402_TOPICO_06_PID_DIGITAL_2020.pdf”.
 */
 
-[td1,ed1,ud1,yd1] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(1), Tf);
-[td2,ed2,ud2,yd2] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(2), Tf);
-[td3,ed3,ud3,yd3] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(3), Tf);
+[td4,ed4,ud4,yd4] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(1), Tf);
+[td5,ed5,ud5,yd5] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(2), Tf);
+[td6,ed6,ud6,yd6] = step_response_PID_digital(motor, 'bilinear', KP, KI, KD, Ta(3), Tf);
 
 
+// =============================================================================
+//                          ANÁLISE DOS RESULTADOS
+// =============================================================================
+/*
+Como esperado, em comparação ao sinal de controle contínuo, o controle discreto
+possui muito mais atraso de resposta. Isso ocorre, pois, ao discretizar o sinal,
+introduz-se um atraso ao sistema da ordem de X_Cont(s)/X_Disc(s) = e^(-Ta*s/2)
+
+Deste modo, é visível, também, que quanto menor o período de amostragem, maior é
+sua velocidade resposta em comparação ao sinal discreto.
+
+É notável, também, que a rapidez de resposta do método de integração 'Bilinear'
+é significativamente maior do que o método de integração 'Euler-backwards'
+
+*/
+
+
+// =============================================================================
+//                         PLOTAGEM DOS GRÁFICOS
+// =============================================================================
+cores = [
+'blue4',
+'deepskyblue3',
+'aquamarine3',
+'springgreen4',
+'gold3',
+'firebrick1',
+'magenta3',
+]
+
+figure(2);
+    subplot(2,1,1)
+    plot2d(t,y, style = color(cores(2)) );
+    plot2d(td1,yd1, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.25 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
+    
+    subplot(2,1,2)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td4,yd4, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
+    
+figure(3);
+    subplot(2,1,1)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td2,yd2, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.1 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
+    
+    subplot(2,1,2)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td5,yd5, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.1 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
+    
+figure(4);
+    subplot(2,1,1)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td3,yd3, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.05 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
+    
+    subplot(2,1,2)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td6,yd6, style = color(cores(7)) );
+    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.05 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto'])
