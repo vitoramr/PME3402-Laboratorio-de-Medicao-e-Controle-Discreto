@@ -301,6 +301,8 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 //                          ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
+[ESTABILIDADE]
+
 Percebe-se que ao aplicar as constantes Kp = 100, Ki = 200, Kd = 10, o sinal discreto
 gerado pelo sistema diverge no método Bilinear. Isso ocorre, pois o sistema discretizado
 do controlador PID por método de integração trapezoidal possui dois polos com módulo
@@ -320,10 +322,8 @@ mudam-se as raízes do sistema, que agora passam a cumprir o critério de Nyquis
 e o sistema passa a possuir estabilidade, conforme se observa nas figuras 2,3,4.
 
 Após aplicar a mudança das constantes do PID,
-[ERRO INFINITO? --> não por causa do Ki]
 
-[ESTABILIDADE]
-Bilinear --> apesar de estável, oscila p/ Ta=0,25s
+[Bilinear --> apesar de estável, oscila p/ Ta=0,25s]
 
 [RAPIDEZ]
 Como esperado, em comparação ao sinal de controle contínuo, o controle discreto
@@ -357,8 +357,8 @@ cores = [
 
 figure(2);
     subplot(2,1,1)
-    plot2d(t,y, style = color(cores(2)) );
-    plot2d(td1,yd1, style = color(cores(7)) );
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td1,yd1, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
@@ -366,7 +366,7 @@ figure(2);
     
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
-    plot2d(td4,yd4, style = color(cores(7)) );
+    plot2d(td4,yd4, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.25 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
@@ -375,7 +375,7 @@ figure(2);
 figure(3);
     subplot(2,1,1)
     plot2d(t,y, style = color(cores(1)) );
-    plot2d(td2,yd2, style = color(cores(7)) );
+    plot2d(td2,yd2, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.1 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
@@ -383,7 +383,7 @@ figure(3);
     
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
-    plot2d(td5,yd5, style = color(cores(7)) );
+    plot2d(td5,yd5, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.1 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
@@ -392,7 +392,7 @@ figure(3);
 figure(4);
     subplot(2,1,1)
     plot2d(t,y, style = color(cores(1)) );
-    plot2d(td3,yd3, style = color(cores(7)) );
+    plot2d(td3,yd3, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.05 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
@@ -400,7 +400,7 @@ figure(4);
     
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
-    plot2d(td6,yd6, style = color(cores(7)) );
+    plot2d(td6,yd6, style = color(cores(6)) );
     title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.05 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
