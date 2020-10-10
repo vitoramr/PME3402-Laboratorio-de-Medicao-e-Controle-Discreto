@@ -55,13 +55,13 @@ motor=syslin('c',A,B,C,D);
 Gmotor=ss2tf(motor);
 
 // Compensador PID
-KP=100;
-KI=200;
-KD=10;
+//KP=100;
+//KI=200;
+//KD=10;
 
-//KP=10;
-//KI=20;
-//KD=0.1;
+KP=5;
+KI=40;
+KD=0.1;
 
 s=poly(0,'s');
 Gpid=syslin('c',KP+(KI/s)+KD*s);
@@ -304,21 +304,24 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 Percebe-se que ao aplicar as constantes Kp = 100, Ki = 200, Kd = 10, o sinal discreto
 gerado pelo sistema diverge no método Bilinear. Isso ocorre, pois o sistema discretizado
 do controlador PID por método de integração trapezoidal possui dois polos com raíz
-unitária (z² - 1), o que torna o sistema instável.
+unitária (z² - 1). Assim, a posição de suas duas raízes devem estar em posições que
+não cumprem o critério de estabilidade de Nyquist, tornando o sistema instável.
 
 O mesmo não ocorre para o método de Backwards Euler, que consegue estabilizar o
-sistema, por possuir apenas um polo em (z -1). Ainda assim, este método de integração
+sistema, por possuir apenas um polo em (z -1) e ainda duas rapizes, conseguindo
+cumprir o critério de Nyquist para essas condições. Ainda assim, este método de integração
 diverge para Ta = 0,25s, por ser um período de amostragem alto acima do critério
 de estabilidade <<<<<<[NÃO SEI QUAL CRITÉRIO. SERIA BOM PESQUISAR ISSO].
 
-Assim, altera-se as constantes de ganho PID para 10, 20 e 0.1 respectivamente para P,I e D.
-Dessa forma, mudam-se as raízes do sistema, o que faz com que ele possa ser  controlado,
-conforme se observa nas figuras 2,3,4.
+Ao alterar as constantes de ganho PID para 5, 40 e 0.1 respectivamente para P,I e D,
+mudam-se as raízes do sistema, que agora passam a cumprir o critério de Nyquist
+e o sistema passa a possuir estabilidade, conforme se observa nas figuras 2,3,4.
 
 Após aplicar a mudança das constantes do PID,
 [ERRO INFINITO? --> não por causa do Ki]
 
 [ESTABILIDADE]
+Bilinear --> apesar de estável, oscila p/ Ta=0,25s
 
 [RAPIDEZ]
 Como esperado, em comparação ao sinal de controle contínuo, o controle discreto
@@ -328,8 +331,11 @@ introduz-se um atraso ao sistema da ordem de X_Cont(s)/X_Disc(s) = e^(-Ta*s/2)
 Deste modo, é visível, também, que quanto menor o período de amostragem, maior é
 sua velocidade resposta em comparação ao sinal discreto.
 
-É notável, também, que a rapidez de resposta do método de integração 'Bilinear'
-é significativamente maior do que o método de integração 'Euler-backwards'
+É notável, também, que a rapidez de resposta do método de integração 'Euler-backwards'
+é levemente maior do que o método de integração 'Bilinear'
+
+[OVERSHOOT]
+Euler-backwards --> oversoot levemente menor que Bilinear
 
 */
 
