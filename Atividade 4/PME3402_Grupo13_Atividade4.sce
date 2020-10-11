@@ -312,7 +312,7 @@ fazendo com que uma das raízes do sistema fechado tivessem parte real positiva,
 tornando o sistema instável.
 
 O mesmo não ocorre para o método de Backwards Euler, que consegue estabilizar o
-sistema, por possuir apenas um polo em (z -1) e ainda duas rapizes, conseguindo
+sistema, por possuir apenas um polo em (z -1) e ainda duas raizes, conseguindo
 cumprir o critério de Nyquist para essas condições. Ainda assim, este método de integração
 diverge para Ta = 0,25s, por ser um período de amostragem alto acima do critério
 de estabilidade <<<<<<[NÃO SEI QUAL CRITÉRIO. SERIA BOM PESQUISAR ISSO].
@@ -337,7 +337,10 @@ sua velocidade resposta em comparação ao sinal discreto.
 é levemente maior do que o método de integração 'Bilinear'
 
 [OVERSHOOT]
-Euler-backwards --> oversoot levemente menor que Bilinear
+Analisando o Overshoot para os três distintos tempos de amostragem, permutados com os dois diferentes
+métodos. Para os três tempos de amostragem, nota-se que o método de Euler-backwards converge
+mais rapidamente do que o método Bilinear. Além disso, aquele método apresenta um overshoot levemente
+menor do que este.
 
 */
 
