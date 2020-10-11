@@ -315,15 +315,20 @@ O mesmo não ocorre para o método de Backwards Euler, que consegue estabilizar 
 sistema, por possuir apenas um polo em (z -1) e ainda duas raizes, conseguindo
 cumprir o critério de Nyquist para essas condições. Ainda assim, este método de integração
 diverge para Ta = 0,25s, por ser um período de amostragem alto acima do critério
-de estabilidade <<<<<<[NÃO SEI QUAL CRITÉRIO. SERIA BOM PESQUISAR ISSO].
+de estabilidade. Isso ocorre pois, para um tempo de amostragem maior, o sistema
+fica menos sensível à variações e acaba desconsiderando variações que o levariam
+a uma convergência ou o método sofre variações muito grandes a cada integração,
+gerando uma dificuldade na estabilização da resposta do sistema.
 
 Ao alterar as constantes de ganho PID para 5, 40 e 0.1 respectivamente para P,I e D,
 mudam-se as raízes do sistema, que agora passam a cumprir o critério de Nyquist
 e o sistema passa a possuir estabilidade, conforme se observa nas figuras 2,3,4.
 
-Após aplicar a mudança das constantes do PID,
+Após aplicar a mudança das constantes do PID, notou-se que o método 'Bilinear' passou
+a convergir para tempos de amostragem menores, mas ainda mostrou-se instável para um
+Ta=0,25s, enquanto o método de 'Euler-Backwards' manteve-se estável para todos os
+tempos analisados.
 
-[Bilinear --> apesar de estável, oscila p/ Ta=0,25s]
 
 [RAPIDEZ]
 Como esperado, em comparação ao sinal de controle contínuo, o controle discreto
@@ -338,9 +343,15 @@ sua velocidade resposta em comparação ao sinal discreto.
 
 [OVERSHOOT]
 Analisando o Overshoot para os três distintos tempos de amostragem, permutados com os dois diferentes
-métodos. Para os três tempos de amostragem, nota-se que o método de Euler-backwards converge
-mais rapidamente do que o método Bilinear. Além disso, aquele método apresenta um overshoot levemente
+métodos. Para os três tempos de amostragem, nota-se que o método de 'Euler-backwards' converge
+mais rapidamente do que o método 'Bilinear'. Além disso, aquele método apresenta um overshoot levemente
 menor do que este.
+
+Isso ocorre pois o método 'Euler-backwards' tem sua variação definida proporcinal à variação no termo
+k, enquanto o método de integração trapezoidal considera ambos os termos k e k-1, sofrendo influências
+ainda do instante anterior. Por isso, quando existem variações na derivada do sinal, como no instante
+de 1s nos casos analisados, o sistema que utiliza o método 'Bilinear' tem uma reação menor e acaba
+superando o sinal da entrada.
 
 */
 
