@@ -4,7 +4,7 @@
                         Escola Politécnica da USP
          PME3402 - Laboratório de Medição e Controle Discreto
        --------------------------------------------------------------
-            ATIVIDADE 4 - CONTROLE DE UM MOTOR POR PID DISCRETO
+            ATIVIDADE 4 - CONTROLE DE MOTOR POR PID DISCRETO
        --------------------------------------------------------------
                                 GRUPO 13
                                 Membros:
@@ -21,7 +21,6 @@
 =============================================================================
 
 Esse programa foi desenvolvido no Scilab 6.1
-
 */
 
 //LIMPEZA DE MEMÓRIA
@@ -55,13 +54,13 @@ motor=syslin('c',A,B,C,D);
 Gmotor=ss2tf(motor);
 
 // Compensador PID
-//KP=100;
-//KI=200;
-//KD=10;
+KP=100;
+KI=200;
+KD=10;
 
-KP=5;
-KI=40;
-KD=0.1;
+//KP=5;
+//KI=40;
+//KD=0.1;
 
 s=poly(0,'s');
 Gpid=syslin('c',KP+(KI/s)+KD*s);
@@ -95,7 +94,7 @@ f = scf(1)
 
 // Simulando o sistema com compensador PID usando as equações de diferenças:
 
-function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta, Tf)
+function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta, Tf, zero_to_cancel, gain)
 /*
     Por meio da equação de diferenças, essa função calcula a resposta discreta
     a um pulso unitário da função de transferência discreta do motor controlada
@@ -104,8 +103,13 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     Ela calcula o controlador pela aproximação de um controlador PID contínuo
     por meio de métodos de integração diferentes:
        - metodo = 'bilinear' (trapezoidal) (atividade 1)
+       - metodo = 'bilinear-corrected' (atividade1)
        - metodo = 'euler-backwards' (método de 'Backwards' Euler) (atividade 2)
-       
+    
+    Devido à instabilidade do controlador PID pelo método Bilinear, oferece-se a
+    possibilidade de corrigir a arquitetura do PID discreto adicionando um zero
+    a ser cancelado e um ganho.
+    
     Quer-se analizar a resposta impulsiva da função de transferência, logo
     o sinal de entrada é R[z] = 1
     Além disso, considera-se um feedback unitário, então M[z] = Y[z]
@@ -127,9 +131,10 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     U(z)      1 + b1*z^(-1) + b2*z^(-2) + ... + bd*z^(-d)
      
     Logo, têm-se que: y[k] =      -b_1*y(k-1) -b_2*y(k-2) - ... - b_p*y(k-d+n)
-                        +a_0*u(k) +a_1*u(k-1) +b_2*u(k-2) + ... + b_k*u(k-d) 
+                        +a_0*u(k) +a_1*u(k-1) +a_2*u(k-2) + ... + a_k*u(k-d) 
     
-    Porém, espera-se que o programa seja capaz de lidar com o caso em que d<n, com o raciocínio análogo
+    A função foi concebida e testada para o caso em que d>n. O caso em que d=n
+    não foi testado, mas espera-se que a função também seja funcional nesse caso
     
     Inputs da função:
         motor --> sistema linear em tempo contínuo do motor
@@ -150,6 +155,33 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     
     // função de transferência do motor em tempo discreto (ZOH):
     GmotorD = ss2tf(motorD);
+    
+    if metodo == 'bilinear-corrected' then
+        // Análise de estabilidade
+        z = poly(0,'z');
+        s_trap = (2/Ta)*(z-1)/(z+1); //Aproximação de s pra o método de integração trapezoidal
+        GpidD = Kp+(Ki/s_trap)+Kd*s_trap;
+        
+        figure()
+        subplot(2,1,1)
+        fig = gca();
+        fig.data_bounds = [-1.5,1.5,-3,3];
+        evans(GmotorD*GpidD, 2)
+        title('Local das raízes e polos do sistema discreto em malha aberta com Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
+        ylabel("Eixo imaginário");
+        xlabel("Eixo real");
+        corrected_GpidD = gain*GpidD / (z-zero_to_cancel)
+        
+        subplot(2,1,2)
+        fig = gca()
+        fig.data_bounds = [-2,2,-5,5]
+        evans(GmotorD*corrected_GpidD, 2)
+        title('Local das raízes e polos do sistema discreto em malha aberta, zero cancelado em '  + string(zero_to_cancel) + ', ganho = ' +string(gain)+ ' Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
+        ylabel("Eixo imaginário");
+        xlabel("Eixo real");
+        GpidD = corrected_GpidD
+        //disp(GpidD)
+    end
     
     // Inicializando variáveis
     td = 0:Ta:Tf-Ta;
@@ -179,18 +211,21 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
                     // ele significa quantos estados anteriores o sistema utiliza
                     // no cálculo do estado atual
     
-    
+    p_system = p;   // Caso seja o método corrigido, o sistema talvez precise de mais casas
     
     // Adicionando zeros nos coeficientes complementares do menor polinômio
     if n==d then //Não há necessidade de adicionar zeros
     elseif p == n then
-        new_B = [zeros(n-d), kB] 
+        new_B = [zeros(1,n-d), kB] 
         kB = new_B
     elseif p == d then
-        new_A = [zeros(d-n), kA]
+        new_A = [zeros(1,d-n), kA]
         kA = new_A
     end
     
+    kB(1) = 0; //Zera-se b0 para facilitar a entrada no loop de diferenças,
+               //pois é o coeficiente que foi isolado para y[k]
+
     // No caso desse exercício, por exemplo, n = 2, d = 3, p = 3
     // a_0 = 0;
     // a_1 = kA(1);
@@ -200,7 +235,6 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     //b_0 = kB(1);
     //b_1 = kB(2);
     //b_2 = kB(3);
-    
     
     // Constantes de integração do PID discreto (antes do loop para evitar repetição de cálculos)
     select metodo // Seleciona o tratamento para cada tipo de método de integração
@@ -215,26 +249,58 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
         Kek    =  Kp + Ki*Ta/2 + 2*Kd/Ta;
         Kek_1  =       Ki*Ta   - 4*Kd/Ta;
         Kek_2  = -Kp + Ki*Ta/2 + 2*Kd/Ta;
+
     case 'euler-backwards' then // Tarefa 2 (Tirado da apostila 6 da disciplina)
         Kek    =  Kp + Ki*Ta   +   Kd/Ta;
         Kek_1  = -Kp           - 2*Kd/Ta;
         Kek_2  =                   Kd/Ta;
+    
+    case 'bilinear-corrected' then
+    // Aplicando o mesmo raciocínio utilizado para encontrar a nova equação de
+    // diferenças para a função de transferência do controlador corrigido.
+    // Como esta tem formato fixo, serão utilizadas variáveis fixas para seus
+    // coeficientes
+    
+    // U(z)       Kek_3 + Kek_2*z + Kek_1*z²
+    // ----  = -------------------------------
+    // E(z)     Kuk_3 + Kuk_2*z + Kuk_1*z² + 1
+    //
+    // u[k] =      -Kuk_1*u(k-1) -Kuk_2*u(k-2) - Kuk_3*u(k-3)
+    //             +Kek_1*e(k-1) +Kek_2*e(k-2) + Kek_3*e(k-3)
+
+        [numPID] =coeff(GpidD.num); // Coeficientes do numerador (saída)
+        [denPID] =coeff(GpidD.den); // Coeficientes do denominador (entrada)
+        
+        p_PID = max(length(numPID), length(denPID));
+        
+        p_system = max(p, p_PID);   // Quantos estados anteriores o sistema necessita 
+        
+        // Normalizando os coeficientes
+        numPID = numPID ./ denPID($)
+        denPID = denPID ./ denPID($)
+        
+        Kuk_3 = denPID(1)
+        Kuk_2 = denPID(2)
+        Kuk_1 = denPID(3)
+        //Kuk = denPID(4) = 1
+        
+        Kek_3 = numPID(1)
+        Kek_2 = numPID(2)
+        Kek_1 = numPID(3)
     else
         error("Wrong input of method")
     end
     
+    
     // Condições iniciais do sinal de saída --> motor parado, mas entrada unitária
-    for i=1:(p-1)
+    for i=1:(p_system-1)
         ud(i)=0;
         yd(i)=0;
         ed(i)=1; //Entrada unitária
     end
     
-    disp(kA)
-    disp(kB)
-    
     // Aplicando a equação de diferenças
-    for k = p:length(td)
+    for k = p_system:length(td)
         // Para a saída discreta y, como visto:
         // kA = [a0, a1, a2, ... , an-1]
         // kB = [1 , b1, b2, ... , bd-1] 
@@ -244,7 +310,6 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
         for i = 1:p-1 //Somando yd += a_i*y(k-i) -b_i*u(k-i), com i = 1:p-1
             yd(k) = yd(k) - kB(i+1)*yd(k-i) + kA(i+1)*ud(k-i);
         end
-        
         
         // Nesse problema:
         //a_2 = kA(2);
@@ -259,8 +324,10 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
         ed(k)  = 1 - yd(k); // Diferença do sinal de impulso unitário menos o feedback unitário
         if metodo == 'bilinear' then
             ud(k) = ud(k-2)+ Kek*ed(k)+ Kek_1*ed(k-1)+ Kek_2*ed(k-2); // Multiplica-se os coeficientes calculados anteriormente
-        else // metodo == 'euler-backwards'
+        elseif metodo == 'euler-backwards'
             ud(k) = ud(k-1)+ Kek*ed(k)+ Kek_1*ed(k-1)+ Kek_2*ed(k-2);
+        elseif metodo == 'bilinear-corrected'
+            ud(k) = -Kuk_3*ud(k-3) - Kuk_2*ud(k-2) - Kuk_1*ud(k-1) + Kek_1*ed(k-1)+ Kek_2*ed(k-2) + Kek_3*ed(k-3); // Multiplica-se os coeficientes calculados anteriormente
         end
     end
     
@@ -275,11 +342,15 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
 endfunction
 
 Ta = [0.25,0.1,0.05] //[s] períodos de amostragem desejados
-
 Tf = 10;
-[td1,ed1,ud1,yd1] = step_response_PID_digital(motor, 'bilinear' , KP, KI, KD, Ta(1), Tf);
-[td2,ed2,ud2,yd2] = step_response_PID_digital(motor, 'bilinear' , KP, KI, KD, Ta(2), Tf);
-[td3,ed3,ud3,yd3] = step_response_PID_digital(motor, 'bilinear' , KP, KI, KD, Ta(3), Tf);
+
+[td0,ed0,ud0,yd0] = step_response_PID_digital(motor, 'bilinear' , KP, KI, KD, Ta(3), Tf, 0,0); //Sem correção
+
+[td1,ed1,ud1,yd1] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(1), Tf, -0.377, 0.2); //Corrigido
+[td2,ed2,ud2,yd2] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(2), Tf, -0.671, 0.8); //Corrigido
+[td3,ed3,ud3,yd3] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(3), Tf, -0.82, 1); //Corrigido
+
+[td7,ed7,ud7,yd7] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(1), Tf, -0.377, 0.1); //Corrigido
 
 // =============================================================================
 //                                TAREFA 2
@@ -292,9 +363,9 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 “PME3402_TOPICO_06_PID_DIGITAL_2020.pdf”.
 */
 
-[td4,ed4,ud4,yd4] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(1), Tf);
-[td5,ed5,ud5,yd5] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(2), Tf);
-[td6,ed6,ud6,yd6] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(3), Tf);
+[td4,ed4,ud4,yd4] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(1), Tf, 0); //Sem correção
+[td5,ed5,ud5,yd5] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(2), Tf, 0); //Sem correção
+[td6,ed6,ud6,yd6] = step_response_PID_digital(motor, 'euler-backwards', KP, KI, KD, Ta(3), Tf, 0); //Sem correção
 
 
 // =============================================================================
@@ -304,55 +375,56 @@ a regra “para trás”, pode ser usado o resultado já mostrado na página 4 d
 [ESTABILIDADE]
 
 Percebe-se que ao aplicar as constantes Kp = 100, Ki = 200, Kd = 10, o sinal discreto
-gerado pelo sistema diverge no método Bilinear. Isso ocorre, pois o sistema discretizado
+gerado pelo sistema diverge no método Bilinear (figura 6). Isso ocorre, pois o sistema discretizado
 do controlador PID por método de integração trapezoidal possui dois polos com módulo
-unitário (z² - 1). Assim, a posição de suas duas raízes do sistema em malha aberta
-devem estar em posições que não cumprem o critério de estabilidade de Nyquist,
-fazendo com que uma das raízes do sistema fechado tivessem parte real positiva,
-tornando o sistema instável.
+unitário (z² - 1), um em -1 e outro em 1. Assim, este sistema compensado será sempre
+instável para qualquer ganho positivo porque há um número par de pólos e zeros à
+direita do pólo em -1. Como o polo em -1 vem do controlador, muda-se a arquitetura
+do controlador PID para cancelar algum de seus zeros à direita de -1, o que torna
+o sistema estável para alguns ganhos, adicionando-se também um ganho ao controlador
+para manter o lugar geométrico das raízes e polos dentro do círculo unitário.
 
 O mesmo não ocorre para o método de Backwards Euler, que consegue estabilizar o
-sistema, por possuir apenas um polo em (z -1) e ainda duas raizes, conseguindo
-cumprir o critério de Nyquist para essas condições. Ainda assim, este método de integração
-diverge para Ta = 0,25s, por ser um período de amostragem alto acima do critério
-de estabilidade. Isso ocorre pois, para um tempo de amostragem maior, o sistema
-fica menos sensível à variações e acaba desconsiderando variações que o levariam
-a uma convergência ou o método sofre variações muito grandes a cada integração,
-gerando uma dificuldade na estabilização da resposta do sistema.
+sistema (figura 6). Isso ocorre, pois o controlador PID discreto possuir apenas
+um polo em 1, ainda possuindo duas raizes, conseguindo cumprir o critério de Nyquist.
+Ainda assim, este método de integração diverge para Ta = 0,25s (figura 9), por
+ser um período de amostragem alto. Isso ocorre pois, para um tempo de amostragem maior,
+o sistema fica menos sensível a variações rápidas e acaba desconsiderando variações
+que o levariam a uma convergência ou o método sofre variações muito grandes a
+cada integração, gerando uma dificuldade na estabilização da resposta do sistema.
 
-Ao alterar as constantes de ganho PID para 5, 40 e 0.1 respectivamente para P,I e D,
-mudam-se as raízes do sistema, que agora passam a cumprir o critério de Nyquist
-e o sistema passa a possuir estabilidade, conforme se observa nas figuras 2,3,4.
+Ao adicionar as correções de zero e de ganho ao controlador PID discreto,
+o sistema passa a possuir estabilidade, conforme se observa nas figuras 6,7 e 8.
+Os valores de zeros a serem utilizados foram obtidos por meio da plotagem do
+local das suas raízes e polos da função de transferência do sistema em malha aberta.
+Os valores do ganho foram ajustados empiricamente para obtenção de um sistema
+estável.
 
-Após aplicar a mudança das constantes do PID, notou-se que o método 'Bilinear' passou
-a convergir para tempos de amostragem menores, mas ainda mostrou-se instável para um
-Ta=0,25s, enquanto o método de 'Euler-Backwards' manteve-se estável para todos os
-tempos analisados.
+Após aplicar a correção do controlador PID trapezoidal, nota-se que o método 'Bilinear'
+corrigido passou a convergir para tempos de amostragem menores, enquanto o método
+de integração numérica de 'Euler-Backwards' manteve-se estável para os períodos
+de amostragem de T=0,1s e T=0,05s, e instável para T=0,25s. Ainda assim, 
 
 
 [RAPIDEZ]
 Como esperado, em comparação ao sinal de controle contínuo, o controle discreto
-possui muito mais atraso de resposta. Isso ocorre, pois, ao discretizar o sinal,
-introduz-se um atraso ao sistema da ordem de X_Cont(s)/X_Disc(s) = e^(-Ta*s/2)
-
-Deste modo, é visível, também, que quanto menor o período de amostragem, maior é
+possui um atraso significativo em sua resposta. Isso ocorre, pois, ao discretizar o sinal,
+introduz-se um atraso ao sistema da ordem de X_Cont(s)/X_Disc(s) = e^(-Ta*s/2).
+A partir dessa expressão, é visível, também, que quanto menor o período de amostragem, maior é
 sua velocidade resposta em comparação ao sinal discreto.
 
-É notável, também, que a rapidez de resposta do método de integração 'Euler-backwards'
-é levemente maior do que o método de integração 'Bilinear'
+É notável, além disso, que a rapidez de resposta do método de integração Bilinear corrigido
+é levemente maior do que a do método de integração Euler-backwards.
 
 [OVERSHOOT]
-Analisando o Overshoot para os três distintos tempos de amostragem, permutados com os dois diferentes
-métodos. Para os três tempos de amostragem, nota-se que o método de 'Euler-backwards' converge
-mais rapidamente do que o método 'Bilinear'. Além disso, aquele método apresenta um overshoot levemente
-menor do que este.
+Percebe-se que o Overshoot da resposta depende das constantes Kp, Kd e Ki do
+controlador PID, além do ganho na correção do Método Bilinear.
 
-Isso ocorre pois o método 'Euler-backwards' tem sua variação definida proporcinal à variação no termo
-k, enquanto o método de integração trapezoidal considera ambos os termos k e k-1, sofrendo influências
-ainda do instante anterior. Por isso, quando existem variações na derivada do sinal, como no instante
-de 1s nos casos analisados, o sistema que utiliza o método 'Bilinear' tem uma reação menor e acaba
-superando o sinal da entrada.
-
+Na figura 10, por exemplo, vê-se a comparação de dois ganhos de correção na resposta
+do sistema controlado pelo PID com médoto de aproximação Bilinear corrigio para
+o período de amostragem de T=0,25s. Enquanto na figura 10.1, utilizando um ganho de 0,2 , existe um grande
+overshoot, ao utilizar um ganho de 0,1 (figura 10.2), o overshoot diminui e aumenta-se
+o tempo de resposta.
 */
 
 
@@ -369,45 +441,62 @@ cores = [
 'magenta3',
 ]
 
-figure(2);
+figure(6);
+    subplot(2,1,1)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td0,yd0, style = color(cores(6)) );
+    title('Figura 6.1: Controle do motor por PID discreto sem correção e com metodo Bilinear e tempo de amostragem Ta = 0.05 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto']);
+    
+    subplot(2,1,2)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td6,yd6, style = color(cores(6)) );
+    title('Figura 6.2: Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.05 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto']);
+
+figure(7);
     subplot(2,1,1)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td1,yd1, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s.');
+    title('Figura 7.1: Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s, corrigido adicionando um polo em -0.377 e ganho .');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
-    legend(['PID contínuo';'PID discreto'])
+    legend(['PID contínuo';'PID discreto']);
     
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td4,yd4, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.25 s.');
+    title('Figura 7.2: Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.25 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
     legend(['PID contínuo';'PID discreto'])
     
-figure(3);
+figure(8);
     subplot(2,1,1)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td2,yd2, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.1 s.');
+    title('Figura 8.1: Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.1 s, corrigido adicionando um polo em -0.671 e ganho 0.8 .');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
-    legend(['PID contínuo';'PID discreto'])
+    legend(['PID contínuo';'PID discreto']);
     
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td5,yd5, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.1 s.');
+    title('Figura 8.2: Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.1 s.');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
-    legend(['PID contínuo';'PID discreto'])
+    legend(['PID contínuo';'PID discreto']);
     
-figure(4);
+figure(9);
     subplot(2,1,1)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td3,yd3, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.05 s.');
+    title('Figura 9.1: Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.05 s, corrigido adicionando um polo em -0.82 e ganho 0.8 .');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
     legend(['PID contínuo';'PID discreto'])
@@ -415,7 +504,25 @@ figure(4);
     subplot(2,1,2)
     plot2d(t,y, style = color(cores(1)) );
     plot2d(td6,yd6, style = color(cores(6)) );
-    title('Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.05 s.');
+    title('Figura 9.2: Controle do motor por PID discreto com metodo Euler-backwards e tempo de amostragem Ta = 0.05 s.');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto']);
+   
+   
+figure(10);
+    subplot(2,1,1)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td1,yd1, style = color(cores(6)) );
+    title('Figura 10.1: Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s, corrigido adicionando um polo em -0.377 e ganho 0.2 .');
     ylabel("Velocidade (rad/s)");
     xlabel("tempo(s)");
     legend(['PID contínuo';'PID discreto'])
+    
+    subplot(2,1,2)
+    plot2d(t,y, style = color(cores(1)) );
+    plot2d(td7,yd7, style = color(cores(6)) );
+    title('Figura 10.2: Controle do motor por PID discreto com metodo Bilinear e tempo de amostragem Ta = 0.25 s, corrigido adicionando um polo em -0.377 e ganho 0.1 .');
+    ylabel("Velocidade (rad/s)");
+    xlabel("tempo(s)");
+    legend(['PID contínuo';'PID discreto']);
