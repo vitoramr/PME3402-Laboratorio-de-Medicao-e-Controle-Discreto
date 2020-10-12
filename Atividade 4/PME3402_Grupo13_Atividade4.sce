@@ -137,11 +137,15 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     não foi testado, mas espera-se que a função também seja funcional nesse caso
     
     Inputs da função:
-        motor --> sistema linear em tempo contínuo do motor
-        metodo --> método de integração do sistema PID ('euler-backward' ou 'bilinear')
-        Kp, Ki e Kd --> constantes de proporcionalidade do controlador PID
-        Ta --> período de amostragem do sinal
-        Tf --> tempo final de simulação
+        motor          --> sistema linear em tempo contínuo do motor
+        metodo         --> método de integração do sistema PID ('euler-backward', 'bilinear' ou 'bilinear-corrected')
+        Kp, Ki e Kd    --> constantes de proporcionalidade do controlador PID
+        Ta             --> período de amostragem do sinal
+        Tf             --> tempo final de simulação
+        zero_to_cancel --> um numéro real que representa o zero a ser cancelado no PID
+                           com método de integração 'bilinear-corrected'
+        gain           --> ganho de correção adicionado à função de transferência
+                           do PID discreto com método de integração bilinear
 
     Outputs da função:
         td --> vetor de tempo discretizado do sinal
@@ -155,33 +159,6 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     
     // função de transferência do motor em tempo discreto (ZOH):
     GmotorD = ss2tf(motorD);
-    
-    if metodo == 'bilinear-corrected' then
-        // Análise de estabilidade
-        z = poly(0,'z');
-        s_trap = (2/Ta)*(z-1)/(z+1); //Aproximação de s pra o método de integração trapezoidal
-        GpidD = Kp+(Ki/s_trap)+Kd*s_trap;
-        
-        figure()
-        subplot(2,1,1)
-        fig = gca();
-        fig.data_bounds = [-1.5,1.5,-3,3];
-        evans(GmotorD*GpidD, 2)
-        title('Local das raízes e polos do sistema discreto em malha aberta com Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
-        ylabel("Eixo imaginário");
-        xlabel("Eixo real");
-        corrected_GpidD = gain*GpidD / (z-zero_to_cancel)
-        
-        subplot(2,1,2)
-        fig = gca()
-        fig.data_bounds = [-2,2,-5,5]
-        evans(GmotorD*corrected_GpidD, 2)
-        title('Local das raízes e polos do sistema discreto em malha aberta, zero cancelado em '  + string(zero_to_cancel) + ', ganho = ' +string(gain)+ ' Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
-        ylabel("Eixo imaginário");
-        xlabel("Eixo real");
-        GpidD = corrected_GpidD
-        //disp(GpidD)
-    end
     
     // Inicializando variáveis
     td = 0:Ta:Tf-Ta;
@@ -225,7 +202,7 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     
     kB(1) = 0; //Zera-se b0 para facilitar a entrada no loop de diferenças,
                //pois é o coeficiente que foi isolado para y[k]
-
+    
     // No caso desse exercício, por exemplo, n = 2, d = 3, p = 3
     // a_0 = 0;
     // a_1 = kA(1);
@@ -237,6 +214,7 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     //b_2 = kB(3);
     
     // Constantes de integração do PID discreto (antes do loop para evitar repetição de cálculos)
+    
     select metodo // Seleciona o tratamento para cada tipo de método de integração
     case 'bilinear' then       // Tarefa 1
     // Para determinar os coeficientes de aproximação de integração de um PID
@@ -255,19 +233,49 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
         Kek_1  = -Kp           - 2*Kd/Ta;
         Kek_2  =                   Kd/Ta;
     
-    case 'bilinear-corrected' then
-    // Aplicando o mesmo raciocínio utilizado para encontrar a nova equação de
-    // diferenças para a função de transferência do controlador corrigido.
-    // Como esta tem formato fixo, serão utilizadas variáveis fixas para seus
-    // coeficientes
-    
-    // U(z)       Kek_3 + Kek_2*z + Kek_1*z²
-    // ----  = -------------------------------
-    // E(z)     Kuk_3 + Kuk_2*z + Kuk_1*z² + 1
-    //
-    // u[k] =      -Kuk_1*u(k-1) -Kuk_2*u(k-2) - Kuk_3*u(k-3)
-    //             +Kek_1*e(k-1) +Kek_2*e(k-2) + Kek_3*e(k-3)
-
+    case 'bilinear-corrected' then // Tarefa 1
+        // Calculando a função de transferência do corretor com o zero corrigido
+        // e com ganho adicionado
+        
+        z = poly(0,'z');
+        s_trap = (2/Ta)*(z-1)/(z+1); //Aproximação de s pra o método de integração trapezoidal
+        GpidD = Kp+(Ki/s_trap)+Kd*s_trap;
+        
+        // Análise de estabilidade
+        figure()
+        subplot(2,1,1)
+        evans(GmotorD*GpidD, 2)
+        title('Local das raízes e polos do sistema discreto em malha aberta com Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
+        ylabel("Eixo imaginário");
+        xlabel("Eixo real");
+        fig = gca();
+        fig.data_bounds = [-1.1,1.1, -1.1,1.1];
+        
+        corrected_GpidD = gain*GpidD / (z-zero_to_cancel)
+        GpidD = corrected_GpidD
+        
+        // Análise de estabilidade da malha aberta corrigida
+        subplot(2,1,2)
+        evans(GmotorD*corrected_GpidD, 2)
+        title('Local das raízes e polos do sistema discreto em malha aberta, zero cancelado em '  + string(zero_to_cancel) + ', ganho = ' +string(gain)+ ', Ta=' +string(Ta)+ 's, Kp = ' +string(KP)+ ', Ki = ' +string(KI)+ ' e Kd = ' +string(KD));
+        ylabel("Eixo imaginário");
+        xlabel("Eixo real");
+        fig = gca()
+        fig.data_bounds = [-1.1,1.1, -1.1,1.1]
+        
+        // Para encontrar a nova equação de diferenças para o controlador PID controlador corrigido,
+        // aplica-se o mesmo raciocínio utilizado para o Y
+        // Contudo, como esta tem formato fixo, serão utilizadas variáveis fixas para seus
+        // coeficientes
+        
+        // U(z)       Kek_3 + Kek_2*z + Kek_1*z²
+        // ----  = -------------------------------
+        // E(z)     Kuk_3 + Kuk_2*z + Kuk_1*z² + 1
+        //
+        // u[k] =      -Kuk_1*u(k-1) -Kuk_2*u(k-2) - Kuk_3*u(k-3)
+        //             +Kek_1*e(k-1) +Kek_2*e(k-2) + Kek_3*e(k-3)
+                    // Análise de estabilidade
+        
         [numPID] =coeff(GpidD.num); // Coeficientes do numerador (saída)
         [denPID] =coeff(GpidD.den); // Coeficientes do denominador (entrada)
         
@@ -290,7 +298,6 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     else
         error("Wrong input of method")
     end
-    
     
     // Condições iniciais do sinal de saída --> motor parado, mas entrada unitária
     for i=1:(p_system-1)
@@ -347,10 +354,12 @@ Tf = 10;
 [td0,ed0,ud0,yd0] = step_response_PID_digital(motor, 'bilinear' , KP, KI, KD, Ta(3), Tf, 0,0); //Sem correção
 
 [td1,ed1,ud1,yd1] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(1), Tf, -0.377, 0.2); //Corrigido
+
+[td7,ed7,ud7,yd7] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(1), Tf, -0.377, 0.1); //Corrigido
 [td2,ed2,ud2,yd2] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(2), Tf, -0.671, 0.8); //Corrigido
 [td3,ed3,ud3,yd3] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(3), Tf, -0.82, 1); //Corrigido
 
-[td7,ed7,ud7,yd7] = step_response_PID_digital(motor, 'bilinear-corrected' , KP, KI, KD, Ta(1), Tf, -0.377, 0.1); //Corrigido
+
 
 // =============================================================================
 //                                TAREFA 2
@@ -393,17 +402,21 @@ o sistema fica menos sensível a variações rápidas e acaba desconsiderando va
 que o levariam a uma convergência ou o método sofre variações muito grandes a
 cada integração, gerando uma dificuldade na estabilização da resposta do sistema.
 
-Ao adicionar as correções de zero e de ganho ao controlador PID discreto,
-o sistema passa a possuir estabilidade, conforme se observa nas figuras 6,7 e 8.
-Os valores de zeros a serem utilizados foram obtidos por meio da plotagem do
+Também, o método de Backwards-Euler para Ta=0,1s e esses ganhos do controlador PID (figura 7)
+apresenta uma resposta oscilante. Embora ela seja estável, por não divergir, a 
+resposta do sistema não atinge um regime permanente, oscilando ao redor do sinal
+de entrada de 1.
+
+Ao adicionar as correções de zero e de ganho ao controlador PID discreto com o método trapezoidal,
+o sistema passa a possuir estabilidade, conforme observa-se nas figuras 6,7 e 8.
+Os valores do zero a ser utilizado para correção foram obtidos por meio da plotagem do
 local das suas raízes e polos da função de transferência do sistema em malha aberta.
 Os valores do ganho foram ajustados empiricamente para obtenção de um sistema
-estável.
+estável, em que o contorno do local das raízes e polos ficasse dentro do círculo unitário.
 
 Após aplicar a correção do controlador PID trapezoidal, nota-se que o método 'Bilinear'
-corrigido passou a convergir para tempos de amostragem menores, enquanto o método
-de integração numérica de 'Euler-Backwards' manteve-se estável para os períodos
-de amostragem de T=0,1s e T=0,05s, e instável para T=0,25s. Ainda assim, 
+corrigido passou a convergir, enquanto o método de integração numérica de 'Euler-Backwards'
+apresenta estabilidade para os períodos de amostragem de T=0,1s e T=0,05s, e instabilidade para T=0,25s.
 
 
 [RAPIDEZ]
@@ -414,7 +427,8 @@ A partir dessa expressão, é visível, também, que quanto menor o período de 
 sua velocidade resposta em comparação ao sinal discreto.
 
 É notável, além disso, que a rapidez de resposta do método de integração Bilinear corrigido
-é levemente maior do que a do método de integração Euler-backwards.
+é levemente maior do que a do método de integração Euler-backwards para as constantes
+do controlador utilizadas.
 
 [OVERSHOOT]
 Percebe-se que o Overshoot da resposta depende das constantes Kp, Kd e Ki do
@@ -425,6 +439,7 @@ do sistema controlado pelo PID com médoto de aproximação Bilinear corrigio pa
 o período de amostragem de T=0,25s. Enquanto na figura 10.1, utilizando um ganho de 0,2 , existe um grande
 overshoot, ao utilizar um ganho de 0,1 (figura 10.2), o overshoot diminui e aumenta-se
 o tempo de resposta.
+
 */
 
 
