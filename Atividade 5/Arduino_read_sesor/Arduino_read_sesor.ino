@@ -12,22 +12,23 @@
 
 // Constantes usadas no código ("#define" economiza memória do Arduino)
 #define PI_VALUE 3.14159265358979 //Constante pi a ser utilizada
-#define dlay 30                   //delay para cada loop do código (ms)
-#define tciclo 1                  // período do sinal senoidal para a velocidade do driver (s)
+#define dlay 50                   //delay para cada loop do código (ms)
+#define tciclo 2                  // período do sinal senoidal para a velocidade do driver (s)
 
 // Definição de variáveis
-unsigned long t;     // Leitura do tempo do clock
-int velocidade = 0;  // Sinal enviado para a velocidade de Driver via controlador PWM (int entre 0 e 255
-float w = 0;         // Frequência do sinal enviado
-
-// Estados do sistema
-unsigned short sentido = 2; // Sentido de rotação do motor (1 ou 2)
-bool parado = true;         // Setar para True para parar o controle do Driver
-
-
+float cmMsec;
+unsigned long microsec;
+unsigned long t;         // Leitura do tempo do clock
+unsigned int velocidade = 0 ;   // Sinal senoidal da velocidade (int entre 0 e 255)
+float w = 0;             // // Frequência angular do sinal enviado (rad/s)
 
 // Inicialização o sensor nos pinos
 Ultrasonic ultrasonic(Sensor_Trigger, Sensor_Echo);
+
+// Estados do sistema
+unsigned short sentido = 2; // Sentido de rotação do motor (1 ou 2)
+bool parado = false;         // Setar para True para parar o controle do Driver
+
 
 void setup()
 {
@@ -35,14 +36,13 @@ void setup()
   Serial.begin(9600);
 
   // Definição dos pinos
-  pinMode(Sensor_Trigger, INPUT);
-  pinMode(Sensor_Echo, INPUT);
+  //pinMode(Sensor_Trigger, INPUT);
+  //pinMode(Sensor_Echo, INPUT);
   pinMode(Driver_IN1, OUTPUT);
   pinMode(Driver_IN2, OUTPUT);
   pinMode(Driver_A, OUTPUT);
-  t=millis();
 
-   // Definindo sentido do driver
+  // Definindo sentido do driver
   // Sentido 1
   if (sentido == 1) {
     digitalWrite(Driver_IN1, HIGH);
@@ -53,31 +53,38 @@ void setup()
   digitalWrite(Driver_IN1, LOW);
   digitalWrite(Driver_IN2, HIGH);
   }
+
+  if (! parado){ 
+    w = 2*PI_VALUE/(tciclo*1000); // Frequência angular do sinal (rad/s)
+  }
 }
 
 void loop()
 {
-// Leitura as informacoes do sensor, em cm
-  float cmMsec;
-  long microsec = ultrasonic.timing();
+  // Leitura as informacoes do sensor, em cm
+  t=millis();
+
+  microsec = ultrasonic.timing();
   cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
   
   // Exibindo informacoes no Serial monitor
+  Serial.print(t);
+  Serial.print(',');
+  Serial.print(cmMsec);
+  Serial.print(',');
   
-  Serial.println(cmMsec);
-
-// Controle do driver
-
-
+  // Controle do driver
   // Definindo velocidade do driver
   if (parado){ // Parado
     velocidade = 0;
   }
   else {
-    w = 2*PI_VALUE/(tciclo*1000);
-    // velocidade = (255/2)* sin(w*t) + 255/2;
-    velocidade = map(sin(w*t),-1,1,0,255);
+    //velocidade = sin(w*t);
+    //velocidadePWM = map(velocidade,-1,1,0,255);
+    velocidade = (255/2)* sin(w*t) + 255/2;
   }
+  Serial.print(",");
+  Serial.println(velocidade);
   
   analogWrite(Driver_A, velocidade);
 
