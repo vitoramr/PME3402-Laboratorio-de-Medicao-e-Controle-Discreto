@@ -26,8 +26,8 @@ INSTRUÇÕES PARA RODAR O PROGRAMA
 Antes de rodar o programa, siga os seguintes passos
 1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 5/"
 em que o programa se encontra
-2) Certifique-se de que os dados do sensor Ultrassônico estão na pasta "/Atividade 5/Processing_save_serial"
-dentro da pasta do programa
+2) Certifique-se de que os dados do sensor Ultrassônico estão na pasta
+"/Atividade 5/Processing_save_serial" dentro da pasta do programa
 3) Rode o programa
 */
 
@@ -44,7 +44,10 @@ xdel(winsid()); // Fecha as janelas abertas
 data_folder = 'Processing_save_serial'
 
 file_names = [
-    'Leitura_Sensor_10_14_12_38_41.csv',
+    'Leitura_Sensor_10_14_15_35_4.csv',
+    'Leitura_Sensor_10_14_15_39_44.csv',
+    'Leitura_Sensor_10_14_15_49_25.csv',
+    'Leitura_Sensor_10_14_15_52_23.csv',
 ];
 
 //Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
