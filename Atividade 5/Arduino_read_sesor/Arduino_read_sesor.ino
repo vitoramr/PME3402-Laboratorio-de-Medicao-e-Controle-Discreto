@@ -71,7 +71,6 @@ void loop()
   Serial.print(t);
   Serial.print(',');
   Serial.print(cmMsec);
-  Serial.print(',');
   
   // Controle do driver
   // Definindo velocidade do driver
@@ -88,5 +87,5 @@ void loop()
   
   analogWrite(Driver_A, velocidade);
 
-  delay(dlay);
+  //delay(dlay);
 }
