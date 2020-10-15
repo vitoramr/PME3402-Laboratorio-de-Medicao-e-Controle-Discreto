@@ -183,10 +183,28 @@ endfunction
 //                         ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
-Sinal enviado ao motor para a medição 1: T = 2s,  (f = 0.5Hz), Variando de 0   V a 5   V ( velocidade = (255/2)*sin(w*t) + (255/2) )
-Sinal enviado ao motor para a medição 2: T = 2s,  (f = 0.5Hz), Variando de 0   V a 5   V ( velocidade = (255/2)*sin(w*t) + (255/2) )
-Sinal enviado ao motor para a medição 3: T = 1s,  (f = 1  Hz), Variando de 1.07V a 3.04V ( velocidade = 105 + 50*sin(w*t) )
-Sinal enviado ao motor para a medição 4: T = 0.5s,(f = 2  Hz), Variando de 1.07V a 3.04V ( velocidade = 105 + 50*sin(w*t) )
+Sinal enviado ao motor para a medição 1:
+T = 2s,  (f = 0.5Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
+
+Sinal enviado ao motor para a medição 2:
+T = 2s,  (f = 0.5Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
+
+Sinal enviado ao motor para a medição 3:
+T = 1s,  (f = 1  Hz), Variando de 1.07V a 3.04V ( velocidade = 105 + 50*sin(w*t) )
+
+Sinal enviado ao motor para a medição 4:
+T = 0.5s,(f = 2  Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
+
+As medições 1 e 2 foram nas condições do vídeo 1 (oscilando e batendo no "chão")
+A medição 3 foi nas condições do vídeo 2 (oscilando sem bater)
+Na medição 4, a bola ficou (não lembro?, eu acho que ela voou, mas caiu e não levantou mais. Acho que vou marcar mais um horário pra verificar como a bola ficou nessa posição)
+
+[DADOS BRUTOS]
+- fa e d --> picos de fa batem com os de d
+
+[DADOS TRATADOS]
+- Remover os outliers é uma maneira rudimentar de tratar os dados
+- Resultados bons, mas podem ser melhor com um filtro
 
 */
 // =============================================================================
@@ -317,7 +335,7 @@ fig5 = scf(5);
     xlabel("f(Hz)");
     
     subplot(3,1,2)
-    plot2d('nl',f1_trim, psd_d1_trim, style = color(cores(1)) ); // Plotando apenas entre 0 e 60
+    plot2d('nl',f1_trim, psd_d1_trim, style = color(cores(1)) );
     title('Espectro de frequência da distância saturada do sensor na medição 1');
     ylabel("PSD");
     xlabel("f(Hz)");
@@ -337,14 +355,14 @@ fig6 = scf(6);
     xlabel("f(Hz)");
     
     subplot(3,1,2)
-    plot2d('nl',f2_trim, psd_d2_trim, style = color(cores(3)) ); // Plotando apenas entre 0 e 60
-    title('Espectro de frequência da distância saturada do sensor na medição 3');
+    plot2d('nl',f2_trim, psd_d2_trim, style = color(cores(3)) );
+    title('Espectro de frequência da distância saturada do sensor na medição 2');
     ylabel("PSD");
     xlabel("f(Hz)");
     
     subplot(3,1,3)
     plot2d('nl',f2, psd_u2, style = color(cores(3)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição 3');
+    title('Espectro de frequência da voltagem enviada ao motor na medição 2');
     ylabel("PSD");
     xlabel("f(Hz)");
 
@@ -356,14 +374,14 @@ fig7 = scf(7);
     xlabel("f(Hz)");
     
     subplot(3,1,2)
-    plot2d('nl',f3_trim, psd_d3_trim, style = color(cores(5)) ); // Plotando apenas entre 0 e 60
+    plot2d('nl',f3_trim, psd_d3_trim, style = color(cores(5)) );
     title('Espectro de frequência da distância saturada do sensor na medição 3');
     ylabel("PSD");
     xlabel("f(Hz)");
     
     subplot(3,1,3)
     plot2d('nl',f3, psd_u3, style = color(cores(5)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição 4');
+    title('Espectro de frequência da voltagem enviada ao motor na medição 3');
     ylabel("PSD");
     xlabel("f(Hz)");
 
@@ -375,7 +393,7 @@ fig8 = scf(8);
     xlabel("f(Hz)");
     
     subplot(3,1,2)
-    plot2d('nl',f4_trim, psd_d4_trim, style = color(cores(7)) ); // Plotando apenas entre 0 e 60
+    plot2d('nl',f4_trim, psd_d4_trim, style = color(cores(7)) );
     title('Espectro de frequência da distância saturada do sensor na medição 4');
     ylabel("PSD");
     xlabel("f(Hz)");
