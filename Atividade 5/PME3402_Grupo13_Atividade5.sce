@@ -4,7 +4,7 @@
                         Escola Politécnica da USP
          PME3402 - Laboratório de Medição e Controle Discreto
        --------------------------------------------------------------
-            ATIVIDADE 4 - CONTROLE DE MOTOR POR PID DISCRETO
+            ATIVIDADE 5 - CONTROLE DE MOTOR POR PID DISCRETO
        --------------------------------------------------------------
                                 GRUPO 13
                                 Membros:
