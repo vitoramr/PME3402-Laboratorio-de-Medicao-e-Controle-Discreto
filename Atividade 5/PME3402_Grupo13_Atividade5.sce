@@ -183,21 +183,39 @@ endfunction
 //                         ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
+
+O funcionamento do sensor ULTRASSOM HC-SR04 consiste basicamente em enviar um sinal que, ao atingir um objeto, volta para  o  sensor  e  com  base nesse tempo entre o envio e recebimento, é calculada a distância entre o sensor e o objeto. Ele pode medir  distâncias  entre  2 cm e 4 m, com precisão de 3mm. Seu ângulo de detecção é de aproximadamente 15 graus, segundo informações do datasheetdo sensor. Esse porcesso ocorre em 3 etapas:
+
+    1.É enviado um sinal com duração de 10 us (microssegundos) ao pino trigger, indicando que a medição terá início
+    2.Automaticamente,  o  módulo  envia  8  pulsos  de  40  KHz  e  aguarda  o  retorno  do  sinal pelo receptor
+    3.Caso  haja  um  retorno  de  sinal  (em  nível  HIGH),  determinamos  a  distância  entre  o sensor  e  o  obstáculo  utilizando  a  seguinte  equação:DISTANCIA=(PULSOEMNÍVELALTOXVELOCIDADEDOSOM(340M/S)/2
+
+Dado o comprimento do tubo, a distância mínima e máxima que o sensor ultrassom consegue capturar não são um fator que prejudique o experimento. O erro de medição do ultrassom de 3mm diminui a precisão do dado obtido, porém tendo em vista que a o experimento esta na escala dos cm não é algo que prejudica a análise dos resultados.
+
 Sinal enviado ao motor para a medição 1:
 T = 2s,  (f = 0.5Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
 
 Sinal enviado ao motor para a medição 2:
 T = 2s,  (f = 0.5Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
 
+As medições 1 e 2 foram nas condições do vídeo 1 (oscilando e batendo no "chão") esse fenômeno é o esperado pois a a tensão a 0V, ou seja o motor é "desligado" a cada repetição fazendo com que a força do vento atuante na esfera seja nula e ela caia. Esse fenômeno é observável também no sinal captado pelo ultrassom com remoção de outliers, esse sinal acompanha o sinal de tensão enviada para o motor, como era de se esperar, apresentando um formato que de grosso modo se aproxima de uma senóide (porém apresenta ruídos). É interessante observar que quando a bola bate no "chão" o sinal captado pelo ultrassom não é nulo pois o o ultrassom capta o reflexo do sinal que atinge o topo da esfera, sendo então essa diferença do sinal medido pelo sensor ultrassom para o 0, quando a bola bate no fundo do tubo, correspondente a aproximadamente o diâmetro da esfera. 
+    
+O ultrassom capta alguns sinais equivalendo a uma grande distância (>2500 cm), isso claramente não ocorre no ensaio e pode ser causado por alguma falha de medição do equipamento, provavelmente causado por captar um sinal refletido que não corresponde ao sinal enviado pelo ultrassom levando a um tempo de calculado de viagem do sinal errôneo. Esse outliers aparecem também na frequência de amostragem do arduino que for isso é aproximadamente constante. Isso pode ter sido causado também por algum erro do arduino.
+
 Sinal enviado ao motor para a medição 3:
 T = 1s,  (f = 1  Hz), Variando de 1.07V a 3.04V ( velocidade = 105 + 50*sin(w*t) )
+
+
+A medição 3 foi nas condições do vídeo 2 (oscilando sem bater).
+Na medição 3, a diminuição das voltagens máxima e mínima e o aumento da frequência levou a uma sustentação da bola no ar, com alguma oscilação, isso é visível tanto no vídeo quanto no gráfico do sinal amostrado. É interessante observar quee há uma queda da média móvel da altura que a esfera se encontra ao longo do experimento e depois um aumento no final, em um caso ideal isso não ocorreria, a força do vento oscilante se equilibraria com a força peso da esfera e ela oscilaria em uma altura média fixa, porém por se tratar de um caso real, a complexidade e até caoticidade da dinâmica da esfera e da mecânica do fluido envolvendo o sitema ar-esfera-tubo leva a esse comportamento. Isso pode ser influenciado também pelo fato do motor/ventoinha ter alguma margem de erro de operação, gerando fluxos e cargas diferentes ao longo do processo para uma mesma tensão enviada.
 
 Sinal enviado ao motor para a medição 4:
 T = 0.5s,(f = 2  Hz), Variando de 0V a 5V       ( velocidade = (255/2)*sin(w*t) + (255/2) )
 
-As medições 1 e 2 foram nas condições do vídeo 1 (oscilando e batendo no "chão")
-A medição 3 foi nas condições do vídeo 2 (oscilando sem bater)
-Na medição 4, a bola ficou (não lembro?, eu acho que ela voou, mas caiu e não levantou mais. Acho que vou marcar mais um horário pra verificar como a bola ficou nessa posição)
+Na medição 4, a alta frequência da tensão transmitida para o motor fez com que a esfera flutuasse no início, mas depois ficasse no fundo apresentando uma flutação de altura baixa em breves momento, isso provavelmente ocorreu pela baixo tempo de amostragem que depois do início não permitiu a geração de uma força do vente suficiente para superar a força peso da bola, apesar da voltagem inserida ter um pico relativamente alto "5V", como visto nas outras medições mais que suficiente para levantar a bola.
+
+Analisando os espectros de frequência dos sinais tanto da tensão enviada ao motor quanto do sinal captado pelo sensor ultrassom, observa-se que há um pico para o espectro da tensão enviada ao motor, 0.5 Hz para as midições 1 e 2, 1 Hz para a medição 3 e 2 Hz para a medição 4, para as medições 1 a 3 esse pico aparece também no espectro da frequência da distância saturada do sensor, correspondendo ao resultado esperado. Para a medição quatro esse pico não aparece na medição da distância da esfera, pois, como descrito no paragrafo anterior, não há um equilibrio entre a força do vento e o peso da esfera, portanto a distância medida não apresenta uma oscilação comportada e consequentemente não há um pico de densidade espectral para determinada frequência.
+
 
 [DADOS BRUTOS]
 - fa e d --> picos de fa batem com os de d
@@ -205,6 +223,8 @@ Na medição 4, a bola ficou (não lembro?, eu acho que ela voou, mas caiu e nã
 [DADOS TRATADOS]
 - Remover os outliers é uma maneira rudimentar de tratar os dados
 - Resultados bons, mas podem ser melhor com um filtro
+
+
 
 */
 // =============================================================================
