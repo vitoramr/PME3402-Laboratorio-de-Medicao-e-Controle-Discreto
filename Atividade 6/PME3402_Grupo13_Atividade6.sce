@@ -59,10 +59,13 @@ wc = 2*%pi*fc;  // Frequência de corte do filtro (rad/s)
 
 s=poly(0,'s');
 z=poly(0,'z');
-H_filtro_c = wc/(s+wc);
-Sys_filtro_c = tf2ss(H_filtro_c);
+H_filtro_c = wc/(s+wc);                   // Função de transferência em tempo contínuo
+Sys_filtro_c = tf2ss(H_filtro_c);         // Transforma a função de transferência em espaço de estados
 Sys_filtro_d = cls2dls(Sys_filtro_c, Ts); // Transforma o sistema contínuo em discreto pelo método bilinear
-H_filtro_d = ss2tf(Sys_filtro_d);
+H_filtro_d = ss2tf(Sys_filtro_d);         // Função de transferência em tempo discreto
+
+disp("Função de transferência em tempo discreto do filtro digital de 1ª ordem passa-baixa")
+disp(H_filtro_d)
 
 /*
 Após a transformação bi-linear a função de transferência do Filtro Digital é dada por:
@@ -71,6 +74,7 @@ Após a transformação bi-linear a função de transferência do Filtro Digital
     ----  =   --------------  =  ------------------
     E(z)         Cy_1 + z           Cy_1*z^-1 + 1
 
+E a equação de diferenças do filtro digital é dada por:
     y[k] = Ce_0*e[k] +Ce_1*e[k-1] - Cy_1*y[k-1]
     
 Analiticamente, pelo "Tópico 04 – Filtros Digitais", os coeficientes da aproximação bilinear
@@ -95,6 +99,9 @@ err1 = abs(Ce_1 - kA(1))
 err2 = abs(Ce_0 - kA(2))
 err3 = abs(Cy_1 - kB(1))
 
+disp("Diferença entre os coeficientes analíticos e os calculados")
+disp(err1,err2,err3)
+
 /*
 Verifica-se que os coeficientes obtidos pela função de transferência são coerentes
 com a expressão analítica, já que:
@@ -103,5 +110,4 @@ err1 = abs(Ce_1 - kA(1)) == 1.665D-16
 err2 = abs(Ce_0 - kA(2)) == 5.551D-17
 err3 = abs(Cy_1 - kB(1)) == 5.551D-17
 */
-
 
