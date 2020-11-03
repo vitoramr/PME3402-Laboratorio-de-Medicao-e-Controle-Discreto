@@ -155,7 +155,7 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
 */
 
     // Modelo em tempo discreto do motor de corrente contínua usando o segurador de ordem zero (ZOH):
-    motorD = dscr(motor,Ta); 
+    motorD = dscr(motor,Ta);  //dscr uses ZOH method to discretize
     
     // função de transferência do motor em tempo discreto (ZOH):
     GmotorD = ss2tf(motorD);
