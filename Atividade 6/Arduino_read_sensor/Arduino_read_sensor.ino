@@ -20,11 +20,21 @@
 #define voltMin 0               // valor mínimo para a senoide (mínimo 0)
 
 // Definição de variáveis
-float cmMsec;
 unsigned long microsec;
 unsigned long t;                // Leitura do tempo do clock (em ms)
 unsigned int velocidade = 0 ;   // Sinal senoidal enviado para o motor (int entre 0 e 255)
 float w = 0;                    // Frequência angular do sinal enviado (rad/s)
+  // Variáveis para o filtro
+float cmMsec;                   // Leitura do sensor de ultrassom (cm)
+float cmMsec_ant;               // Valor de cmMsec(k-1) usado na aplicação do filtro
+bool primeira_leitura = true;   // Booleana para verificar se é a primeira leitura do sensor
+float filtered_cmMsec;          // Sinal filtrado da leitura do sensor (cm)
+float filtered_cmMsec_ant;      // Valor de filtered_cmMsec (k-1) usado na aplicação do filtro
+const float freq_cortew = 2*PI_VALUE*10;  // Frequência de corte usada no filtro (rad/s)
+const float per_amo = 0.015;    // Período de amostragem calculada na aula 5 através do SciLab (s)
+const float Ce_0 = ((freq_cortew*per_amo)/2) / (1 + (freq_cortew*per_amo)/2);       // Coeficiente analítico usado no filtro
+const float Ce_1 = Ce_0;        // Coeficiente analítico usado no filtro
+const float Cy_1 = -(1 - (freq_cortew*per_amo)/2) / (1 + (freq_cortew*per_amo)/2);  // Coeficiente analítico usado no filtro
 
 // Inicialização o sensor nos pinos
 Ultrasonic ultrasonic(Sensor_Trigger, Sensor_Echo);
@@ -69,16 +79,35 @@ void setup()
 
 void loop()
 {
-  // Leitura as informacoes do sensor, em cm
+  // Leitura das informacoes do sensor, em cm
   t=millis();                                            // Tempo medido pelo Arduino (ms)
-
+  
   microsec = ultrasonic.timing();
   cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM); // Distância medida pelo sensor (cm)
-  
   Serial.print(t);
   Serial.print(',');
   Serial.print(cmMsec);
   Serial.print(",");
+  
+  // Filtragem do sinal do sensor
+  /*A equação de diferenças do filtro digital é dada por:
+    y[k] = Ce_0*e[k] +Ce_1*e[k-1] - Cy_1*y[k-1]
+        
+    Analiticamente, pelo "Tópico 04 – Filtros Digitais", os coeficientes da aproximação bilinear
+    para a função de transferência do filtro são dados por
+    
+    Cy_1 =  -(1 - (wc*T)/2) / (1 + (wc*T)/2);
+    Ce_0 = Ce_1 = ((wc*T)/2) / (1 + (wc*T)/2);
+  */
+  if (primeira_leitura) {
+    cmMsec_ant = cmMsec;
+    filtered_cmMsec_ant = cmMsec;
+  }
+  
+  filtered_cmMsec = Ce_0*cmMsec + Ce_1*cmMsec_ant - Cy_1*filtered_cmMsec_ant;
+  cmMsec_ant = cmMsec;
+  filtered_cmMsec_ant = filtered_cmMsec;
+  primeira_leitura = false;
   
   // Definindo velocidade do driver
   //velocidade = (255/2)* sin(w*t) + 255/2;
