@@ -117,7 +117,9 @@ data_folder = 'Processing_save_serial'
 file_names = [
     'Leitura_Sensor_11_6_1_33_46_fc10.csv',
     'Leitura_Sensor_11_6_1_35_10_fc5.csv',
-    'Leitura_Sensor_11_6_1_36_48_fc5.csv'
+    'Leitura_Sensor_11_6_1_36_48_fc5.csv',
+    'Leitura_Sensor_11_6_19_22_35_T15_fc2.csv',
+    'Leitura_Sensor_11_6_19_23_14_T15_fc2.csv',
 ];
 
 // =============================================================================
@@ -169,20 +171,39 @@ endfunction
 // FUNÇÃO DE APLICAÇÃO DO FILTRO PELO SCILAB
 // =============================================================================
 
-function [y] = filtro_passa_baixa(e)
-        y = zeros(e);
-        y(1) = e(1);
-        
-        for k =2:length(e)
-            y(k) = -Cy_1*y(k-1) + Ce_1*e(k-1) + Ce_0*e(k);
-        end
+function [y] = filtro_passa_baixa(e, fc, Ts)
+    /*
+    Realiza a filtragem numérica de um sinal discreto e[k] por meio da aproximação
+    bilinear de um filtro digital passa baixa de 1º ordem 
+    
+    Inputs
+        e --> sinal discretizado
+        fc --> frequência de corte do filtro (Hz)
+        Ts --> período de amostragem do sinal
+    Output
+        y --> sinal filtrado
+    */
+    
+    wc = 2*%pi*fc;  // Frequência de corte do filtro (rad/s)
+    // Cálculo dos coeficientes do filtro
+    Cy_1 =  -(1 - (wc*Ts)/2) / (1 + (wc*Ts)/2);
+    Ce_0 = ((wc*Ts)/2) / (1 + (wc*Ts)/2);
+    Ce_1 = Ce_0;
+    
+    y = zeros(e); // Cria um vetor de zeros do tamanho do vetor e
+    y(1) = e(1);  // Atribuindo o valor inicial
+    
+    // Loop da filtragem do sinal e[k]
+    for k =2:length(e)
+        y(k) = -Cy_1*y(k-1) + Ce_1*e(k-1) + Ce_0*e(k);
+    end
 endfunction
 
 // =============================================================================
 // FUNÇÃO DE ANÁLISE ESPECTRAL DO SINAL
 // =============================================================================
 
-function [f, psd] = spectral_treatment(signal_t,fs)
+function [psd] = spectral_calculation(signal_t,fs)
     /*
     Inputs:
     sinat_t --> um vetor unidimensional sinal_t (Nx1) que representa o valor de um
@@ -190,7 +211,6 @@ function [f, psd] = spectral_treatment(signal_t,fs)
     fs      --> um valor real que representa a frequência de amostragem do sinal em Hz
     
     Outputs:
-    f    --> vetor (N/2 x 1) de números reais com a escala de frequência do sinal em Hz
     psd  --> vetor (N/2 x 1) de números reais com a densidade espectral de potência do sinal temporal
     */
     
@@ -204,55 +224,78 @@ function [f, psd] = spectral_treatment(signal_t,fs)
     psd = (1/(fs*N)) * ( abs(spectrum_f) ).^2 ; // PSD --> densidade espectral de potência
     psd(2:$-1) = 2*psd(2:$-1);
     
-    
-    f = (fs /N)*(0:N/2)'                    // Escala de frequências
 endfunction
 
 // Carregamento dos dados
 plot_na_funcao = %F; // %T para True ou %F para False
 
-[t1,d1,d1_filt_arduino,u1] = data_read(data_folder, file_names(1), plot_na_funcao);
-[t2,d2,d2_filt_arduino,u2] = data_read(data_folder, file_names(2), plot_na_funcao);
-[t3,d3,d3_filt_arduino,u3] = data_read(data_folder, file_names(3), plot_na_funcao);
+[t1,d1,d1_filt_Arduino,u1] = data_read(data_folder, file_names(1), plot_na_funcao);
+[t2,d2,d2_filt_Arduino,u2] = data_read(data_folder, file_names(2), plot_na_funcao);
+[t3,d3,d3_filt_Arduino,u3] = data_read(data_folder, file_names(3), plot_na_funcao);
+[t4,d4,d4_filt_Arduino,u4] = data_read(data_folder, file_names(4), plot_na_funcao);
+[t5,d5,d5_filt_Arduino,u5] = data_read(data_folder, file_names(5), plot_na_funcao);
 
 // Analisando o período e frequência de amostragem do Arduino
-Ta_t1 = ( t1(2:$,1) - t1(1:$-1,1) ) // Diferença entre um instante e outro
-Ta_t2 = ( t2(2:$,1) - t2(1:$-1,1) ) // Diferença entre um instante e outro
-Ta_t3 = ( t3(2:$,1) - t3(1:$-1,1) ) // Diferença entre um instante e outro
+function [Ts_vec, Ts, fs] = sampling_time_step(t)
+    // Input: t --> vetor discreto de tempos
+    Ts_vec = ( t(2:$,1) - t(1:$-1,1) ) // Intervalos de tempo entre uma medição e outra
+    Ts = mean(Ts_vec);                 // Período de amostragem médio do sinal
+    fs = 1/Ts;                         // Frequência de amostragem média do sinal
+endfunction
 
-Ta1 = mean(Ta_t1); fa1 = 1/Ta1;
-Ta2 = mean(Ta_t2); fa2 = 1/Ta2;
-Ta3 = mean(Ta_t3); fa3 = 1/Ta3;
+[Ta_t1, Ta1, fa1] = sampling_time_step(t1);
+[Ta_t2, Ta2, fa2] = sampling_time_step(t1);
+[Ta_t3, Ta3, fa3] = sampling_time_step(t1);
+[Ta_t4, Ta4, fa4] = sampling_time_step(t1);
+[Ta_t5, Ta5, fa5] = sampling_time_step(t1);
 
 // Filtragem numérica do sinal pelo Scilab
-d1_filtrado = filtro_passa_baixa(d1);
-d2_filtrado = filtro_passa_baixa(d2);
-d3_filtrado = filtro_passa_baixa(d3);
+d1_filt_Scilab = filtro_passa_baixa(d1, 10, Ts);
+d2_filt_Scilab = filtro_passa_baixa(d2, 5 , Ts);
+d3_filt_Scilab = filtro_passa_baixa(d3, 5 , Ts);
+d4_filt_Scilab = filtro_passa_baixa(d4, 2 , Ts);
+d5_filt_Scilab = filtro_passa_baixa(d5, 2 , Ts);
 
 // Analise espectral dos sinais
-// Medição 1
-[f1,psd_d1] = spectral_treatment(d1,fa1);
-[#,psd_d1_filt_arduino] = spectral_treatment(d1_filt_arduino,fa1);
-[#,psd_d1_filtrado] = spectral_treatment(d1_filtrado,fa1);
-[# ,psd_u1] = spectral_treatment(u1,fa1);
 
-// Medição 2
-[f2,psd_d2] = spectral_treatment(d2,fa2);
-[#,psd_d2_filt_arduino] = spectral_treatment(d2_filt_arduino,fa2);
-[#,psd_d2_filtrado] = spectral_treatment(d2_filtrado,fa2);
-[# ,psd_u2] = spectral_treatment(u2,fa2);
+function [f, psd_d, psd_d_filt_Arduino, psd_d_filt_Scilab, psd_u] = data_spectral_treatment(fs,d,d_filt_Arduino,d_filt_Scilab, u)
+    /*
+    Para evitar repetições de código, essa função aplica os calculos espectrais para todos os dados que temos 
+    */
+    N = length(d);
+    f = (fs /N)*(0:N/2)'                    // Escala de frequências
+    psd_d              = spectral_calculation(d,fs);
+    psd_d_filt_Arduino = spectral_calculation(d_filt_Arduino,fs);
+    psd_d_filt_Scilab  = spectral_calculation(d_filt_Scilab,fs);
+    psd_u              = spectral_calculation(d,fs);
+endfunction
 
-// Medição 3
-[f3,psd_d3] = spectral_treatment(d3,fa3);
-[#,psd_d3_filt_arduino] = spectral_treatment(d3_filt_arduino,fa3);
-[#,psd_d3_filtrado] = spectral_treatment(d3_filtrado,fa3);
-[# ,psd_u3] = spectral_treatment(u3,fa3);
+[f1,psd_d1, psd_d1_filt_Arduino, psd_d1_filt_Scilab, psd_u1] = data_spectral_treatment(fa1,d1,d1_filt_Arduino, d1_filt_Scilab, u1);
+[f2,psd_d2, psd_d2_filt_Arduino, psd_d2_filt_Scilab, psd_u2] = data_spectral_treatment(fa2,d2,d2_filt_Arduino, d2_filt_Scilab, u2);
+[f3,psd_d3, psd_d3_filt_Arduino, psd_d3_filt_Scilab, psd_u3] = data_spectral_treatment(fa3,d3,d3_filt_Arduino, d3_filt_Scilab, u3);
+[f4,psd_d4, psd_d4_filt_Arduino, psd_d4_filt_Scilab, psd_u4] = data_spectral_treatment(fa4,d4,d4_filt_Arduino, d4_filt_Scilab, u4);
+[f5,psd_d5, psd_d5_filt_Arduino, psd_d5_filt_Scilab, psd_u5] = data_spectral_treatment(fa5,d5,d5_filt_Arduino, d5_filt_Scilab, u5);
+
 
 // =============================================================================
 // ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
+Parâmetros de cada medição:
+Sinal enviado ao motor:
+- T_sinal: período de oscilação do sinal enviado
+- voltMax: valor máximo do sinal oscilatório (máx = 255)
+- voltMin: valor mínimo do sinal oscilatório (mín = 0)
 
+Medição 1: fc filtro = 10Hz | T_sinal = 1  s | voltMax = 130 | voltMin = 80
+Medição 2: fc filtro =  5Hz | T_sinal = 1  s | voltMax = 140 | voltMin = 70
+Medição 3: fc filtro =  5Hz | T_sinal = 1  s | voltMax = 170 | voltMin = 50
+Medição 4: fc filtro =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
+Medição 5: fc filtro =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
+
+Como pode-se ver, foram realizados testes com diferentes frequências de corte, períodos do sinal enviado ao motor e voltagens.
+
+O picos na frequência zero do espectro de frequências de todos os sinais era esperado e ele ocorre devido ao viés dos sinais, ou seja, quando estes possuem uma média diferente de zero. Isso ocorre, pois os sinais oscilam ao redor de um ponto acima de zero, o que faz com que a integral do vetor ao longo do tempo seja não nula e gera o pico na frequência zero.
 
 */
 
@@ -272,104 +315,53 @@ cores = [
 'red',          // 8
 ]
 
-fig1 = scf(1);
-    plot2d(t1, d1, style = color(cores(2)) );
-    plot2d(t1, d1_filtrado , style = color(cores(4)) );
-    plot2d(t1, d1_filt_arduino , style = color(cores(8)) );
-    title('Distância captada pelo ultrassom na medição 1');
+// Plot das distâncias
+function plot_dist(t,d,d_filt_Arduino,d_filt_Scilab, medicao)
+    fig = scf();
+    plot2d(t, d, style = color(cores(2)) );
+    plot2d(t, d_filt_Scilab , style = color(cores(4)) );
+    plot2d(t, d_filt_Arduino , style = color(cores(8)) );
+    title('Distância captada pelo ultrassom na medição ' + string(medicao));
     ylabel("d (cm)");
     xlabel("tempo(s)");
-    hl= legend(['Sinal medido';'Filtrado pelo Scilab'; 'Filtrado pelo Arduino']);
+    h= legend(['Sinal medido';'Filtrado pelo Scilab'; 'Filtrado pelo Arduino']);
+endfunction
 
-fig2 = scf(2);
+plot_dist(t1,d1,d1_filt_Arduino, d1_filt_Scilab, 1);
+plot_dist(t2,d2,d2_filt_Arduino, d2_filt_Scilab, 2);
+plot_dist(t3,d3,d3_filt_Arduino, d3_filt_Scilab, 3);
+plot_dist(t4,d4,d4_filt_Arduino, d4_filt_Scilab, 4);
+plot_dist(t5,d5,d5_filt_Arduino, d5_filt_Scilab, 5);
+
+function plot_freq(f,psd_d,psd_d_filt_Arduino,psd_d_filt_Scilab, psd_u, medicao)
+    fig = scf();
     subplot(4,1,1)
-    plot2d('nl',f1, psd_d1, style = color(cores(1)) );
-    title('Espectro de frequência da distância lida pelo Ultrassom na medição 1');
+    plot2d('nl',f, psd_d, style = color(cores(1)) );
+    title('Espectro de frequência da distância lida pelo Ultrassom na medição ' + string(medicao));
     ylabel("PSD");
     xlabel("f(Hz)");
     
     subplot(4,1,2)
-    plot2d('nl',f1, psd_d1_filt_arduino, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Arduino na medição 1');
+    plot2d('nl',f, psd_d_filt_Arduino, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Arduino na medição ' + string(medicao));
     ylabel("PSD");
     xlabel("f(Hz)");
     
     subplot(4,1,3)
-    plot2d('nl',f1, psd_d1_filtrado, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Scilab na medição 1');
+    plot2d('nl',f, psd_d_filt_Scilab, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Scilab na medição ' + string(medicao));
     xlabel("f(Hz)");
     
     subplot(4,1,4)
-    plot2d('nl',f1, psd_u1, style = color(cores(1)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição 1');
+    plot2d('nl',f, psd_u, style = color(cores(1)) );
+    title('Espectro de frequência da voltagem enviada ao motor na medição ' + string(medicao));
     ylabel("PSD");
     xlabel("f(Hz)");
-    
-    
-fig3 = scf(3);
-    plot2d(t2, d2, style = color(cores(2)) );
-    plot2d(t2, d2_filtrado , style = color(cores(4)) );
-    plot2d(t2, d2_filt_arduino , style = color(cores(8)) );
-    title('Distância captada pelo ultrassom na medição 2');
-    ylabel("d (cm)");
-    xlabel("tempo(s)");
-    hl= legend(['Sinal medido';'Filtrado pelo Scilab'; 'Filtrado pelo Arduino']);
+endfunction
 
-fig4 = scf(4);
-    subplot(4,1,1)
-    plot2d('nl',f2, psd_d2, style = color(cores(1)) );
-    title('Espectro de frequência da distância lida pelo Ultrassom na medição 2');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,2)
-    plot2d('nl',f2, psd_d2_filt_arduino, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Arduino na medição 2');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,3)
-    plot2d('nl',f2, psd_d2_filtrado, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Scilab na medição 2');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,4)
-    plot2d('nl',f2, psd_u2, style = color(cores(1)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição 2');
-    ylabel("PSD");
-    xlabel("f(Hz)");
+plot_freq(f1,psd_d1,psd_d1_filt_Arduino,psd_d1_filt_Scilab, psd_u1, 1);
+plot_freq(f2,psd_d2,psd_d2_filt_Arduino,psd_d2_filt_Scilab, psd_u2, 2);
+plot_freq(f3,psd_d3,psd_d3_filt_Arduino,psd_d3_filt_Scilab, psd_u3, 3);
+plot_freq(f4,psd_d4,psd_d4_filt_Arduino,psd_d4_filt_Scilab, psd_u4, 4);
+plot_freq(f5,psd_d5,psd_d5_filt_Arduino,psd_d5_filt_Scilab, psd_u5, 5);
 
-fig5 = scf(5);
-    plot2d(t3, d3, style = color(cores(2)) );
-    plot2d(t3, d3_filtrado , style = color(cores(4)) );
-    plot2d(t3, d3_filt_arduino , style = color(cores(8)) );
-    title('Distância captada pelo ultrassom na medição 3');
-    ylabel("d (cm)");
-    xlabel("tempo(s)");
-    hl= legend(['Sinal medido';'Filtrado pelo Scilab'; 'Filtrado pelo Arduino']);
-
-fig6 = scf(6);
-    subplot(4,1,1)
-    plot2d('nl',f3, psd_d3, style = color(cores(1)) );
-    title('Espectro de frequência da distância lida pelo Ultrassom na medição 3');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,2)
-    plot2d('nl',f3, psd_d3_filt_arduino, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Arduino na medição 3');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,3)
-    plot2d('nl',f3, psd_d3_filtrado, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Scilab na medição 3');
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,4)
-    plot2d('nl',f3, psd_u3, style = color(cores(1)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição 3');
-    ylabel("PSD");
-    xlabel("f(Hz)");
