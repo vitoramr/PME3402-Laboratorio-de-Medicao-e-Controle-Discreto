@@ -27,7 +27,7 @@ Antes de rodar o programa, siga os seguintes passos
 1) Certifique-se de que o Scilab está aberto na pasta "/Atividade 6/"
 em que o programa se encontra
 2) Certifique-se de que os dados do sensor Ultrassônico estão na pasta
-"/Atividade 5/Processing_save_serial" dentro da pasta do programa
+"/Atividade 6/Processing_save_serial" dentro da pasta do programa
 3) Rode o programa
 */
 
@@ -52,9 +52,9 @@ Onde e --> sinal bruto
 */
 
 
-Ts = 0.015;     // Período de amostragem do sinal (s) (média dos períodos de medição do exercício anterior)
+Ts = 0.025;     // Período de amostragem do sinal (s) (média dos períodos de medição do exercício anterior)
 fs = 1/Ts;      // Frequência de amostragem do sinal (Hz)
-fc = 2;         // Frequência de corte do filtro (Hz)
+fc = 10;         // Frequência de corte do filtro (Hz)
 wc = 2*%pi*fc;  // Frequência de corte do filtro (rad/s)
 
 s=poly(0,'s');
@@ -120,24 +120,23 @@ err3 = abs(Cy_1 - kB(1)) == 5.551D-17
 data_folder = 'Processing_save_serial'
 
 file_names = [
-    'Leitura_Sensor_10_14_15_35_4.csv',  // T = 2, Sinal varia de 0 a 5V ( velocidade = (255/2)*sin(w*t) + (255/2) )
-    'Leitura_Sensor_10_14_15_39_44.csv', // T = 2, Sinal varia de 0 a 5V ( velocidade = (255/2)*sin(w*t) + (255/2) )
-    'Leitura_Sensor_10_14_15_49_25.csv', // T = 1, Sinal da velocidade = 105 + 50*sin(w*t)
-    'Leitura_Sensor_10_14_15_52_23.csv', // T = 0.5 , Sinal varia de 0 a 5V ( velocidade = (255/2)*sin(w*t) + (255/2) )
+    'Leitura_Sensor_11_4_23_1.csv',
 ];
 
-//Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
-function [t,d,u] = data_read(data_folder,filename, plot_signal)
+
+function [t,d,d_filt,u] = data_read(data_folder,filename, plot_signal)
     // Obtendo os caminhos de cada arquivo do experimento
     base_path = pwd(); // Diretório atual onde o Scilab está aberto
     s = filesep();     // Separador de arquivos para o OS atual ( '\' para Windows e '/' para Linux)
     
     data_directory = base_path + s + data_folder;
+    //Ordem de chamada: csvRead(filename, separator, decimal, conversion, substitute, regexpcomments, range, header)
     sensor   = csvRead(data_directory + s + filename, ',','.','double', [], [], [], 1 );
     
     t = sensor(:,1) / 1000; // Sinal está em ms, e passa-o para s
-    d = sensor(:,2);        // Sinal do sensor em cm
-    u = sensor(:,3)*5/255;  // Sinal tem a tensão entre 0 e 255, e passa-a para 0V a 5V
+    d = sensor(:,2);        // Sinal do sensor ultrassom em cm
+    d_filt = sensor(:,3);   // Sinal fitlrado do sensor ultrassom em cm
+    u = sensor(:,4)*5/255;  // Sinal tem a tensão entre 0 e 255, e passa-a para 0V a 5V
     
     // Plotagem dos gráficos individuais
     if plot_signal then
@@ -168,11 +167,7 @@ endfunction
 
 plot_na_funcao = %F; // %T para True ou %F para False
 
-[t1,d1,u1] = data_read(data_folder, file_names(1), plot_na_funcao);
-[t2,d2,u2] = data_read(data_folder, file_names(2), plot_na_funcao);
-[t3,d3,u3] = data_read(data_folder, file_names(3), plot_na_funcao);
-[t4,d4,u4] = data_read(data_folder, file_names(4), plot_na_funcao);
-
+[t1,d1,d1_filt_arduino,u1] = data_read(data_folder, file_names(1), plot_na_funcao);
 
 function [y] = filtro_passa_baixa(e)
         y = zeros(e);
@@ -197,78 +192,29 @@ function [f, psd] = spectral_treatment(signal_t,fs)
     
     N = length(signal_t);
     
-    spectrum_f = fft(signal_t);
+    spectrum_f = fft(signal_t - mean(signal_t));
     
     spectrum_f = spectrum_f(1:N/2+1); // Como a fft é simétrica, pega-se metade do vetor
     
     psd = (1/(fs*N)) * ( abs(spectrum_f) ).^2 ; // PSD --> densidade espectral de potência
     psd(2:$-1) = 2*psd(2:$-1);
     
+    
     f = (fs /N)*(0:N/2)'                    // Escala de frequências
 endfunction
 
 // Analisando a frequência de amostragem do sinal do sensor
 fa_t1 = 1.0 ./ ( t1(2:$,1) - t1(1:$-1,1) ) // Diferença entre um instante e outro
-fa_t2 = 1.0 ./ ( t2(2:$,1) - t2(1:$-1,1) ) // Diferença entre um instante e outro
-fa_t3 = 1.0 ./ ( t3(2:$,1) - t3(1:$-1,1) ) // Diferença entre um instante e outro
-fa_t4 = 1.0 ./ ( t4(2:$,1) - t4(1:$-1,1) ) // Diferença entre um instante e outro
-
-// Frequência de amostragem
-// Como a frequência de amostragem tem grande variação, assume-se fa como a média
-// dos valores dos vetores (fa_t).
-// Foi testado, também, calcular a frequ~encia de amostragem como a média do
-// vetor de frequências sem contar os valores estourados de f, mas houve muito
-// pouca diferença em relação ao valor usado.
 fa1 = mean(fa_t1);
-fa2 = mean(fa_t2);
-fa3 = mean(fa_t3);
-fa4 = mean(fa_t4);
 
-// Para lidar com os outliers, remove-se medições anômalas do sensor (Trimming Outliers)
-max_dist = 70; // Valor máximo para contabilizar a distância
-                // Se a distância for maior do que esse valor, exclui-se a distância
-
-t1_trim = t1(d1<max_dist)
-d1_trim = d1(d1<max_dist)
-
-t2_trim = t2(d2<max_dist)
-d2_trim = d2(d2<max_dist)
-
-t3_trim = t3(d3<max_dist)
-d3_trim = d3(d3<max_dist)
-
-t4_trim = t4(d4<max_dist)
-d4_trim = d4(d4<max_dist)
-
-d_1_filtrado = filtro_passa_baixa(d1);
-d_2_filtrado = filtro_passa_baixa(d2);
-d_3_filtrado = filtro_passa_baixa(d3);
-d_4_filtrado = filtro_passa_baixa(d4);
+d1_filtrado = filtro_passa_baixa(d1);
 
 // Analise espectral
 // Medição 1
 [f1,psd_d1] = spectral_treatment(d1,fa1);
+[#,psd_d1_filt_arduino] = spectral_treatment(d1_filt_arduino,fa1);
+[#,psd_d1_filtrado] = spectral_treatment(d1_filtrado,fa1);
 [# ,psd_u1] = spectral_treatment(u1,fa1);
-[# ,psd_d1_filtrado] = spectral_treatment(d_1_filtrado,fa1);
-[f1_trim, psd_d1_trim] = spectral_treatment(d1_trim ,fa1); // PSD do vetor "Cortado"
-
-// Medição 2
-[f2,psd_d2] = spectral_treatment(d2,fa2);
-[# ,psd_u2] = spectral_treatment(u2,fa2);
-[# ,psd_d2_filtrado] = spectral_treatment(d_2_filtrado,fa2);
-[f2_trim, psd_d2_trim] = spectral_treatment( d2_trim ,fa2); // PSD do vetor "Cortado"
-
-// Medição 3
-[f3,psd_d3] = spectral_treatment(d3,fa3);
-[# ,psd_u3] = spectral_treatment(u3,fa3);
-[# ,psd_d3_filtrado] = spectral_treatment(d_3_filtrado,fa3);
-[f3_trim, psd_d3_trim] = spectral_treatment( d3_trim ,fa3); // PSD do vetor "Cortado"
-
-// Medição 4
-[f4,psd_d4] = spectral_treatment(d4,fa4);
-[# ,psd_u4] = spectral_treatment(u4,fa4);
-[# ,psd_d4_filtrado] = spectral_treatment(d_4_filtrado,fa4);
-[f4_trim, psd_d4_trim] = spectral_treatment( d4_trim ,fa4); // PSD do vetor "Cortado"
 
 
 // =============================================================================
@@ -283,9 +229,43 @@ cores = [
 'gold3',        // 5
 'firebrick1',   // 6
 'magenta3',     // 7
+'red',          // 8
 ]
 
+fig1 = scf(1);
+    plot2d(t1, d1, style = color(cores(2)) );
+    plot2d(t1, d1_filtrado , style = color(cores(4)) );
+    plot2d(t1, d1_filt_arduino , style = color(cores(8)) );
+    title('Distância captada pelo ultrassom na medição 1');
+    ylabel("d (cm)");
+    xlabel("tempo(s)");
+    hl= legend(['Sinal medido';'Filtrado pelo Scilab'; 'Filtrado pelo Arduino']);
 
+fig2 = scf(2);
+    subplot(4,1,1)
+    plot2d(f1, psd_d1, style = color(cores(1)) );
+    title('Espectro de frequência da distância lida pelo Ultrassom na medição 1');
+    ylabel("PSD");
+    xlabel("f(Hz)");
+    
+    subplot(4,1,2)
+    plot2d(f1, psd_d1_filt_arduino, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Arduino na medição 1');
+    ylabel("PSD");
+    xlabel("f(Hz)");
+    
+    subplot(4,1,3)
+    plot2d(f1, psd_d1_filtrado, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Scilab na medição 1');
+    xlabel("f(Hz)");
+    
+    subplot(4,1,4)
+    plot2d(f1, psd_u1, style = color(cores(1)) );
+    title('Espectro de frequência da voltagem enviada ao motor na medição 1');
+    ylabel("PSD");
+    xlabel("f(Hz)");
+
+/*
 fig1 = scf(1);
     plot2d(t1, d1, style = color(cores(2)) );
     plot2d(t1, d_1_filtrado , style = color(cores(7)) );
@@ -317,7 +297,7 @@ fig4 = scf(4);
     ylabel("d (cm)");
     xlabel("tempo(s)");
     hl= legend(['Sinal medido';'Sinal filtrado']);
-/*
+
 fig4 = scf(5);
     subplot(3,1,1)
     plot2d('nl',f3, psd_d3, style = color(cores(5)) );

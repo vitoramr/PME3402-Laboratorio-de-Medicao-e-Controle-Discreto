@@ -15,22 +15,28 @@
 #define dlay 50                 // delay para cada loop do código (ms)
 
 // Características do sinal a ser enviado ao motor
-#define tciclo 1                // período do sinal senoidal enviado ao driver (s)
+#define tciclo 2                // período do sinal senoidal enviado ao driver (s)
 #define voltMax 255             // valor máximo para a senoide (máximo 255)
 #define voltMin 0               // valor mínimo para a senoide (mínimo 0)
+#define f_c 10                  // Frequência de corte do filtro (Hz)
+
+// Estados do sistema
+const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
+const bool movendo = true;      // Setar para true para mover o controle do Driver, false para parar o Driver
 
 // Definição de variáveis
 unsigned long microsec;
 unsigned long t;                // Leitura do tempo do clock (em ms)
 unsigned int velocidade = 0 ;   // Sinal senoidal enviado para o motor (int entre 0 e 255)
 float w = 0;                    // Frequência angular do sinal enviado (rad/s)
+
   // Variáveis para o filtro
 float cmMsec;                   // Leitura do sensor de ultrassom (cm)
 float cmMsec_ant;               // Valor de cmMsec(k-1) usado na aplicação do filtro
 bool primeira_leitura = true;   // Booleana para verificar se é a primeira leitura do sensor
 float filtered_cmMsec;          // Sinal filtrado da leitura do sensor (cm)
 float filtered_cmMsec_ant;      // Valor de filtered_cmMsec (k-1) usado na aplicação do filtro
-const float freq_cortew = 2*PI_VALUE*10;  // Frequência de corte usada no filtro (rad/s)
+const float freq_cortew = 2*PI_VALUE*f_c;  // Frequência de corte usada no filtro (rad/s)
 const float per_amo = 0.015;    // Período de amostragem calculada na aula 5 através do SciLab (s)
 const float Ce_0 = ((freq_cortew*per_amo)/2) / (1 + (freq_cortew*per_amo)/2);       // Coeficiente analítico usado no filtro
 const float Ce_1 = Ce_0;        // Coeficiente analítico usado no filtro
@@ -39,19 +45,13 @@ const float Cy_1 = -(1 - (freq_cortew*per_amo)/2) / (1 + (freq_cortew*per_amo)/2
 // Inicialização o sensor nos pinos
 Ultrasonic ultrasonic(Sensor_Trigger, Sensor_Echo);
 
-// Estados do sistema
-const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
-const bool movendo = true;      // Setar para True para mover o controle do Driver, False para parar o Driver
-
-
+// Início do programa
 void setup()
 {
   // Inicialização do Serial
   Serial.begin(9600);
 
   // Definição dos pinos
-  //pinMode(Sensor_Trigger, INPUT);
-  //pinMode(Sensor_Echo, INPUT);
   pinMode(Driver_IN1, OUTPUT);
   pinMode(Driver_IN2, OUTPUT);
   pinMode(Driver_A, OUTPUT);
@@ -74,6 +74,13 @@ void setup()
   else {
     velocidade = 0;
     w = 0;
+  }
+  
+  while (primeira_leitura) { //Primeira leitura do sensor para armazenamento das variáveis do filtro
+    microsec = ultrasonic.timing();
+    cmMsec_ant = ultrasonic.convert(microsec, Ultrasonic::CM);
+    filtered_cmMsec_ant = cmMsec_ant;
+    primeira_leitura = false;
   }
 }
 
@@ -99,19 +106,18 @@ void loop()
     Cy_1 =  -(1 - (wc*T)/2) / (1 + (wc*T)/2);
     Ce_0 = Ce_1 = ((wc*T)/2) / (1 + (wc*T)/2);
   */
-  if (primeira_leitura) {
-    cmMsec_ant = cmMsec;
-    filtered_cmMsec_ant = cmMsec;
-  }
   
   filtered_cmMsec = Ce_0*cmMsec + Ce_1*cmMsec_ant - Cy_1*filtered_cmMsec_ant;
+  Serial.print(filtered_cmMsec);
+  Serial.print(",");
+
+  // Atualizando os valores da medição antiga
   cmMsec_ant = cmMsec;
   filtered_cmMsec_ant = filtered_cmMsec;
-  primeira_leitura = false;
-  
+
   // Definindo velocidade do driver
   //velocidade = (255/2)* sin(w*t) + 255/2;
-  velocidade = movendo*mapfloat(sin(w*t),-1.,1.,voltMin,voltMax); // Mapeia a velocidade para valores entre 0 e 255  
+  velocidade = movendo*mapfloat(sin(w*t),-1.,1.,voltMin,voltMax); // Mapeia a velocidade da senoide para valores entre voltMin e voltMax  
 
   Serial.println(velocidade);
 
