@@ -297,6 +297,13 @@ Como pode-se ver, foram realizados testes com diferentes frequências de corte, 
 
 O picos na frequência zero do espectro de frequências de todos os sinais era esperado e ele ocorre devido ao viés dos sinais, ou seja, quando estes possuem uma média diferente de zero. Isso ocorre, pois os sinais oscilam ao redor de um ponto acima de zero, o que faz com que a integral do vetor ao longo do tempo seja não nula e gera o pico na frequência zero.
 
+Comparando os diferentes filtros a partir dos sinais medidos plotados em função do tempo (d x t) é possível observar que ambos os filtros reduzem efetivamente os ruídos o que é perceptível pelo pelo desaparecimento de picos de medição, esse fenômeno é muito evidente nos gráficos da medição 2. Dando um zoom nos gráficos é possível observar que os pequenos picos locais são também filtrados, de forma que a curva do sinal fique com menos oscilações.
+
+É possível observar observar um deslocamento das curvas do sinal filtrado para a direita, gerando um tipo de delay pelo filtro. Isso é mais acentuado para as medições 4 e 5 e pode portanto estar associado a uma menor frequência de corte ou maior período de oscilação do sinal enviado.
+
+Para essses casos também, o filtro do arduíno teve o mesmo comportamento do filtro do scilab, gerando ambos a mesma curva, porém nas mediições 1, 2 e 3 é possivel, através de um zoom, comparar os dois filtros, e observa-se que o filtro do arduino tende a reduzir mais o sinal, tanto para as altas quanto para as baixas, para um pico no sinal medido o filtro do scilab devolverá um sinal maior que o do arduíno e para um vale o filtro do scilab gerará um sinal menor que o do arduíno. É interessante observar como esse fenômeno desaparece para menores frequências de corte e maiores períodos de oscilação do sinal enviado.
+
+
 */
 
 // =============================================================================
