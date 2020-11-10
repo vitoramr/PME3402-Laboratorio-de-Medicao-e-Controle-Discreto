@@ -267,7 +267,7 @@ function [f, psd_d, psd_d_filt_Arduino, psd_d_filt_Scilab, psd_u] = data_spectra
     psd_d              = spectral_calculation(d,fs);
     psd_d_filt_Arduino = spectral_calculation(d_filt_Arduino,fs);
     psd_d_filt_Scilab  = spectral_calculation(d_filt_Scilab,fs);
-    psd_u              = spectral_calculation(u,fs);
+    psd_u              = spectral_calculation(d,fs);
 endfunction
 
 [f1,psd_d1, psd_d1_filt_Arduino, psd_d1_filt_Scilab, psd_u1] = data_spectral_treatment(fa1,d1,d1_filt_Arduino, d1_filt_Scilab, u1);
@@ -313,6 +313,7 @@ Comparando os diferentes filtros a partir dos sinais medidos plotados em funçã
 
 Para essses casos também, o filtro do arduíno teve o mesmo comportamento do filtro do scilab, gerando ambos a mesma curva, porém nas mediições 1, 2 e 3 é possivel, através de um zoom, comparar os dois filtros, e observa-se que o filtro do arduino tende a reduzir mais o sinal, tanto para as altas quanto para as baixas, para um pico no sinal medido o filtro do scilab devolverá um sinal maior que o do arduíno e para um vale o filtro do scilab gerará um sinal menor que o do arduíno. É interessante observar como esse fenômeno desaparece para menores frequências de corte e maiores períodos de oscilação do sinal enviado.
 
+<<<<<<< HEAD
 Realizou-se, também, a análise espectral para os sinais medidos e filtrados pelo scilab e pelo Arduino, para cada medição. Em linha com as análises feitas anteriormente, nota-se que tanto o filtro do Arduino como do Scilab reduziram o ruído. Na medição 1, nota-se que os sinais filtrados se mostram muito mais próximos ao sinal medido e com uma filtragem menor, devido à maior frequência de corte. Conforme se diminui a frequência de corte, nota-se que a filtragem é melhorada. 
 
 Do mesmo modo que nas análises anteriores, se nota um delay em ambos os filtros, especialmente nas medições 3, 4 e 5. Também nota-se diferenças entre os filtros, uma vez que o do Scilab reduz o ruído mais do que o do Arduino. Nota-se isto com maior facilidade no gráfico 4 
@@ -331,6 +332,8 @@ Também é possível notar que, com os filtros, o sinal medido se aproxima do en
 
 
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of 2133066... Update PME3402_Grupo13_Atividade6.sce
 
 */
 
@@ -370,14 +373,28 @@ plot_dist(t5,d5,d5_filt_Arduino, d5_filt_Scilab, 5);
 
 function plot_freq(f,psd_d,psd_d_filt_Arduino,psd_d_filt_Scilab, psd_u, medicao)
     fig = scf();
-    plot2d('nl',f, psd_u, style = color(cores(3)) );
+    subplot(4,1,1)
     plot2d('nl',f, psd_d, style = color(cores(1)) );
-    plot2d('nl',f, psd_d_filt_Arduino, style = color(cores(4)) );
-    plot2d('nl',f, psd_d_filt_Scilab, style = color(cores(8)) );
     title('Espectro de frequência da distância lida pelo Ultrassom na medição ' + string(medicao));
     ylabel("PSD");
     xlabel("f(Hz)");
-    h= legend(['Sinal enviado ao motor';'Sinal medido';'Filtrado pelo Arduino'; 'Filtrado pelo Scilab']);
+    
+    subplot(4,1,2)
+    plot2d('nl',f, psd_d_filt_Arduino, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Arduino na medição ' + string(medicao));
+    ylabel("PSD");
+    xlabel("f(Hz)");
+    
+    subplot(4,1,3)
+    plot2d('nl',f, psd_d_filt_Scilab, style = color(cores(1)) );
+    title('Espectro de frequência da distância filtrada pelo Scilab na medição ' + string(medicao));
+    xlabel("f(Hz)");
+    
+    subplot(4,1,4)
+    plot2d('nl',f, psd_u, style = color(cores(1)) );
+    title('Espectro de frequência da voltagem enviada ao motor na medição ' + string(medicao));
+    ylabel("PSD");
+    xlabel("f(Hz)");
 endfunction
 
 plot_freq(f1,psd_d1,psd_d1_filt_Arduino,psd_d1_filt_Scilab, psd_u1, 1);
