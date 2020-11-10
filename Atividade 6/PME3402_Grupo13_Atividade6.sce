@@ -267,7 +267,7 @@ function [f, psd_d, psd_d_filt_Arduino, psd_d_filt_Scilab, psd_u] = data_spectra
     psd_d              = spectral_calculation(d,fs);
     psd_d_filt_Arduino = spectral_calculation(d_filt_Arduino,fs);
     psd_d_filt_Scilab  = spectral_calculation(d_filt_Scilab,fs);
-    psd_u              = spectral_calculation(d,fs);
+    psd_u              = spectral_calculation(u,fs);
 endfunction
 
 [f1,psd_d1, psd_d1_filt_Arduino, psd_d1_filt_Scilab, psd_u1] = data_spectral_treatment(fa1,d1,d1_filt_Arduino, d1_filt_Scilab, u1);
@@ -282,58 +282,32 @@ endfunction
 // =============================================================================
 /*
 Parâmetros de cada medição:
-Filtro digital:
-- fc: Frequência de corte do filtro (Hz)
 Sinal enviado ao motor:
 - T_sinal: período de oscilação do sinal enviado
 - voltMax: valor máximo do sinal oscilatório (máx = 255)
 - voltMin: valor mínimo do sinal oscilatório (mín = 0)
 
-Medição 1: fc = 10Hz | T_sinal = 1  s | voltMax = 130 | voltMin = 80
-Medição 2: fc =  5Hz | T_sinal = 1  s | voltMax = 140 | voltMin = 70
-Medição 3: fc =  5Hz | T_sinal = 1  s | voltMax = 170 | voltMin = 50
-Medição 4: fc =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
-Medição 5: fc =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
+Medição 1: fc filtro = 10Hz | T_sinal = 1  s | voltMax = 130 | voltMin = 80
+Medição 2: fc filtro =  5Hz | T_sinal = 1  s | voltMax = 140 | voltMin = 70
+Medição 3: fc filtro =  5Hz | T_sinal = 1  s | voltMax = 170 | voltMin = 50
+Medição 4: fc filtro =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
+Medição 5: fc filtro =  2Hz | T_sinal = 1.5s | voltMax = 200 | voltMin = 30
 
 Como pode-se ver, foram realizados testes com diferentes frequências de corte, períodos do sinal enviado ao motor e voltagens.
 
-1) Análise do sinal
-
-(Falar de
-- A bola apresenta uma resposta de frequência aproximadamente na mesma frequência do sinal enviado ao motor
-- Ainda assim, pelos vídeos pode-se ver que além de a bolinha oscilar em relação à frequência do sinal enviado ao motor, ela também oscila em torno de um ponto que sobe e desce com uma baixa frequência. Por isso, os sinas apresentam grandes amplitudes no espectro para baixas frequências
-)
-
 O picos na frequência zero do espectro de frequências de todos os sinais era esperado e ele ocorre devido ao viés dos sinais, ou seja, quando estes possuem uma média diferente de zero. Isso ocorre, pois os sinais oscilam ao redor de um ponto acima de zero, o que faz com que a integral do vetor ao longo do tempo seja não nula e gera o pico na frequência zero.
 
-<<<<<<< Updated upstream
 Comparando os diferentes filtros a partir dos sinais medidos plotados em função do tempo (d x t) é possível observar que ambos os filtros reduzem efetivamente os ruídos o que é perceptível pelo pelo desaparecimento de picos de medição, esse fenômeno é muito evidente nos gráficos da medição 2. Dando um zoom nos gráficos é possível observar que os pequenos picos locais são também filtrados, de forma que a curva do sinal fique com menos oscilações.
 
 É possível observar observar um deslocamento das curvas do sinal filtrado para a direita, gerando um tipo de delay pelo filtro. Isso é mais acentuado para as medições 4 e 5 e pode portanto estar associado a uma menor frequência de corte ou maior período de oscilação do sinal enviado.
 
 Para essses casos também, o filtro do arduíno teve o mesmo comportamento do filtro do scilab, gerando ambos a mesma curva, porém nas mediições 1, 2 e 3 é possivel, através de um zoom, comparar os dois filtros, e observa-se que o filtro do arduino tende a reduzir mais o sinal, tanto para as altas quanto para as baixas, para um pico no sinal medido o filtro do scilab devolverá um sinal maior que o do arduíno e para um vale o filtro do scilab gerará um sinal menor que o do arduíno. É interessante observar como esse fenômeno desaparece para menores frequências de corte e maiores períodos de oscilação do sinal enviado.
 
-<<<<<<< HEAD
 Realizou-se, também, a análise espectral para os sinais medidos e filtrados pelo scilab e pelo Arduino, para cada medição. Em linha com as análises feitas anteriormente, nota-se que tanto o filtro do Arduino como do Scilab reduziram o ruído. Na medição 1, nota-se que os sinais filtrados se mostram muito mais próximos ao sinal medido e com uma filtragem menor, devido à maior frequência de corte. Conforme se diminui a frequência de corte, nota-se que a filtragem é melhorada. 
 
 Do mesmo modo que nas análises anteriores, se nota um delay em ambos os filtros, especialmente nas medições 3, 4 e 5. Também nota-se diferenças entre os filtros, uma vez que o do Scilab reduz o ruído mais do que o do Arduino. Nota-se isto com maior facilidade no gráfico 4 
 
 Também é possível notar que, com os filtros, o sinal medido se aproxima do enviado pelo motor, o que comprova a eficâcia do filtro. No gráfico 1, com a frequência de corte menor, os filtros não se aproximam tanto do sinal que sai do motor, mostrando que a filtragem é pior nestes casos. Conforme a frequência de corte diminui, a filtragem é melhorada, mas sempre se mostrando melhor no Scilab.
-=======
-2) Análise do filtro
-
-(Falar de
-- O filtro introduz um atraso ao sinal
-- Quanto menor a frequência de corte do filtro, maior o atraso
-- A filtragem do sinal fez com que o período de amostragem do Arduino passasse de 0.015s na atividade 5 para 0.023s na atividade 6. Esse maior período de amostragem também aumenta o atraso de resposta do sistema e pode dificultar o controle da bolinha
-- O filtro melhora a visibilidade do pico de frequência e diminui a resposta do sistema em altas frequências
-)
-
-
-
->>>>>>> Stashed changes
-=======
->>>>>>> parent of 2133066... Update PME3402_Grupo13_Atividade6.sce
 
 */
 
@@ -373,28 +347,14 @@ plot_dist(t5,d5,d5_filt_Arduino, d5_filt_Scilab, 5);
 
 function plot_freq(f,psd_d,psd_d_filt_Arduino,psd_d_filt_Scilab, psd_u, medicao)
     fig = scf();
-    subplot(4,1,1)
+    plot2d('nl',f, psd_u, style = color(cores(3)) );
     plot2d('nl',f, psd_d, style = color(cores(1)) );
+    plot2d('nl',f, psd_d_filt_Arduino, style = color(cores(4)) );
+    plot2d('nl',f, psd_d_filt_Scilab, style = color(cores(8)) );
     title('Espectro de frequência da distância lida pelo Ultrassom na medição ' + string(medicao));
     ylabel("PSD");
     xlabel("f(Hz)");
-    
-    subplot(4,1,2)
-    plot2d('nl',f, psd_d_filt_Arduino, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Arduino na medição ' + string(medicao));
-    ylabel("PSD");
-    xlabel("f(Hz)");
-    
-    subplot(4,1,3)
-    plot2d('nl',f, psd_d_filt_Scilab, style = color(cores(1)) );
-    title('Espectro de frequência da distância filtrada pelo Scilab na medição ' + string(medicao));
-    xlabel("f(Hz)");
-    
-    subplot(4,1,4)
-    plot2d('nl',f, psd_u, style = color(cores(1)) );
-    title('Espectro de frequência da voltagem enviada ao motor na medição ' + string(medicao));
-    ylabel("PSD");
-    xlabel("f(Hz)");
+    h= legend(['Sinal enviado ao motor';'Sinal medido';'Filtrado pelo Arduino'; 'Filtrado pelo Scilab']);
 endfunction
 
 plot_freq(f1,psd_d1,psd_d1_filt_Arduino,psd_d1_filt_Scilab, psd_u1, 1);
@@ -402,4 +362,3 @@ plot_freq(f2,psd_d2,psd_d2_filt_Arduino,psd_d2_filt_Scilab, psd_u2, 2);
 plot_freq(f3,psd_d3,psd_d3_filt_Arduino,psd_d3_filt_Scilab, psd_u3, 3);
 plot_freq(f4,psd_d4,psd_d4_filt_Arduino,psd_d4_filt_Scilab, psd_u4, 4);
 plot_freq(f5,psd_d5,psd_d5_filt_Arduino,psd_d5_filt_Scilab, psd_u5, 5);
-
