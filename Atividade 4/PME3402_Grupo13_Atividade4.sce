@@ -178,8 +178,8 @@ function [td,ed,ud,yd] = step_response_PID_digital(motor, metodo, Kp, Ki, Kd, Ta
     // B = [bd-1, bd-2 , bd- 3, ... , 1 ]
     
     // Para facilitar o entendimento do código, invertem-se os vetores A e B
-    kA = flipdim(kA,2) // Agora A = [an-d, ..., an-2, an-1, an]
-    kB = flipdim(kB,2) // Agora B = [a0, a1, a2, ...]
+    kA = flipdim(kA,2) // Agora A = [an-d, ..., an-1, an]
+    kB = flipdim(kB,2) // Agora B = [1, b1, b2, ...]
     
     n=length(kA);
     d=length(kB);
