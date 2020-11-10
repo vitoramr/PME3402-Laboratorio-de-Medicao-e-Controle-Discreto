@@ -9,11 +9,14 @@
 
 // Inputs de características do sistema de Controle
 #define ref_dist 15.0           // Posição de referência desejada para a bolinha
-#define T_amost 0.023           // Período de amostragem do Arduino calculado por meio SciLab (s)
+#define T_amost 0.023           // Período de amostragem do Arduino calculado no SciLab pela diferença entre tempos medidos (s)
 #define f_c 2                   // Frequência de corte do filtro (Hz)
 #define K_P 5.0                 // Constante proporcional do PID
-#define K_I 2.5                 // Constante integrativa do PID
-#define K_D 0.1                 // Constante derivativa do PID
+#define K_I 0.0                 // Constante integrativa do PID
+#define K_D 0.0                 // Constante derivativa do PID
+float PID_min = -100.0;         // Constante para o mapeamento da saída do PID entre 0 e 255
+float PID_max = 100.0;          // Constante para o mapeamento da saída do PID entre 0 e 255
+
 
 // Estados do sistema
 const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
@@ -30,8 +33,7 @@ const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
 // Definição de variáveis de cálculos
 unsigned long microsec;
 unsigned long t;                // Leitura do tempo do clock (em ms)
-unsigned int velocidade = 0 ;   // Sinal senoidal enviado para o motor (int entre 0 e 255)
-float w = 0;                    // Frequência angular do sinal enviado (rad/s)
+unsigned int Sinal_Driver = 0 ; // Sinal enviado para o PWM do motor (int entre 0 e 255)
 
 // Constantes usadas no código
 #define PI_VALUE 3.141593       // Constante pi a ser utilizada
@@ -61,6 +63,7 @@ float error = 0.0;             // É a variável e[k], de diferença entre a ref
 float error_K_1 = 0.0;         // É a variável e[k-1] do período anterior
 float error_K_2 = 0.0;         // É a variável e[k-2] do período anterior ao anterior
 
+
 // Inicialização o sensor nos pinos
 Ultrasonic ultrasonic(Sensor_Trigger, Sensor_Echo);
 
@@ -76,32 +79,29 @@ void setup()
   pinMode(Driver_A, OUTPUT);
 
   // Definindo sentido do driver
-  // Sentido 1
   if (sentido == 1) {
+  // Sentido 1
     digitalWrite(Driver_IN1, HIGH);
     digitalWrite(Driver_IN2, LOW);
   }
   else if (sentido == 2) {
   // Sentido 2
-  digitalWrite(Driver_IN1, LOW);
-  digitalWrite(Driver_IN2, HIGH);
+    digitalWrite(Driver_IN1, LOW);
+    digitalWrite(Driver_IN2, HIGH);
   }
 
-  dist_ant = dist;
-  filtered_dist_ant = filtered_dist;
-  error_K_2 = error_K_1;
-  error_K_1 = error;
-
-  // Armazenando os dados iniciais para as variáveis em k-1 e k-2
-  while (segunda_leitura){ // Segunda leitura do sensor para armazenamento das variáveis em k-1
+  // Armazenando os dados iniciais para o início dos cáclulos com as variáveis de k-1 e k-2
+  while (segunda_leitura){
     
-    while (primeira_leitura) { //Primeira leitura do sensor para armazenamento das variáveis de k-2
+    //Primeira leitura do sensor para armazenamento das variáveis de k-2
+    while (primeira_leitura) { 
       microsec = ultrasonic.timing();
       dist = ultrasonic.convert(microsec, Ultrasonic::CM);
-      error_K_2 = ref_dist - dist;
+      error_K_2 = -(ref_dist - dist);
       primeira_leitura = false;
     }
 
+    // Segunda leitura do sensor para armazenamento das variáveis em k-1
     microsec = ultrasonic.timing();
     dist_ant = ultrasonic.convert(microsec, Ultrasonic::CM);
     filtered_dist_ant = dist_ant;
@@ -153,14 +153,17 @@ void loop()
 
   
   PID_out = ( PID_out + K_ek*error + K_ek_1*error_K_1 + K_ek_2*error_K_2 );
-  
-  // Saturação do sinal de saída do PID entre 0 e 255
-  PID_out = constrain( PID_out, 0.0 , 255.0 ); //constrain(x, a, b) --> // Satura o valor de x entre a e b
 
   // Enviando o sinal de saída do PID ao Driver
-  analogWrite(Driver_A, byte(PID_out));
-
+  //PID_min = min(PID_min, PID_out);
+  //PID_max = max(PID_max, PID_out);
   
+  Sinal_Driver = mapFloat(PID_out, PID_min, PID_max , 0.0 ,255.0);
+  
+  analogWrite(Driver_A, Sinal_Driver);
+
+  Serial.print(Sinal_Driver);
+  Serial.print(",");
   Serial.println(PID_out);
   
   // Atualizando os valores da medição antiga
@@ -168,4 +171,12 @@ void loop()
   filtered_dist_ant = filtered_dist;
   error_K_2 = error_K_1;
   error_K_1 = error;
+}
+
+
+int mapFloat(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  x = constrain(x, in_min, in_max); // Satura o valor de x entre in_min e in_max
+  float mapping = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; // Mapeamento linear entre in e out
+  return round(mapping); // Arredonda o cálculo para o número inteiro mais próximo
 }
