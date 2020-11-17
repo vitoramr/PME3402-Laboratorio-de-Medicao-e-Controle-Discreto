@@ -9,21 +9,21 @@
 
 // Inputs de características do sistema de Controle
 // Uso do "define" economiza a memória do Arduino, pois ele substitui o que está no "define" no código antes de compilar, sem estocar como uma variável
-#define ref_dist 15.0           // Posição de referência desejada para a bolinha
-#define T_amost 0.023           // Período de amostragem do Arduino calculado no SciLab pela diferença entre tempos medidos (s)
+#define T_amost 0.025           // Período de amostragem do Arduino calculado no SciLab pela diferença entre tempos medidos (s)
 #define f_c 2.5                 // Frequência de corte do filtro (Hz)
-#define K_P 0.3                 // Constante proporcional do PID
-#define K_I 0.0                 // Constante integrativa do PID
-#define K_D 0.0                 // Constante derivativa do PID
+#define K_P 0.6                 // Constante proporcional do PID
+#define K_I 0.1                 // Constante integrativa do PID
+#define K_D 0.1                 // Constante derivativa do PID
+#define ref_dist 30.0           // Posição de referência desejada para a bolinha
 #define max_dist 55.0           // Distância máxima da bola no tubo
 #define min_dist 5.0            // Distância mínima da bola no tubo
 const float error_max = - (ref_dist - max_dist);
 const float error_min = - (ref_dist - min_dist);
-const float PID_min = 1.1*K_P*error_min;          // Constante para o mapeamento da saída do PID entre 0 e 255
-const float PID_max = 1.1*K_P*error_max;          // Constante para o mapeamento da saída do PID entre 0 e 255
+const float PID_min_estimado = 1.1*K_P*error_min;          // Constante para o mapeamento da saída do PID entre 0 e 255
+const float PID_max_estimado = 1.1*K_P*error_max;          // Constante para o mapeamento da saída do PID entre 0 e 255
 
-//const float PID_min = -50.0;         // Constante para o mapeamento da saída do PID entre 0 e 255
-//const float PID_max = 50.0; 
+const float PID_min = -15.0;     // Saída do controlador para a bola na posição mais alta (distância mínima)
+const float PID_max = 30.0;      // Saída do controlador para a bola na posição mais baixa (distância máxima)
 
 // Estados do sistema
 const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
@@ -50,9 +50,9 @@ const float Ce_1 = Ce_0;                                                        
 const float Cy_1 = -(1 - (freq_cortew*T_amost)/2) / (1 + (freq_cortew*T_amost)/2);  // Coeficiente analítico usado no filtro
 
 // Constantes para o controlador PID (Método de integração 'euler-backwards')
-const float K_ek    =  K_P + K_I*T_amost   +   K_D/T_amost;
-const float K_ek_1  = -K_P                 - 2*K_D/T_amost;
-const float K_ek_2  =                          K_D/T_amost;
+const float K_ek    = K_P + K_I*T_amost + K_D/T_amost;
+const float K_ek_1  = -K_P - 2*K_D/T_amost;
+const float K_ek_2  = K_D/T_amost;
 
 // Variáveis para o filtro
 float dist;                    // Leitura do sensor de ultrassom (cm)
@@ -124,8 +124,9 @@ void loop()
   
   microsec = ultrasonic.timing();
   dist = ultrasonic.convert(microsec, Ultrasonic::CM); // Distância medida pelo sensor (cm)
-  //Serial.print(t);
-  //Serial.print(',');
+  
+  Serial.print(t);
+  Serial.print(',');
   Serial.print(dist);
   Serial.print(",");
   
@@ -147,13 +148,14 @@ void loop()
 
   // Controlador PID
   /*  Segundo a apostila 6 da disciplina, a equação de diferenças de um controlador PID
-      com métodode de integração Euler-backwards, resulta na seguinte equação de diferenças:
+      com métodode de integração 'Euler-backwards', resulta na seguinte equação de diferenças:
           u(k) = u(k-1)+ Kek*e(k)+ Kek_1*e(k-1)+ Kek_2*e(k-2)
       Os coeficientes são dados por:
           Kek    =  Kp + Ki*Ta   +   Kd/Ta;
           Kek_1  = -Kp           - 2*Kd/Ta
           Kek_2  =                   Kd/Ta;
   */
+  
   // Usando o sinal de erro invertido, pois o sensor encontra-se num referêncial oposto ao do motor
   // Logo, deseja-se que um sinal medido maior do que o de referência aumente a ação do motor
   error = - (ref_dist - filtered_dist); 
@@ -161,24 +163,20 @@ void loop()
   
   PID_out = ( PID_out + K_ek*error + K_ek_1*error_K_1 + K_ek_2*error_K_2 );
 
-  // Enviando o sinal de saída do PID ao Driver
-  //PID_min = min(PID_min, PID_out);
-  //PID_max = max(PID_max, PID_out);
-  
+  // Enviando o sinal de saída do PID ao Driver  
   Sinal_Driver = mapFloat(PID_out, PID_min, PID_max , 0.0 ,255.0);
   
   analogWrite(Driver_A, Sinal_Driver);
 
-
-  Serial.print(Sinal_Driver);
-  Serial.print(",");
-
-  Serial.print(PID_min);
-  Serial.print(",");
-
-  Serial.print(PID_max);
-  Serial.print(",");
-
+  //analogWrite(Driver_A, 0);
+  
+  // Imprimindo no Serial o sinal da saída PID
+  //Serial.print(Sinal_Driver);
+  //Serial.print(",");
+  //Serial.print(PID_min_estimado);
+  //Serial.print(",");
+  //Serial.print(PID_max_estimado);
+  //Serial.print(",");
   Serial.println(PID_out);
   
   // Atualizando os valores da medição antiga

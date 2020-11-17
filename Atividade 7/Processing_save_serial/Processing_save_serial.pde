@@ -3,7 +3,7 @@ Serial mySerial; //Funcionalidade serial
 PrintWriter output; //Funcionalidade de escrita em arquivos
 
 void setup() {
-  String portName = Serial.list()[2]; //configura a porta serial
+  String portName = Serial.list()[0]; //configura a porta serial
   //print(portName);
   mySerial = new Serial(this, portName, 9600); //Configura a porta serial
   //mySerial = new Serial(this, "COM5", 9600); //Configura a porta serial
