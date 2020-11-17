@@ -244,10 +244,10 @@ function [Ts_vec, Ts, fs] = sampling_time_step(t)
 endfunction
 
 [Ta_t1, Ta1, fa1] = sampling_time_step(t1);
-[Ta_t2, Ta2, fa2] = sampling_time_step(t1);
-[Ta_t3, Ta3, fa3] = sampling_time_step(t1);
-[Ta_t4, Ta4, fa4] = sampling_time_step(t1);
-[Ta_t5, Ta5, fa5] = sampling_time_step(t1);
+[Ta_t2, Ta2, fa2] = sampling_time_step(t2);
+[Ta_t3, Ta3, fa3] = sampling_time_step(t3);
+[Ta_t4, Ta4, fa4] = sampling_time_step(t4);
+[Ta_t5, Ta5, fa5] = sampling_time_step(t5);
 
 // Filtragem numérica do sinal pelo Scilab
 d1_filt_Scilab = filtro_passa_baixa(d1, 10, Ts);

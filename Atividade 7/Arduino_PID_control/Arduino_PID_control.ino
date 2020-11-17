@@ -8,27 +8,32 @@
 #include <Ultrasonic.h>
 
 // Inputs de características do sistema de Controle
+// Uso do "define" economiza a memória do Arduino, pois ele substitui o que está no "define" no código antes de compilar, sem estocar como uma variável
 #define ref_dist 15.0           // Posição de referência desejada para a bolinha
 #define T_amost 0.023           // Período de amostragem do Arduino calculado no SciLab pela diferença entre tempos medidos (s)
-#define f_c 2                   // Frequência de corte do filtro (Hz)
-#define K_P 5.0                 // Constante proporcional do PID
+#define f_c 2.5                 // Frequência de corte do filtro (Hz)
+#define K_P 0.3                 // Constante proporcional do PID
 #define K_I 0.0                 // Constante integrativa do PID
 #define K_D 0.0                 // Constante derivativa do PID
-float PID_min = -100.0;         // Constante para o mapeamento da saída do PID entre 0 e 255
-float PID_max = 100.0;          // Constante para o mapeamento da saída do PID entre 0 e 255
+#define max_dist 55.0           // Distância máxima da bola no tubo
+#define min_dist 5.0            // Distância mínima da bola no tubo
+const float error_max = - (ref_dist - max_dist);
+const float error_min = - (ref_dist - min_dist);
+const float PID_min = 1.1*K_P*error_min;          // Constante para o mapeamento da saída do PID entre 0 e 255
+const float PID_max = 1.1*K_P*error_max;          // Constante para o mapeamento da saída do PID entre 0 e 255
 
+//const float PID_min = -50.0;         // Constante para o mapeamento da saída do PID entre 0 e 255
+//const float PID_max = 50.0; 
 
 // Estados do sistema
 const short sentido = 2;        // Sentido de rotação do motor (1 ou 2)
 
 // Determinando os terminais de saída do sensor:
-// Uso do "define" economiza a memória do Arduino, pois ele substitui o que está no "define" no código antes de compilar, sem estocar como uma variável
 #define Sensor_Trigger 4        // pino conectado ao Trigger do Ultrassônico
 #define Sensor_Echo 5           // pino conectado ao Echo do Ultrassônico
 #define Driver_IN1 8            // pino conectado ao IN1 do Driver
 #define Driver_IN2 9            // pino conectado ao IN2 do Driver
 #define Driver_A 10             // pino conectado ao  A  do Driver
-
 
 // Definição de variáveis de cálculos
 unsigned long microsec;
@@ -91,6 +96,7 @@ void setup()
   }
 
   // Armazenando os dados iniciais para o início dos cáclulos com as variáveis de k-1 e k-2
+  /*
   while (segunda_leitura){
     
     //Primeira leitura do sensor para armazenamento das variáveis de k-2
@@ -105,9 +111,10 @@ void setup()
     microsec = ultrasonic.timing();
     dist_ant = ultrasonic.convert(microsec, Ultrasonic::CM);
     filtered_dist_ant = dist_ant;
-    error_K_1 = ref_dist - dist_ant;
+    error_K_1 = -(ref_dist - dist);
     segunda_leitura = false;
   }
+  */
 }
 
 void loop()
@@ -162,8 +169,16 @@ void loop()
   
   analogWrite(Driver_A, Sinal_Driver);
 
+
   Serial.print(Sinal_Driver);
   Serial.print(",");
+
+  Serial.print(PID_min);
+  Serial.print(",");
+
+  Serial.print(PID_max);
+  Serial.print(",");
+
   Serial.println(PID_out);
   
   // Atualizando os valores da medição antiga
