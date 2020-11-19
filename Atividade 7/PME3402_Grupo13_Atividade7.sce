@@ -42,6 +42,11 @@ data_folder = 'Processing_save_serial'
 file_names = [
     'Medicao 1 - Ref 20,Kp 0_6,Ki 0_1, Kd 0_1, max 30, min -15.csv',
     'Medicao 2 - Ref 30,Kp 0_6,Ki 0_1, Kd 0_1, max 30, min -15.csv',
+    'Medicao 3 - Ref 30.csv',
+    'Leitura_Sensor_11_19_20_3_28.csv',
+    'Leitura_Sensor_11_19_20_5_4.csv',
+    'Leitura_Sensor_11_19_20_6_18.csv',
+    'Leitura_Sensor_11_19_20_7_14.csv',
 ];
 
 // =============================================================================
@@ -65,34 +70,8 @@ function [t,d,d_filt,u] = data_read(data_folder,filename)
 endfunction
 
 // =============================================================================
-// FUNÇÃO DE ANÁLISE ESPECTRAL DO SINAL
+// FUNÇÃO DE ANÁLISE DA FREQUÊNCIA DE AMOSTRAGEM
 // =============================================================================
-
-function [psd] = spectral_calculation(signal_t,fs)
-    /*
-    Inputs:
-    sinat_t --> um vetor unidimensional sinal_t (Nx1) que representa o valor de um
-    sinal temporal
-    fs      --> um valor real que representa a frequência de amostragem do sinal em Hz
-    
-    Outputs:
-    psd  --> vetor (N/2 x 1) de números reais com a densidade espectral de potência do sinal temporal
-    */
-    
-    N = length(signal_t);
-    
-    //spectrum_f = fft(signal_t - mean(signal_t)); // Retira o viés do sinal (pico na frequência zero)
-    spectrum_f = fft(signal_t); 
-    
-    spectrum_f = spectrum_f(1:N/2+1); // Como a fft é simétrica, pega-se metade do vetor
-    
-    psd = (1/(fs*N)) * ( abs(spectrum_f) ).^2 ; // PSD --> densidade espectral de potência
-    psd(2:$-1) = 2*psd(2:$-1);
-    
-endfunction
-
-
-// Analisando o período e frequência de amostragem do Arduino
 function [Ts_vec, Ts, fs] = sampling_time_step(t)
     // Input: t --> vetor discreto de tempos
     Ts_vec = ( t(2:$,1) - t(1:$-1,1) ) // Intervalos de tempo entre uma medição e outra
@@ -100,21 +79,9 @@ function [Ts_vec, Ts, fs] = sampling_time_step(t)
     fs = 1/Ts;                         // Frequência de amostragem média do sinal
 endfunction
 
-
-// Analise espectral dos sinais
-function [f, psd_d, psd_d_filt, psd_u] = data_spectral_treatment(fs,d,d_filt, u)
-    /*
-    Para evitar repetições de código, essa função aplica os calculos espectrais para todos os dados que temos 
-    */
-    N = length(d);
-    f = (fs /N)*(0:N/2)'                    // Escala de frequências
-    psd_d              = spectral_calculation(d,fs);
-    psd_d_filt         = spectral_calculation(d_filt,fs);
-    psd_u              = spectral_calculation(d,fs);
-endfunction
-
-
-// Análise do desempenho do controlador
+// =============================================================================
+// MÉTRICA DE ANÁLISE DO DESEMPENHO DO CONTROLADOR
+// =============================================================================
 function [absolute_error, rmse] = squared_error_analysis(signal, reference)
     absolute_error = (signal - reference);
     rmse = sqrt( mean( (signal - reference).^2 ) ); // Root Mean Squared Error (RMSE)
@@ -123,31 +90,74 @@ endfunction
 // Carregamento dos dados
 [t1,d1,d1_filt,u1] = data_read(data_folder,file_names(1));
 [t2,d2,d2_filt,u2] = data_read(data_folder,file_names(2));
+[t3,d3,d3_filt,u3] = data_read(data_folder,file_names(3));
+[t4,d4,d4_filt,u4] = data_read(data_folder,file_names(4));
+[t5,d5,d5_filt,u5] = data_read(data_folder,file_names(5));
+[t6,d6,d6_filt,u6] = data_read(data_folder,file_names(6));
+[t7,d7,d7_filt,u7] = data_read(data_folder,file_names(7));
 
 // Posições de referência dos dados
 d1_ref = 20.0;
 d2_ref = 30.0;
+d3_ref = 30.0;
+d4_ref = 30.0;
+d5_ref = 45.0;
+d6_ref = 10.0;
+d7_ref = 15.0;
 
 // Análise do período de amostragem
 [Ta_t1, Ta1, fa1] = sampling_time_step(t1);
 [Ta_t2, Ta2, fa2] = sampling_time_step(t2);
-
-// Análise espectral
-[f1,psd_d1, psd_d1_filt, psd_u1] = data_spectral_treatment(fa1,d1,d1_filt, u1);
-[f2,psd_d2, psd_d2_filt, psd_u2] = data_spectral_treatment(fa2,d2,d2_filt, u2);
+[Ta_t3, Ta3, fa3] = sampling_time_step(t1);
+[Ta_t4, Ta4, fa4] = sampling_time_step(t2);
+[Ta_t5, Ta5, fa5] = sampling_time_step(t1);
+[Ta_t6, Ta6, fa6] = sampling_time_step(t2);
+[Ta_t7, Ta7, fa7] = sampling_time_step(t2);
 
 // Análise do desempenho do controlador
-[err1, rmse1] = squared_error_analysis(d1_filt, d1_ref)
-[err2, rmse2] = squared_error_analysis(d2_filt, d2_ref)
+[err1, rmse1] = squared_error_analysis(d1_filt, d1_ref);
+[err2, rmse2] = squared_error_analysis(d2_filt, d2_ref);
+[err3, rmse3] = squared_error_analysis(d3_filt, d3_ref);
+[err4, rmse4] = squared_error_analysis(d4_filt, d4_ref);
+[err5, rmse5] = squared_error_analysis(d5_filt, d5_ref);
+[err6, rmse6] = squared_error_analysis(d6_filt, d6_ref);
+[err7, rmse7] = squared_error_analysis(d7_filt, d7_ref);
 
 
 disp("RMSE da medição 1: " + string(rmse1) )
 disp("RMSE da medição 2: " + string(rmse2) )
+disp("RMSE da medição 3: " + string(rmse3) )
+disp("RMSE da medição 4: " + string(rmse4) )
+disp("RMSE da medição 5: " + string(rmse5) )
+disp("RMSE da medição 6: " + string(rmse6) )
+disp("RMSE da medição 7: " + string(rmse7) )
+
+
 
 // =============================================================================
 //                         ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
+
+Resultados obtidos nas medições:
+Medição 1 (ref = 20.0, K_P = 0.6 , K_I = 0.1 , K_D = 0.1 , PID_min = -15, PID_max = 30) --> RMSE = 6.3840101
+Medição 2 (ref = 30.0, K_P = 0.6 , K_I = 0.1 , K_D = 0.1 , PID_min = -15, PID_max = 30) --> RMSE = 4.6528019
+Medição 3 (ref = 30.0, K_P = 0.6 , K_I = 0.12, K_D = 0.1 , PID_min = -15, PID_max = 30) --> RMSE = 4.560936
+Medição 4 (ref = 30.0, K_P = 0.55, K_I = 0.12, K_D = 0.12, PID_min = -15, PID_max = 30) --> RMSE = 4.4613355
+Medição 5 (ref = 45.0, K_P = 0.55, K_I = 0.12, K_D = 0.12, PID_min = -15, PID_max = 30) --> RMSE = 3.451867
+Medição 6 (ref = 10.0, K_P = 0.55, K_I = 0.12, K_D = 0.12, PID_min = -15, PID_max = 30) --> RMSE = 8.461225
+Medição 7 (ref = 15.0, K_P = 0.55, K_I = 0.12, K_D = 0.12, PID_min = -15, PID_max = 30) --> RMSE = 8.5295188
+
+Comentários do Tamai
+1 - O sensor de ultrassom tem uma faixa de operação. Se a bolinha estiver muito próxima, o sensor não fornece a distância correta.
+
+2 - A dinâmica do sistema é muito diferente quando a bolinha está na saída livre do tubo (perto do sensor), pois parte da bolinha fica fora do tubo.
+
+4 - A bancada é altamente não linear. Além da "zona morta" do ventilador, ou seja, toda a faixa de valores de rotação do ventilador desde o zero, até que a bolinha comece a subir, há também atrito no eixo do ventilador, fazendo que a tensão precise aumentar até um certo valor até que o ventilador comece a girar.
+
+5 - Não é apenas isso, a perda de carga na região da bolinha muda bastante. Ou seja, suponha que você, em malha aberta, consiga o milagre de encontrar uma tensão que, aplicada no motor do ventilador, faz com que a bolinha fique equilibrada. Basta ocorrer alguma mudança na posição da bolinha, e ela pode cair e ficar "presa" na posição inferior, se, por exemplo, essa tensão é insuficiente para mover a bolinha (item 4).
+
+
 Lógica empregada no controle do Arduino:
 
 medir a distancia da bolinha
@@ -176,14 +186,6 @@ analogWrite(sinal)
 
 Atualiza variaveis para o próximo loop
 
-Comentários do Tamai
-1 - O sensor de ultrassom tem uma faixa de operação. Se a bolinha estiver muito próxima, o sensor não fornece a distância correta.
-
-2 - A dinâmica do sistema é muito diferente quando a bolinha está na saída livre do tubo (perto do sensor), pois parte da bolinha fica fora do tubo.
-
-4 - A bancada é altamente não linear. Além da "zona morta" do ventilador, ou seja, toda a faixa de valores de rotação do ventilador desde o zero, até que a bolinha comece a subir, há também atrito no eixo do ventilador, fazendo que a tensão precise aumentar até um certo valor até que o ventilador comece a girar.
-
-5 - Não é apenas isso, a perda de carga na região da bolinha muda bastante. Ou seja, suponha que você, em malha aberta, consiga o milagre de encontrar uma tensão que, aplicada no motor do ventilador, faz com que a bolinha fique equilibrada. Basta ocorrer alguma mudança na posição da bolinha, e ela pode cair e ficar "presa" na posição inferior, se, por exemplo, essa tensão é insuficiente para mover a bolinha (item 4).
 
 */
 // =============================================================================
@@ -202,8 +204,10 @@ cores = [
 ]
 
 // Plot das distâncias
-function plot_dist(t, d, d_filt, d_ref, rmse, medicao)
+function plot_dist(t, d, d_filt, d_ref, u, abs_error, rmse, medicao)
     fig = scf();
+    
+    subplot(2,1,1)
     plot2d(t, d, style = color(cores(2)) );
     plot2d(t, d_filt, style = color(cores(7)) );
     plot2d(t, d_ref*ones(t), style = color('red') )
@@ -211,27 +215,25 @@ function plot_dist(t, d, d_filt, d_ref, rmse, medicao)
     ylabel("d (cm)");
     xlabel("tempo(s)");
     h= legend(['Sinal medido';'Filtrado'; 'Referência']);
-endfunction
-
-plot_dist(t1,d1,d1_filt, d1_ref, rmse1, 1);
-plot_dist(t2,d2,d2_filt, d2_ref, rmse2, 2);
-
-
-function plot_PID(t, abs_error, u, rmse, medicao)
-    fig = scf();
-    subplot(2,1,1)
+    
+    subplot(2,2,3)
     plot2d(t, abs_error, style = color(cores(2)) );
-    title('Erro entre a distância captada e o sinal de referência na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
+    title('Erro entre a distância captada e o sinal de referência na medição ' + string(medicao));
     ylabel("Erro (cm)");
     xlabel("tempo(s)");
     
-    subplot(2,1,2)
+    subplot(2,2,4)
     plot2d(t, u, style = color(cores(7)) );
-    title('Saída do controlado PID na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
+    title('Saída do controlado PID na medição ' + string(medicao) );
     ylabel("Saída do PID");
     xlabel("tempo(s)");
 endfunction
 
-plot_PID(t1,err1,u1, rmse1, 1);
-plot_PID(t2,err2,u2, rmse2, 2);
+plot_dist(t1,d1,d1_filt, d1_ref, u1, err1, rmse1, 1);
+plot_dist(t2,d2,d2_filt, d2_ref, u2, err2, rmse2, 2);
+plot_dist(t3,d3,d3_filt, d3_ref, u3, err3, rmse3, 3);
+plot_dist(t4,d4,d4_filt, d4_ref, u4, err4, rmse4, 4);
+plot_dist(t5,d5,d5_filt, d5_ref, u5, err5, rmse5, 5);
+plot_dist(t6,d6,d6_filt, d6_ref, u6, err6, rmse6, 6);
+plot_dist(t7,d7,d7_filt, d7_ref, u7, err7, rmse7, 7);
 
