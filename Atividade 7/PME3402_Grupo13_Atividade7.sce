@@ -40,8 +40,8 @@ xdel(winsid()); // Fecha as janelas abertas
 data_folder = 'Processing_save_serial'
 
 file_names = [
-    'Medicao 1 - Ref 20.csv',
-    'Medicao 2 - Ref 30.csv',
+    'Medicao 1 - Ref 20,Kp 0_6,Ki 0_1, Kd 0_1, max 30, min -15.csv',
+    'Medicao 2 - Ref 30,Kp 0_6,Ki 0_1, Kd 0_1, max 30, min -15.csv',
 ];
 
 // =============================================================================
@@ -145,17 +145,50 @@ disp("RMSE da medição 1: " + string(rmse1) )
 disp("RMSE da medição 2: " + string(rmse2) )
 
 // =============================================================================
-// ANÁLISE DOS RESULTADOS
+//                         ANÁLISE DOS RESULTADOS
 // =============================================================================
 /*
+Lógica empregada no controle do Arduino:
 
+medir a distancia da bolinha
+filtra distancia medida
+
+Cálculo do erro
+Tipo, geralmente o cálculo do erro seria erro = referência - medido, mas tem que pensar que o referencial do sensor de distância é outro, então a gente quer que ele "aumente" o sinal do ventilador caso a distância medida seja maior do que a referência
+erro = - (ref_dist - filtered_dist);
+
+equação de diferenças para pegar a saída do PID
+
+Mapear a saída do PID: sinal = mapFloat(PID_out, PID_min, PID_max , 0.0 ,255.0)
+
+PID_max e PID_min dependem de vários fatores, como as constantes do controlador (Kp,Ki,Kd) e da posição de referência escolhida. Para um valor que funcionasse para os Ks testados e para diferentes posições de referência foram valores arbitrarios testados experimentalmente. Uma estimativa utilizada pela equipe para estimar esses extremos foi considerar 10% a mais do erro máximo e mínimo quando só há a atuação da constante proporcional do controlador PID
+
+Código do Arduino utilizado
+#define max_dist 55.0           // Distância máxima da bola no tubo (bola em contato com o ventilador)
+#define min_dist 5.0            // Distância mínima da bola no tubo (bola na saída do tubo)
+const float error_max = - (ref_dist - max_dist);
+const float error_min = - (ref_dist - min_dist);
+const float PID_min_estimado = 1.1*K_P*error_min;          // Constante para o mapeamento da saída do PID entre 0 e 255
+const float PID_max_estimado = 1.1*K_P*error_max;          // Constante para o mapeamento da saída do PID entre 0 e 255
+
+
+analogWrite(sinal)
+
+Atualiza variaveis para o próximo loop
+
+Comentários do Tamai
+1 - O sensor de ultrassom tem uma faixa de operação. Se a bolinha estiver muito próxima, o sensor não fornece a distância correta.
+
+2 - A dinâmica do sistema é muito diferente quando a bolinha está na saída livre do tubo (perto do sensor), pois parte da bolinha fica fora do tubo.
+
+4 - A bancada é altamente não linear. Além da "zona morta" do ventilador, ou seja, toda a faixa de valores de rotação do ventilador desde o zero, até que a bolinha comece a subir, há também atrito no eixo do ventilador, fazendo que a tensão precise aumentar até um certo valor até que o ventilador comece a girar.
+
+5 - Não é apenas isso, a perda de carga na região da bolinha muda bastante. Ou seja, suponha que você, em malha aberta, consiga o milagre de encontrar uma tensão que, aplicada no motor do ventilador, faz com que a bolinha fique equilibrada. Basta ocorrer alguma mudança na posição da bolinha, e ela pode cair e ficar "presa" na posição inferior, se, por exemplo, essa tensão é insuficiente para mover a bolinha (item 4).
 
 */
-
 // =============================================================================
 //                         PLOTAGEM DOS GRÁFICOS
 // =============================================================================
-
 
 cores = [
 'blue4',        // 1
@@ -193,7 +226,7 @@ function plot_PID(t, abs_error, u, rmse, medicao)
     xlabel("tempo(s)");
     
     subplot(2,1,2)
-    plot2d(t, u, style = color(cores(2)) );
+    plot2d(t, u, style = color(cores(7)) );
     title('Saída do controlado PID na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
     ylabel("Saída do PID");
     xlabel("tempo(s)");
