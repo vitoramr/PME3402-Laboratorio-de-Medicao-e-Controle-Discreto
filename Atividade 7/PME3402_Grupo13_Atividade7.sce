@@ -40,13 +40,15 @@ xdel(winsid()); // Fecha as janelas abertas
 data_folder = 'Processing_save_serial'
 
 file_names = [
+    'Medicao 1 - Ref 20.csv',
+    'Medicao 2 - Ref 30.csv',
 ];
 
 // =============================================================================
 // FUNÇÃO DE CARREGAMENTO DOS DADOS
 // =============================================================================
 
-function [t,d,d_filt,u] = data_read(data_folder,filename, plot_signal)
+function [t,d,d_filt,u] = data_read(data_folder,filename)
     // Obtendo os caminhos de cada arquivo do experimento
     base_path = pwd(); // Diretório atual onde o Scilab está aberto
     s = filesep();     // Separador de arquivos para o OS atual ( '\' para Windows e '/' para Linux)
@@ -60,63 +62,6 @@ function [t,d,d_filt,u] = data_read(data_folder,filename, plot_signal)
     d_filt = data(:,3);   // Sinal fitlrado do sensor ultrassom em cm
     u = data(:,4);        // Sinal da saída do Controlador PID enviado ao motor
     
-    // Plotagem dos gráficos individuais
-    if plot_signal then
-        cores = [
-            'blue4',
-            'deepskyblue3',
-            'aquamarine3',
-            'springgreen4',
-            'gold3',
-            'firebrick1',
-            'magenta3',
-        ]
-        scf();
-            subplot(2,1,1)
-            fig = gca();
-            plot2d(t,d, style = color(cores(1)) );
-            title('Distância lida pelo ultrassom (cm)');
-            ylabel("d (cm)");
-            xlabel("tempo(s)");
-        
-            subplot(2,1,2)
-            plot2d(t,u, style = color(cores(1)) );
-            title('Tensão enviada ao motor');
-            ylabel("Tensão (V)");
-            xlabel("tempo(s)");
-    end
-endfunction
-
-// =============================================================================
-// FUNÇÃO DE APLICAÇÃO DO FILTRO PELO SCILAB
-// =============================================================================
-
-function [y] = filtro_passa_baixa(e, fc, Ts)
-    /*
-    Realiza a filtragem numérica de um sinal discreto e[k] por meio da aproximação
-    bilinear de um filtro digital passa baixa de 1º ordem 
-    
-    Inputs
-        e --> sinal discretizado
-        fc --> frequência de corte do filtro (Hz)
-        Ts --> período de amostragem do sinal
-    Output
-        y --> sinal filtrado
-    */
-    
-    wc = 2*%pi*fc;  // Frequência de corte do filtro (rad/s)
-    // Cálculo dos coeficientes do filtro
-    Cy_1 =  -(1 - (wc*Ts)/2) / (1 + (wc*Ts)/2);
-    Ce_0 = ((wc*Ts)/2) / (1 + (wc*Ts)/2);
-    Ce_1 = Ce_0;
-    
-    y = zeros(e); // Cria um vetor de zeros do tamanho do vetor e
-    y(1) = e(1);  // Atribuindo o valor inicial
-    
-    // Loop da filtragem do sinal e[k]
-    for k =2:length(e)
-        y(k) = -Cy_1*y(k-1) + Ce_1*e(k-1) + Ce_0*e(k);
-    end
 endfunction
 
 // =============================================================================
@@ -147,9 +92,6 @@ function [psd] = spectral_calculation(signal_t,fs)
 endfunction
 
 
-
-// Carregamento dos dados
-
 // Analisando o período e frequência de amostragem do Arduino
 function [Ts_vec, Ts, fs] = sampling_time_step(t)
     // Input: t --> vetor discreto de tempos
@@ -160,30 +102,47 @@ endfunction
 
 
 // Analise espectral dos sinais
-
-function [f, psd_d, psd_d_filt_Arduino, psd_d_filt_Scilab, psd_u] = data_spectral_treatment(fs,d,d_filt_Arduino,d_filt_Scilab, u)
+function [f, psd_d, psd_d_filt, psd_u] = data_spectral_treatment(fs,d,d_filt, u)
     /*
     Para evitar repetições de código, essa função aplica os calculos espectrais para todos os dados que temos 
     */
     N = length(d);
     f = (fs /N)*(0:N/2)'                    // Escala de frequências
     psd_d              = spectral_calculation(d,fs);
-    psd_d_filt_Arduino = spectral_calculation(d_filt_Arduino,fs);
-    psd_d_filt_Scilab  = spectral_calculation(d_filt_Scilab,fs);
+    psd_d_filt         = spectral_calculation(d_filt,fs);
     psd_u              = spectral_calculation(d,fs);
 endfunction
 
 
-// =============================================================================
-// ANÁLISE DO DESEMPENHO DO CONTROLADOR
-// =============================================================================
-
-function [sqr_error, msqr, bias] = squared_error_analysis(signal, reference)
-    sqr_error = (signal - reference).^2;
-    msqr = mean(sqr_error);
-    bias = stdev(sqr_error);
+// Análise do desempenho do controlador
+function [absolute_error, rmse] = squared_error_analysis(signal, reference)
+    absolute_error = (signal - reference);
+    rmse = sqrt( mean( (signal - reference).^2 ) ); // Root Mean Squared Error (RMSE)
 endfunction
 
+// Carregamento dos dados
+[t1,d1,d1_filt,u1] = data_read(data_folder,file_names(1));
+[t2,d2,d2_filt,u2] = data_read(data_folder,file_names(2));
+
+// Posições de referência dos dados
+d1_ref = 20.0;
+d2_ref = 30.0;
+
+// Análise do período de amostragem
+[Ta_t1, Ta1, fa1] = sampling_time_step(t1);
+[Ta_t2, Ta2, fa2] = sampling_time_step(t2);
+
+// Análise espectral
+[f1,psd_d1, psd_d1_filt, psd_u1] = data_spectral_treatment(fa1,d1,d1_filt, u1);
+[f2,psd_d2, psd_d2_filt, psd_u2] = data_spectral_treatment(fa2,d2,d2_filt, u2);
+
+// Análise do desempenho do controlador
+[err1, rmse1] = squared_error_analysis(d1_filt, d1_ref)
+[err2, rmse2] = squared_error_analysis(d2_filt, d2_ref)
+
+
+disp("RMSE da medição 1: " + string(rmse1) )
+disp("RMSE da medição 2: " + string(rmse2) )
 
 // =============================================================================
 // ANÁLISE DOS RESULTADOS
@@ -210,3 +169,36 @@ cores = [
 ]
 
 // Plot das distâncias
+function plot_dist(t, d, d_filt, d_ref, rmse, medicao)
+    fig = scf();
+    plot2d(t, d, style = color(cores(2)) );
+    plot2d(t, d_filt, style = color(cores(7)) );
+    plot2d(t, d_ref*ones(t), style = color('red') )
+    title('Distância captada pelo ultrassom na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
+    ylabel("d (cm)");
+    xlabel("tempo(s)");
+    h= legend(['Sinal medido';'Filtrado'; 'Referência']);
+endfunction
+
+plot_dist(t1,d1,d1_filt, d1_ref, rmse1, 1);
+plot_dist(t2,d2,d2_filt, d2_ref, rmse2, 2);
+
+
+function plot_PID(t, abs_error, u, rmse, medicao)
+    fig = scf();
+    subplot(2,1,1)
+    plot2d(t, abs_error, style = color(cores(2)) );
+    title('Erro entre a distância captada e o sinal de referência na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
+    ylabel("Erro (cm)");
+    xlabel("tempo(s)");
+    
+    subplot(2,1,2)
+    plot2d(t, u, style = color(cores(2)) );
+    title('Saída do controlado PID na medição ' + string(medicao) + " ( RMSE = " + string(rmse) + " )." );
+    ylabel("Saída do PID");
+    xlabel("tempo(s)");
+endfunction
+
+plot_PID(t1,err1,u1, rmse1, 1);
+plot_PID(t2,err2,u2, rmse2, 2);
+
